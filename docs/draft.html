@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Draft · Fantasy World Cup 2026</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  /* draft-page-specific */
+  .draft-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 16px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .draft-layout { grid-template-columns: 1fr; }
+    .roster-panel { position: sticky; top: 8px; }
+  }
+
+  .roster-panel {
+    background: var(--bg-card);
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 16px;
+  }
+  .roster-panel h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--bg-header);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+  .roster-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .stat {
+    background: #f8f8f6;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  .stat .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat .val { font-size: 18px; font-weight: 700; color: var(--bg-header); }
+  .stat .val.warn { color: var(--accent); }
+
+  .roster-list {
+    list-style: none;
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+  }
+  .roster-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-row);
+    font-size: 13px;
+  }
+  .roster-list li:last-child { border-bottom: none; }
+  .roster-list .pick-kind {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .roster-list .pick-kind.team   { background: var(--bg-header); color: #fff; }
+  .roster-list .pick-kind.player { background: var(--accent); color: #fff; }
+  .roster-list .pick-name { flex: 1; }
+  .roster-list .pick-price { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .roster-list .pick-remove {
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 16px; padding: 0 4px;
+  }
+  .roster-list .pick-remove:hover { color: var(--accent); }
+  .roster-empty { text-align: center; color: var(--text-muted); padding: 24px 0; font-size: 13px; }
+
+  .save-row { display: flex; gap: 8px; }
+  .save-row .btn { flex: 1; justify-content: center; }
+
+  /* Asset table tweaks */
+  table.data .add-btn {
+    background: var(--bg-header); color: #fff; border: none;
+    padding: 4px 12px; border-radius: 3px; font-size: 12px; font-weight: 600;
+    cursor: pointer;
+  }
+  table.data .add-btn:hover { background: var(--accent); }
+  table.data .add-btn.in-roster { background: var(--accent); }
+  table.data .add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  table.data tr.in-roster { background: #fef0f7; }
+  table.data tr.in-roster:hover { background: #fde2ec; }
+  .tier-badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    padding: 1px 6px; border-radius: 3px;
+    color: #fff; letter-spacing: 0.3px;
+  }
+  .tier-1 { background: #b91c1c; }
+  .tier-2 { background: #ea580c; }
+  .tier-3 { background: #ca8a04; }
+  .tier-4 { background: #16a34a; }
+  .tier-5 { background: #6b7280; }
+
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-header); color: #fff;
+    padding: 10px 18px; border-radius: 4px; font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    opacity: 0; transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  .toast.accent { background: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>DRAFT YOUR ROSTER</h1>
+  <p class="subtitle">Pick up to 12 teams + players · $100 budget · Locked at kickoff</p>
+  <p class="user-line" id="userLine"></p>
+</header>
+
+<nav class="site-nav" id="siteNav" style="display:none">
+  <a href="./index.html">Home</a>
+  <a href="./draft.html" class="active">Draft</a>
+  <a href="./roster.html">My Roster</a>
+  <a href="./leaderboard.html">Leaderboard</a>
+  <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+</nav>
+
+<main>
+  <!-- Signed-out callout -->
+  <section class="card signin-card" id="signinCard" style="display:none">
+    <h2>Sign in to draft</h2>
+    <p>You need to sign in with Google before you can save a roster.</p>
+    <button class="btn" id="signInBtn">Sign in with Google</button>
+  </section>
+
+  <!-- Signed-in: draft UI -->
+  <div id="draftUI" style="display:none">
+    <div class="draft-layout">
+      <!-- LEFT: browse -->
+      <div>
+        <div class="pills" id="tabPills">
+          <button class="active" data-tab="teams">Teams</button>
+          <button data-tab="players">Players</button>
+        </div>
+
+        <div class="row-flex" style="margin-bottom:12px">
+          <input type="search" id="searchBox" placeholder="Search…" style="flex:1; min-width:160px">
+          <select id="tierFilter">
+            <option value="">All tiers</option>
+            <option value="1">Tier 1 ($15 / $10)</option>
+            <option value="2">Tier 2 ($12 / $7)</option>
+            <option value="3">Tier 3 ($9 / $5)</option>
+            <option value="4">Tier 4 ($6 / $3)</option>
+            <option value="5">Tier 5 ($3 / $2)</option>
+          </select>
+          <span class="count-label" id="resultCount"></span>
+        </div>
+
+        <table class="data" id="assetTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Tier</th>
+              <th class="num">Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="assetBody">
+            <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text-muted)">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- RIGHT: roster panel -->
+      <aside class="roster-panel">
+        <h2>Your Roster</h2>
+        <div class="roster-stats">
+          <div class="stat">
+            <div class="label">Budget left</div>
+            <div class="val" id="budgetLeft">$100</div>
+          </div>
+          <div class="stat">
+            <div class="label">Picks</div>
+            <div class="val" id="pickCount">0 / 12</div>
+          </div>
+        </div>
+        <ul class="roster-list" id="rosterList">
+          <li class="roster-empty" id="rosterEmpty">No picks yet — click a row to add</li>
+        </ul>
+        <div class="save-row">
+          <button class="btn" id="resetBtn" title="Clear all picks">Reset</button>
+          <button class="btn btn-accent" id="saveBtn">Save Roster</button>
+        </div>
+        <p class="muted" style="font-size:11px;margin-top:8px;text-align:center" id="saveHint"></p>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import "./shared.js";
+
+  const BUDGET     = 100;
+  const ROSTER_CAP = 12;
+  const PLAYER_MIN_PRICE = 2;
+
+  // ---- state -------------------------------------------------------------
+  let currentUser = null;
+  let teams = [];     // loaded from data/seed_teams.json
+  let players = [];   // loaded from data/seed_players.json when available
+  let roster = JSON.parse(localStorage.getItem("fwc_draft_roster") || "[]");
+  let currentTab = "teams";
+
+  // ---- DOM refs ----------------------------------------------------------
+  const userLine    = document.getElementById('userLine');
+  const signinCard  = document.getElementById('signinCard');
+  const draftUI     = document.getElementById('draftUI');
+  const siteNav     = document.getElementById('siteNav');
+  const adminLink   = document.getElementById('adminLink');
+  const signInBtn   = document.getElementById('signInBtn');
+  const tabPills    = document.getElementById('tabPills');
+  const searchBox   = document.getElementById('searchBox');
+  const tierFilter  = document.getElementById('tierFilter');
+  const resultCount = document.getElementById('resultCount');
+  const assetBody   = document.getElementById('assetBody');
+  const budgetLeft  = document.getElementById('budgetLeft');
+  const pickCount   = document.getElementById('pickCount');
+  const rosterList  = document.getElementById('rosterList');
+  const rosterEmpty = document.getElementById('rosterEmpty');
+  const resetBtn    = document.getElementById('resetBtn');
+  const saveBtn     = document.getElementById('saveBtn');
+  const saveHint    = document.getElementById('saveHint');
+  const toast       = document.getElementById('toast');
+
+  // ---- data load ---------------------------------------------------------
+  async function loadData() {
+    try {
+      const res = await fetch('./data/seed_teams.json');
+      teams = await res.json();
+    } catch (e) {
+      console.error('seed_teams.json failed to load', e);
+    }
+    try {
+      const res2 = await fetch('./data/seed_players.json');
+      players = await res2.json();
+    } catch (e) {
+      // Player data may not exist yet — that's fine, draft can be teams-only
+      players = [];
+    }
+  }
+
+  // ---- auth wiring -------------------------------------------------------
+  await new Promise(r => requestAnimationFrame(r));
+  signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
+
+  window.fwc.onAuth(async (user) => {
+    currentUser = user;
+    if (user) {
+      userLine.innerHTML = `Signed in as <strong>${user.displayName || user.email}</strong>
+        <button id="signOutBtn">Sign out</button>`;
+      document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
+      siteNav.style.display = 'flex';
+      signinCard.style.display = 'none';
+      draftUI.style.display = 'block';
+      if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+      if (!teams.length) await loadData();
+      render();
+    } else {
+      // Show draft UI in "preview" mode for signed-out users so they can
+      // explore the asset list, but they can't save.
+      signinCard.style.display = 'block';
+      draftUI.style.display = 'block';
+      siteNav.style.display = 'none';
+      if (!teams.length) await loadData();
+      render();
+    }
+    updateSaveHint();
+  });
+
+  // ---- roster math -------------------------------------------------------
+  function getAsset(kind, id) {
+    return kind === 'team'
+      ? teams.find(t => t.id === id)
+      : players.find(p => p.id === id);
+  }
+  function rosterSpent() {
+    return roster.reduce((sum, r) => sum + r.price, 0);
+  }
+  function isInRoster(kind, id) {
+    return roster.some(r => r.kind === kind && r.id === id);
+  }
+
+  function addToRoster(kind, id) {
+    if (isInRoster(kind, id)) return;
+    if (roster.length >= ROSTER_CAP) {
+      showToast(`Max ${ROSTER_CAP} picks`, true);
+      return;
+    }
+    const asset = getAsset(kind, id);
+    if (!asset) return;
+    const price = asset.basePrice;
+    if (rosterSpent() + price > BUDGET) {
+      showToast(`Over budget by $${rosterSpent() + price - BUDGET}`, true);
+      return;
+    }
+    roster.push({ kind, id, name: asset.name, price });
+    persist();
+    render();
+  }
+
+  function removeFromRoster(kind, id) {
+    roster = roster.filter(r => !(r.kind === kind && r.id === id));
+    persist();
+    render();
+  }
+
+  function persist() {
+    localStorage.setItem("fwc_draft_roster", JSON.stringify(roster));
+  }
+
+  // ---- rendering ---------------------------------------------------------
+  function render() {
+    renderAssetTable();
+    renderRosterPanel();
+  }
+
+  function renderAssetTable() {
+    const source = currentTab === 'teams' ? teams : players;
+    const q = searchBox.value.trim().toLowerCase();
+    const tier = tierFilter.value;
+    const filtered = source.filter(a => {
+      if (q && !a.name.toLowerCase().includes(q)) return false;
+      if (tier && String(a.tier) !== tier) return false;
+      return true;
+    }).sort((a, b) => b.basePrice - a.basePrice || a.name.localeCompare(b.name));
+
+    resultCount.textContent = `${filtered.length} ${currentTab}`;
+
+    if (!filtered.length) {
+      assetBody.innerHTML = `<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text-muted)">
+        ${currentTab === 'players' && !players.length
+          ? 'Player data not loaded yet — run the squad-pull script to seed players.'
+          : 'No matches.'}
+      </td></tr>`;
+      return;
+    }
+
+    assetBody.innerHTML = filtered.map((a, i) => {
+      const owned = isInRoster(currentTab === 'teams' ? 'team' : 'player', a.id);
+      const kind = currentTab === 'teams' ? 'team' : 'player';
+      const remainsBudget = rosterSpent() + a.basePrice <= BUDGET;
+      const room = roster.length < ROSTER_CAP;
+      const canAdd = !owned && remainsBudget && room;
+      return `<tr class="${owned ? 'in-roster' : ''}">
+        <td class="rank-cell">${i + 1}</td>
+        <td class="team-cell">${escape(a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}</td>
+        <td><span class="tier-badge tier-${a.tier}">T${a.tier}</span></td>
+        <td class="num">$${a.basePrice}</td>
+        <td><button class="add-btn ${owned ? 'in-roster' : ''}" data-kind="${kind}" data-id="${escape(a.id)}" ${owned ? '' : (canAdd ? '' : 'disabled')}>
+          ${owned ? '✓ In roster' : (canAdd ? '+ Add' : 'No room')}
+        </button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderRosterPanel() {
+    const spent = rosterSpent();
+    const left = BUDGET - spent;
+    budgetLeft.textContent = `$${left}`;
+    budgetLeft.classList.toggle('warn', left < 0);
+    pickCount.textContent = `${roster.length} / ${ROSTER_CAP}`;
+
+    if (!roster.length) {
+      rosterList.innerHTML = `<li class="roster-empty">No picks yet — click "+ Add" to draft</li>`;
+    } else {
+      rosterList.innerHTML = roster.map(r => `
+        <li>
+          <span class="pick-kind ${r.kind}">${r.kind === 'team' ? 'T' : 'P'}</span>
+          <span class="pick-name">${escape(r.name)}</span>
+          <span class="pick-price">$${r.price}</span>
+          <button class="pick-remove" data-kind="${r.kind}" data-id="${escape(r.id)}" title="Remove">×</button>
+        </li>
+      `).join('');
+    }
+
+    saveBtn.disabled = !(currentUser && !window.fwc.configIsPlaceholder && roster.length > 0);
+  }
+
+  function updateSaveHint() {
+    if (window.fwc.configIsPlaceholder) {
+      saveHint.textContent = 'Firebase not configured yet — local drafts persist in browser storage.';
+    } else if (!currentUser) {
+      saveHint.textContent = 'Sign in with Google to save your roster.';
+    } else {
+      saveHint.textContent = '';
+    }
+  }
+
+  // ---- events ------------------------------------------------------------
+  tabPills.addEventListener('click', (e) => {
+    if (e.target.tagName !== 'BUTTON') return;
+    currentTab = e.target.dataset.tab;
+    [...tabPills.children].forEach(b => b.classList.toggle('active', b === e.target));
+    render();
+  });
+  searchBox.addEventListener('input', renderAssetTable);
+  tierFilter.addEventListener('change', renderAssetTable);
+  assetBody.addEventListener('click', (e) => {
+    const btn = e.target.closest('.add-btn');
+    if (!btn || btn.disabled) return;
+    addToRoster(btn.dataset.kind, btn.dataset.id);
+  });
+  rosterList.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pick-remove');
+    if (!btn) return;
+    removeFromRoster(btn.dataset.kind, btn.dataset.id);
+  });
+  resetBtn.addEventListener('click', () => {
+    if (!roster.length) return;
+    if (confirm('Clear all picks?')) {
+      roster = []; persist(); render();
+    }
+  });
+  saveBtn.addEventListener('click', async () => {
+    if (!currentUser || window.fwc.configIsPlaceholder) return;
+    saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+    try {
+      const ref = window.fwc.doc(window.fwc.db, 'users', currentUser.uid);
+      await window.fwc.setDoc(ref, {
+        email: currentUser.email,
+        displayName: currentUser.displayName,
+        roster: roster.map(r => ({ assetId: r.id, kind: r.kind, purchasePrice: r.price, currentlyHeld: true })),
+        totalSpent: rosterSpent(),
+        currentBudget: BUDGET - rosterSpent(),
+        totalPoints: 0,
+        joinedAt: new Date().toISOString(),
+      }, { merge: true });
+      showToast('Roster saved!', false);
+    } catch (e) {
+      console.error(e);
+      showToast(`Save failed: ${e.message}`, true);
+    } finally {
+      saveBtn.disabled = false; saveBtn.textContent = 'Save Roster';
+    }
+  });
+
+  // ---- helpers -----------------------------------------------------------
+  function escape(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+  let toastTimer;
+  function showToast(msg, isWarn) {
+    toast.textContent = msg;
+    toast.classList.toggle('accent', !!isWarn);
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+</script>
+
+</body>
+</html>

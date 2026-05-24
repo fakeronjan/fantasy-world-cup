@@ -777,6 +777,86 @@ PRESETS: list[tuple[str, ScoringWeights, PlayerPricing]] = [
 ]
 
 
+def tier_return_analysis() -> None:
+    """For each price tier, across all 4 historical World Cups, report
+    average + median actual points earned. Lets us sanity-check whether
+    each tier is paying off proportionally."""
+    from collections import defaultdict
+    import statistics
+
+    weights = ScoringWeights()  # use the locked defaults
+    pricing = PlayerPricing(min_price=2)
+
+    team_by_tier: dict[int, list[float]] = defaultdict(list)
+    player_by_tier: dict[int, list[float]] = defaultdict(list)
+    # Track scored-only separately so we can show the contrast.
+    player_by_tier_scored_only: dict[int, list[float]] = defaultdict(list)
+
+    for year in (2010, 2014, 2018, 2022):
+        teams, players = load_year(year, pricing, format_2026=True)
+        for t in teams:
+            team_by_tier[t.price].append(t.points(weights, format_2026=True))
+        teams_by_name = {t.name: t for t in teams}
+        for p in players:
+            t = teams_by_name.get(p.team_name)
+            if t is None:
+                continue
+            pts = p.points(weights, t)
+            player_by_tier[p.price].append(pts)
+            if p.goals > 0:
+                player_by_tier_scored_only[p.price].append(pts)
+
+    print(f"\n{'='*78}")
+    print(f"  TIER RETURN ANALYSIS — averages across WC 2010, 2014, 2018, 2022")
+    print(f"  (using locked scoring weights; teams + players adapted to 2026 format)")
+    print(f"{'='*78}")
+
+    print(f"\nTEAMS:")
+    print(f"  {'price':>5} {'n':>4} {'mean':>6} {'median':>6} {'p25':>5} {'p75':>5} {'min':>4} {'max':>4} {'pts/$':>6}")
+    for price in sorted(team_by_tier.keys(), reverse=True):
+        pts = team_by_tier[price]
+        if not pts:
+            continue
+        pts_sorted = sorted(pts)
+        n = len(pts)
+        mean = statistics.mean(pts)
+        med = statistics.median(pts)
+        p25 = pts_sorted[n // 4]
+        p75 = pts_sorted[(3 * n) // 4]
+        print(f"  ${price:>4} {n:>4} {mean:>6.1f} {med:>6.1f} {p25:>5.1f} {p75:>5.1f} "
+              f"{min(pts):>4.0f} {max(pts):>4.0f} {mean/price:>6.2f}")
+
+    print(f"\nPLAYERS (ALL squad members — what you'd ACTUALLY draft from):")
+    print(f"  {'price':>5} {'n':>4} {'mean':>6} {'median':>6} {'p25':>5} {'p75':>5} {'min':>4} {'max':>4} {'pts/$':>6}")
+    for price in sorted(player_by_tier.keys(), reverse=True):
+        pts = player_by_tier[price]
+        if not pts:
+            continue
+        pts_sorted = sorted(pts)
+        n = len(pts)
+        mean = statistics.mean(pts)
+        med = statistics.median(pts)
+        p25 = pts_sorted[n // 4]
+        p75 = pts_sorted[(3 * n) // 4]
+        print(f"  ${price:>4} {n:>4} {mean:>6.1f} {med:>6.1f} {p25:>5.1f} {p75:>5.1f} "
+              f"{min(pts):>4.0f} {max(pts):>4.0f} {mean/price:>6.2f}")
+
+    print(f"\nPLAYERS (scorers-only subset — for context: 'if they DID score, what was their return?'):")
+    print(f"  {'price':>5} {'n':>4} {'mean':>6} {'median':>6} {'p25':>5} {'p75':>5} {'min':>4} {'max':>4} {'pts/$':>6}")
+    for price in sorted(player_by_tier_scored_only.keys(), reverse=True):
+        pts = player_by_tier_scored_only[price]
+        if not pts:
+            continue
+        pts_sorted = sorted(pts)
+        n = len(pts)
+        mean = statistics.mean(pts)
+        med = statistics.median(pts)
+        p25 = pts_sorted[n // 4]
+        p75 = pts_sorted[(3 * n) // 4]
+        print(f"  ${price:>4} {n:>4} {mean:>6.1f} {med:>6.1f} {p25:>5.1f} {p75:>5.1f} "
+              f"{min(pts):>4.0f} {max(pts):>4.0f} {mean/price:>6.2f}")
+
+
 def main() -> None:
     summary_rows = []
     # Run each preset under both the historical 32-team format AND the
@@ -813,4 +893,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--tier-returns" in sys.argv:
+        tier_return_analysis()
+    else:
+        main()
