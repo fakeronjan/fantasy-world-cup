@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fantasy World Cup 2026</title>
+<link rel="stylesheet" href="./shared.css">
+</head>
+<body>
+
+<header class="site-header">
+  <h1>FANTASY WORLD CUP</h1>
+  <p class="subtitle">2026 · A Friend-League Salary Cap Game</p>
+  <p class="user-line" id="userLine"></p>
+</header>
+
+<nav class="site-nav" id="siteNav" style="display:none">
+  <a href="./roster.html">My Roster</a>
+  <a href="./leaderboard.html">Leaderboard</a>
+  <a href="./draft.html" id="draftLink" style="display:none">Draft</a>
+  <a href="./transfer.html" id="transferLink" style="display:none">Transfer</a>
+  <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+</nav>
+
+<main>
+  <!-- Signed-out state: sign-in card -->
+  <section class="card signin-card" id="signinCard" style="display:none">
+    <h2>Sign in to play</h2>
+    <p>You'll need a Google account. Once you're in, you can draft your roster:
+       up to 12 picks of teams + players within a $100 budget. Score points
+       as your picks win games and score goals.</p>
+    <button class="btn" id="signInBtn">
+      Sign in with Google
+    </button>
+  </section>
+
+  <!-- Signed-in state: welcome card -->
+  <section class="card" id="welcomeCard" style="display:none">
+    <h2>Welcome <span id="welcomeName"></span></h2>
+    <p id="welcomeStatus" class="muted">Loading your status…</p>
+    <div class="row-flex" style="margin-top:16px">
+      <a href="./roster.html" class="btn">View My Roster</a>
+      <a href="./leaderboard.html" class="btn btn-accent">Leaderboard</a>
+    </div>
+  </section>
+
+  <!-- Setup-needed callout — only shows while Firebase config is still placeholder -->
+  <section class="card" id="setupNotice" style="display:none">
+    <h2>⚙️  Setup needed</h2>
+    <p>Firebase isn't configured yet. Before sign-in will work:</p>
+    <ol style="margin:8px 0 12px 20px; line-height:1.8; color:var(--text-muted)">
+      <li>Create a Firebase project at <a href="https://console.firebase.google.com">console.firebase.google.com</a></li>
+      <li>Enable the <strong>Google</strong> sign-in provider (Authentication → Sign-in method)</li>
+      <li>Create a web app and copy the config object</li>
+      <li>Paste it into <code>docs/shared.js</code> where it says <code>REPLACE_ME</code></li>
+      <li>Create a Firestore database and apply <code>firestore.rules</code></li>
+    </ol>
+    <p class="muted">This notice disappears automatically once the config is filled in.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  Built on the foundation of fakeronjan.com fantasy sports.
+</footer>
+
+<script type="module">
+  import "./shared.js";
+
+  const userLine    = document.getElementById('userLine');
+  const signinCard  = document.getElementById('signinCard');
+  const welcomeCard = document.getElementById('welcomeCard');
+  const setupNotice = document.getElementById('setupNotice');
+  const welcomeName = document.getElementById('welcomeName');
+  const siteNav     = document.getElementById('siteNav');
+  const draftLink   = document.getElementById('draftLink');
+  const adminLink   = document.getElementById('adminLink');
+  const signInBtn   = document.getElementById('signInBtn');
+
+  // shared.js attaches `window.fwc` synchronously after import.
+  // Give the module a tick to evaluate before reading from window.fwc.
+  await new Promise(r => requestAnimationFrame(r));
+
+  if (window.fwc.configIsPlaceholder) {
+    setupNotice.style.display = 'block';
+    signinCard.style.display = 'block';   // show the button anyway — it surfaces a helpful error
+  }
+
+  signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
+
+  window.fwc.onAuth((user) => {
+    if (user) {
+      userLine.innerHTML = `Signed in as <strong>${user.displayName || user.email}</strong>
+        <button id="signOutBtn">Sign out</button>`;
+      document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
+
+      welcomeName.textContent = user.displayName || user.email;
+      welcomeCard.style.display = 'block';
+      signinCard.style.display = 'none';
+      siteNav.style.display = 'flex';
+
+      // Pre-kickoff: show draft link. After kickoff: hide it (logic on draft page).
+      // For now, always show the draft link until we wire up config.currentRound.
+      draftLink.style.display = '';
+
+      if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+    } else {
+      userLine.textContent = '';
+      welcomeCard.style.display = 'none';
+      signinCard.style.display = 'block';
+      siteNav.style.display = 'none';
+    }
+  });
+</script>
+
+</body>
+</html>

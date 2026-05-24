@@ -1,0 +1,10 @@
+# Data + simulation
+pandas>=2.0
+numpy>=1.24
+requests>=2.30
+lxml>=5.0
+html5lib>=1.1
+beautifulsoup4>=4.12
+
+# Firebase admin (for seed_assets.py, ingest_results.py, reprice.py)
+firebase-admin>=6.4

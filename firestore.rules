@@ -1,0 +1,90 @@
+rules_version = '2';
+
+// Fantasy World Cup — Firestore security rules.
+//
+// Principles:
+//   - Everyone signed in can READ everything (leaderboard transparency).
+//   - Users can WRITE only their own `users/{uid}` doc, and only when the
+//     game state allows (pre-kickoff for draft, transfer windows for swaps).
+//   - All catalog data (teams, players, matches, config, leaderboard) is
+//     writable only by admin accounts. Admin writes happen via the
+//     server-side Firebase Admin SDK (used by GitHub Actions ingest +
+//     reprice scripts), which bypasses these rules entirely via the
+//     service-account key — so the rules just need to lock out everyone
+//     who isn't an admin from the client side.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- helpers -------------------------------------------------------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      // PASTE ADMIN UIDS BELOW. Get them from Firebase Console →
+      // Authentication → Users. Mirror this list in docs/shared.js
+      // (the ADMIN_UIDS Set), used to gate UI links.
+      return isSignedIn() && request.auth.uid in [
+        // 'PASTE_ADMIN_UID_HERE',
+      ];
+    }
+    function configDoc() {
+      return get(/databases/$(database)/documents/config/global).data;
+    }
+    function beforeKickoff() {
+      return request.time < configDoc().kickoffTimestamp;
+    }
+    function transferWindowOpen() {
+      return configDoc().transferWindowOpen == true;
+    }
+
+    // ---- users ---------------------------------------------------------
+    // A user can read/write their own doc. Roster edits allowed only
+    // pre-kickoff (initial draft) or during a transfer window.
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == uid;
+      allow update: if isSignedIn() && request.auth.uid == uid
+                     && (beforeKickoff() || transferWindowOpen()
+                         || onlyTouchesProfileFields());
+      allow delete: if false;
+    }
+    function onlyTouchesProfileFields() {
+      // Allow harmless updates (e.g., displayName refresh) outside transfer
+      // windows. Block any roster/budget edits.
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return !changed.hasAny(['roster', 'currentBudget', 'totalSpent']);
+    }
+
+    // ---- catalog (admin-only writes) ----------------------------------
+    match /teams/{teamId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /players/{playerId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /matches/{matchId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /config/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /leaderboard/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ---- transactions (audit log; users append their own) -------------
+    match /transactions/{txId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && (beforeKickoff() || transferWindowOpen());
+      allow update, delete: if false; // immutable
+    }
+  }
+}
