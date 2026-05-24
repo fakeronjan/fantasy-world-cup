@@ -1,0 +1,574 @@
+[
+  {
+    "player": "James Rodríguez",
+    "goals": 6
+  },
+  {
+    "player": "Thomas Müller",
+    "goals": 5
+  },
+  {
+    "player": "Lionel Messi",
+    "goals": 4
+  },
+  {
+    "player": "Neymar",
+    "goals": 4
+  },
+  {
+    "player": "Robin van Persie",
+    "goals": 4
+  },
+  {
+    "player": "Enner Valencia",
+    "goals": 3
+  },
+  {
+    "player": "Karim Benzema",
+    "goals": 3
+  },
+  {
+    "player": "André Schürrle",
+    "goals": 3
+  },
+  {
+    "player": "Arjen Robben",
+    "goals": 3
+  },
+  {
+    "player": "Xherdan Shaqiri",
+    "goals": 3
+  },
+  {
+    "player": "Abdelmoumene Djabou",
+    "goals": 2
+  },
+  {
+    "player": "Islam Slimani",
+    "goals": 2
+  },
+  {
+    "player": "Tim Cahill",
+    "goals": 2
+  },
+  {
+    "player": "David Luiz",
+    "goals": 2
+  },
+  {
+    "player": "Oscar",
+    "goals": 2
+  },
+  {
+    "player": "Alexis Sánchez",
+    "goals": 2
+  },
+  {
+    "player": "Jackson Martínez",
+    "goals": 2
+  },
+  {
+    "player": "Bryan Ruiz",
+    "goals": 2
+  },
+  {
+    "player": "Mario Mandžukić",
+    "goals": 2
+  },
+  {
+    "player": "Ivan Perišić",
+    "goals": 2
+  },
+  {
+    "player": "Mario Götze",
+    "goals": 2
+  },
+  {
+    "player": "Mats Hummels",
+    "goals": 2
+  },
+  {
+    "player": "Miroslav Klose",
+    "goals": 2
+  },
+  {
+    "player": "Toni Kroos",
+    "goals": 2
+  },
+  {
+    "player": "André Ayew",
+    "goals": 2
+  },
+  {
+    "player": "Asamoah Gyan",
+    "goals": 2
+  },
+  {
+    "player": "Wilfried Bony",
+    "goals": 2
+  },
+  {
+    "player": "Gervinho",
+    "goals": 2
+  },
+  {
+    "player": "Memphis Depay",
+    "goals": 2
+  },
+  {
+    "player": "Ahmed Musa",
+    "goals": 2
+  },
+  {
+    "player": "Clint Dempsey",
+    "goals": 2
+  },
+  {
+    "player": "Luis Suárez",
+    "goals": 2
+  },
+  {
+    "player": "Yacine Brahimi",
+    "goals": 1
+  },
+  {
+    "player": "Sofiane Feghouli",
+    "goals": 1
+  },
+  {
+    "player": "Rafik Halliche",
+    "goals": 1
+  },
+  {
+    "player": "Ángel Di María",
+    "goals": 1
+  },
+  {
+    "player": "Gonzalo Higuaín",
+    "goals": 1
+  },
+  {
+    "player": "Marcos Rojo",
+    "goals": 1
+  },
+  {
+    "player": "Mile Jedinak",
+    "goals": 1
+  },
+  {
+    "player": "Kevin De Bruyne",
+    "goals": 1
+  },
+  {
+    "player": "Marouane Fellaini",
+    "goals": 1
+  },
+  {
+    "player": "Romelu Lukaku",
+    "goals": 1
+  },
+  {
+    "player": "Dries Mertens",
+    "goals": 1
+  },
+  {
+    "player": "Divock Origi",
+    "goals": 1
+  },
+  {
+    "player": "Jan Vertonghen",
+    "goals": 1
+  },
+  {
+    "player": "Edin Džeko",
+    "goals": 1
+  },
+  {
+    "player": "Vedad Ibišević",
+    "goals": 1
+  },
+  {
+    "player": "Miralem Pjanić",
+    "goals": 1
+  },
+  {
+    "player": "Avdija Vršajević",
+    "goals": 1
+  },
+  {
+    "player": "Fernandinho",
+    "goals": 1
+  },
+  {
+    "player": "Fred",
+    "goals": 1
+  },
+  {
+    "player": "Thiago Silva",
+    "goals": 1
+  },
+  {
+    "player": "Joël Matip",
+    "goals": 1
+  },
+  {
+    "player": "Charles Aránguiz",
+    "goals": 1
+  },
+  {
+    "player": "Jean Beausejour",
+    "goals": 1
+  },
+  {
+    "player": "Jorge Valdivia",
+    "goals": 1
+  },
+  {
+    "player": "Eduardo Vargas",
+    "goals": 1
+  },
+  {
+    "player": "Pablo Armero",
+    "goals": 1
+  },
+  {
+    "player": "Juan Cuadrado",
+    "goals": 1
+  },
+  {
+    "player": "Teófilo Gutiérrez",
+    "goals": 1
+  },
+  {
+    "player": "Juan Quintero",
+    "goals": 1
+  },
+  {
+    "player": "Joel Campbell",
+    "goals": 1
+  },
+  {
+    "player": "Óscar Duarte",
+    "goals": 1
+  },
+  {
+    "player": "Marco Ureña",
+    "goals": 1
+  },
+  {
+    "player": "Ivica Olić",
+    "goals": 1
+  },
+  {
+    "player": "Wayne Rooney",
+    "goals": 1
+  },
+  {
+    "player": "Daniel Sturridge",
+    "goals": 1
+  },
+  {
+    "player": "Olivier Giroud",
+    "goals": 1
+  },
+  {
+    "player": "Blaise Matuidi",
+    "goals": 1
+  },
+  {
+    "player": "Paul Pogba",
+    "goals": 1
+  },
+  {
+    "player": "Moussa Sissoko",
+    "goals": 1
+  },
+  {
+    "player": "Mathieu Valbuena",
+    "goals": 1
+  },
+  {
+    "player": "Sami Khedira",
+    "goals": 1
+  },
+  {
+    "player": "Mesut Özil",
+    "goals": 1
+  },
+  {
+    "player": "Sokratis Papastathopoulos",
+    "goals": 1
+  },
+  {
+    "player": "Georgios Samaras",
+    "goals": 1
+  },
+  {
+    "player": "Andreas Samaris",
+    "goals": 1
+  },
+  {
+    "player": "Carlo Costly",
+    "goals": 1
+  },
+  {
+    "player": "Reza Ghoochannejhad",
+    "goals": 1
+  },
+  {
+    "player": "Mario Balotelli",
+    "goals": 1
+  },
+  {
+    "player": "Claudio Marchisio",
+    "goals": 1
+  },
+  {
+    "player": "Keisuke Honda",
+    "goals": 1
+  },
+  {
+    "player": "Shinji Okazaki",
+    "goals": 1
+  },
+  {
+    "player": "Giovani dos Santos",
+    "goals": 1
+  },
+  {
+    "player": "Andrés Guardado",
+    "goals": 1
+  },
+  {
+    "player": "Javier Hernández",
+    "goals": 1
+  },
+  {
+    "player": "Rafael Márquez",
+    "goals": 1
+  },
+  {
+    "player": "Oribe Peralta",
+    "goals": 1
+  },
+  {
+    "player": "Daley Blind",
+    "goals": 1
+  },
+  {
+    "player": "Stefan de Vrij",
+    "goals": 1
+  },
+  {
+    "player": "Leroy Fer",
+    "goals": 1
+  },
+  {
+    "player": "Klaas-Jan Huntelaar",
+    "goals": 1
+  },
+  {
+    "player": "Wesley Sneijder",
+    "goals": 1
+  },
+  {
+    "player": "Georginio Wijnaldum",
+    "goals": 1
+  },
+  {
+    "player": "Peter Odemwingie",
+    "goals": 1
+  },
+  {
+    "player": "Cristiano Ronaldo",
+    "goals": 1
+  },
+  {
+    "player": "Nani",
+    "goals": 1
+  },
+  {
+    "player": "Silvestre Varela",
+    "goals": 1
+  },
+  {
+    "player": "Aleksandr Kerzhakov",
+    "goals": 1
+  },
+  {
+    "player": "Aleksandr Kokorin",
+    "goals": 1
+  },
+  {
+    "player": "Koo Ja-cheol",
+    "goals": 1
+  },
+  {
+    "player": "Lee Keun-ho",
+    "goals": 1
+  },
+  {
+    "player": "Son Heung-min",
+    "goals": 1
+  },
+  {
+    "player": "Xabi Alonso",
+    "goals": 1
+  },
+  {
+    "player": "Juan Mata",
+    "goals": 1
+  },
+  {
+    "player": "Fernando Torres",
+    "goals": 1
+  },
+  {
+    "player": "David Villa",
+    "goals": 1
+  },
+  {
+    "player": "Blerim Džemaili",
+    "goals": 1
+  },
+  {
+    "player": "Admir Mehmedi",
+    "goals": 1
+  },
+  {
+    "player": "Haris Seferovic",
+    "goals": 1
+  },
+  {
+    "player": "Granit Xhaka",
+    "goals": 1
+  },
+  {
+    "player": "John Brooks",
+    "goals": 1
+  },
+  {
+    "player": "Julian Green",
+    "goals": 1
+  },
+  {
+    "player": "Jermaine Jones",
+    "goals": 1
+  },
+  {
+    "player": "Edinson Cavani",
+    "goals": 1
+  },
+  {
+    "player": "Diego Godín",
+    "goals": 1
+  },
+  {
+    "player": "Sead Kolašinac",
+    "goals": 1
+  },
+  {
+    "player": "Marcelo",
+    "goals": 1
+  },
+  {
+    "player": "John Boye",
+    "goals": 1
+  },
+  {
+    "player": "Noel Valladares",
+    "goals": 1
+  },
+  {
+    "player": "Joseph Yobo",
+    "goals": 1
+  },
+  {
+    "player": "Receiving a red card",
+    "goals": 1
+  },
+  {
+    "player": "Receiving two yellow cards in two matches; yellow cards expire after the completion of the quarter-finals",
+    "goals": 1
+  },
+  {
+    "player": "Gérard Houllier",
+    "goals": 1
+  },
+  {
+    "player": "Raul Arias",
+    "goals": 1
+  },
+  {
+    "player": "Gabriel Calderón",
+    "goals": 1
+  },
+  {
+    "player": "Ricki Herbert",
+    "goals": 1
+  },
+  {
+    "player": "Abdel Moneim Hussein",
+    "goals": 1
+  },
+  {
+    "player": "Kwok Ka Ming",
+    "goals": 1
+  },
+  {
+    "player": "Ioan Lupescu",
+    "goals": 1
+  },
+  {
+    "player": "Ginés Meléndez",
+    "goals": 1
+  },
+  {
+    "player": "Tsuneyasu Miyamoto",
+    "goals": 1
+  },
+  {
+    "player": "Sunday Oliseh",
+    "goals": 1
+  },
+  {
+    "player": "Mixu Paatelainen",
+    "goals": 1
+  },
+  {
+    "player": "Jaime Rodríguez",
+    "goals": 1
+  },
+  {
+    "player": "Theodore Whitmore",
+    "goals": 1
+  },
+  {
+    "player": "$8 million – To each team eliminated at the group stage",
+    "goals": 1
+  },
+  {
+    "player": "$9 million – To each team eliminated in the round of 16",
+    "goals": 1
+  },
+  {
+    "player": "$14 million – To each team eliminated in the quarter-finals",
+    "goals": 1
+  },
+  {
+    "player": "$20 million – Fourth placed team",
+    "goals": 1
+  },
+  {
+    "player": "$22 million – Third placed team",
+    "goals": 1
+  },
+  {
+    "player": "$25 million – Runner-up",
+    "goals": 1
+  },
+  {
+    "player": "$35 million – Winner",
+    "goals": 1
+  }
+]

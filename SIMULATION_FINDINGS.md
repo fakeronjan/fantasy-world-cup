@@ -66,37 +66,45 @@ Greedy-optimal $100 roster under each scoring system, capped at 12 picks:
 because the format expansion already gives teams extra value via the new
 R32 match.
 
-## Recommended starting weights
+## FINAL locked weights (2026-05-24, validated across 4 World Cups)
 
 ```python
 ScoringWeights(
     # team — per match
-    team_win = 3,
+    team_win = 4,
     team_draw = 1,
-    # team — advancement bonuses (cumulative as team progresses)
-    bonus_r32 = 1,
-    bonus_r16 = 2,
-    bonus_qf = 4,
-    bonus_sf = 6,
-    bonus_final = 10,
-    bonus_champion = 15,
+    # team — advancement bonuses (CUMULATIVE; a champion gets all 6 stacked)
+    bonus_r32 = 2,
+    bonus_r16 = 3,
+    bonus_qf = 5,
+    bonus_sf = 8,
+    bonus_final = 12,
+    bonus_champion = 20,
     # player — per event
     player_goal = 5,
-    player_assist = 0,       # DROPPED — no free source for assists; user accepted goals-only
-    player_clean_sheet = 4,  # PENDING USER DECISION — automatic to compute from match score,
-                             # but need to decide who gets credit (GK only? GK+defenders?
-                             # whole team?) and seed position data accordingly.
+    player_assist = 0,                # dropped (no free data source)
+    player_win_share = 1,             # +1 to every squad player when team wins
+    player_clean_sheet_gk = 5,        # +5 to GK when team keeps a CS
+    player_clean_sheet_other = 1,     # +1 to every other squad player when team CS
 )
 ```
 
-**Note on the assist decision (2026-05-24):** Initially the simulation
-assumed `player_assist = 3` but had no assist data to score against
-(group standings + goalscorers list only). When the live game would have
-gone in, automated assist data required a paid API (€29/mo football-data
-Deep Data). User opted to drop assists from scoring rather than pay.
-Re-running with `player_assist = 0` produces identical balance results
-(4-8% gap, 27-32% mix advantage) because the original sim's score
-contribution from assists was already zero.
+All values are integers. Roster cap 12, budget $100, $2 player price floor.
+
+### Validation across 4 tournaments
+
+Simulated WC 2010, 2014, 2018, 2022 (all adapted to 2026 48-team format).
+Champion ROI lands in 4.8–5.3 pts/$, well-priced cinderella teams in
+2.7–6.0 pts/$, top value-pick players in 5.6–7.8 pts/$. Highlights:
+
+- **Forlán 2010:** $7 → 37 pts (5.3 pts/$) — solid Tier 2 value pick
+- **Müller 2010:** $5 (Tier 3 pre-tournament) → 38 pts (7.6 pts/$) — value steal
+- **James Rodríguez 2014:** $5 → 39 pts (7.8 pts/$) — best ROI in tournament
+- **Morocco 2022:** $6 → 36 pts (6.0 pts/$) — cinderella beats champion ROI
+- **Costa Rica 2014:** $6 → 25 pts (4.2 pts/$) — cinderella nearly matches champion
+
+The design works: favorites are decent value, dark horses pay big when
+right, and underpriced players who break out are the king-makers.
 
 ## Recommended starting prices ($100 budget, 12-pick max, $2 player floor)
 

@@ -29,17 +29,22 @@ INITIAL_CONFIG = {
     "currentRound": "pre",            # "pre" | "group" | "R32" | "R16" | "QF" | "SF" | "F" | "done"
     "transferWindowOpen": False,
     "scoringWeights": {
-        "team_win": 3,
+        # Locked 2026-05-24, all integers.
+        # Team side: per-match wins + cumulative round-bonus stack
+        "team_win": 4,
         "team_draw": 1,
-        "bonus_r32": 1,
-        "bonus_r16": 2,
-        "bonus_qf": 4,
-        "bonus_sf": 6,
-        "bonus_final": 10,
-        "bonus_champion": 15,
+        "bonus_r32": 2,
+        "bonus_r16": 3,
+        "bonus_qf": 5,
+        "bonus_sf": 8,
+        "bonus_final": 12,
+        "bonus_champion": 20,
+        # Player side: goals + win-share for squad of winning team + CS split
         "player_goal": 5,
-        "player_assist": 0,   # DROPPED — no free source for assists (2026-05-24 decision)
-        "player_clean_sheet": 4,  # PENDING who-gets-credit decision; harmless to seed as 4
+        "player_assist": 0,                # dropped (no free data source)
+        "player_win_share": 1,             # +1 to every squad player of a team that wins
+        "player_clean_sheet_gk": 5,        # +5 to GK when team keeps a clean sheet
+        "player_clean_sheet_other": 1,     # +1 to every other squad player when team CS
     },
     "kickoffTimestamp": None,         # set to the WC 2026 kickoff datetime (Firestore Timestamp)
     "budget": 100,

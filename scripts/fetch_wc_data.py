@@ -125,7 +125,7 @@ def main() -> None:
     out_dir = Path(__file__).resolve().parent.parent / "data"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    for year in (2022, 2018):
+    for year in (2022, 2018, 2014, 2010):
         print(f"\n=== {year} World Cup ===")
 
         print("Group standings...")

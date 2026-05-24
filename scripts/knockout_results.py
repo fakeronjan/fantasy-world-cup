@@ -96,6 +96,77 @@ WC2018_GROUP_ONLY = {
 }
 
 
+# ---------------------------------------------------------------------------
+# WC 2014 (Brazil — Germany won)
+# ---------------------------------------------------------------------------
+
+WC2014_KNOCKOUT: dict[str, tuple[str, int, int, int]] = {
+    # Champion: R16, QF, SF, F all wins.
+    "Germany":     ("W",  4, 0, 0),  # ALG (ET) W, FRA W, BRA 7-1 W, ARG W (ET)
+    # Runner-up: F lost.
+    "Argentina":   ("F",  2, 1, 1),  # SUI(ET) W, BEL W, NED 0-0 (PK W) = D, F L GER
+    # 3rd-place: NED won 3rd vs BRA, lost SF on PK (counted as D).
+    "Netherlands": ("SF", 2, 2, 0),  # MEX W, CRC 0-0 (PK W) = D, ARG 0-0 (PK L) = D, BRA 3-0 W
+    "Brazil":      ("SF", 1, 1, 2),  # CHI 1-1 (PK W) = D, COL W, GER 1-7 L, NED 0-3 L
+    "France":      ("QF", 1, 0, 1),
+    "Belgium":     ("QF", 1, 0, 1),
+    "Costa Rica":  ("QF", 0, 2, 0),  # GRE 1-1 (PK W), NED 0-0 (PK L) — both D
+    "Colombia":    ("QF", 1, 0, 1),
+    "Algeria":     ("R16",0, 0, 1),
+    "Switzerland": ("R16",0, 0, 1),
+    "Mexico":      ("R16",0, 0, 1),
+    "Greece":      ("R16",0, 1, 0),  # CRC PK loss = D
+    "United States":("R16",0, 0, 1),
+    "Chile":       ("R16",0, 1, 0),  # BRA PK loss = D
+    "Uruguay":     ("R16",0, 0, 1),
+    "Nigeria":     ("R16",0, 0, 1),
+}
+WC2014_GROUP_ONLY = {
+    "Croatia", "Cameroon",
+    "Spain", "Australia",
+    "Côte d'Ivoire", "Japan",
+    "Italy", "England",
+    "Ecuador", "Honduras",
+    "Bosnia and Herzegovina", "Iran",
+    "Portugal", "Ghana",
+    "Russia", "South Korea",
+}
+
+
+# ---------------------------------------------------------------------------
+# WC 2010 (South Africa — Spain won)
+# ---------------------------------------------------------------------------
+
+WC2010_KNOCKOUT: dict[str, tuple[str, int, int, int]] = {
+    "Spain":       ("W",  4, 0, 0),  # POR W, PAR W, GER W, NED W (ET)
+    "Netherlands": ("F",  3, 0, 1),  # SVK W, BRA W, URU W, F L ESP
+    "Germany":     ("SF", 3, 0, 1),  # ENG W, ARG W, ESP L, 3rd W URU
+    "Uruguay":     ("SF", 1, 1, 2),  # KOR W, GHA 1-1 (PK W) = D, NED L, 3rd L GER
+    "Argentina":   ("QF", 1, 0, 1),  # MEX W, GER L
+    "Brazil":      ("QF", 1, 0, 1),  # CHI W, NED L
+    "Ghana":       ("QF", 1, 1, 0),  # USA W (ET), URU 1-1 (PK L) = D — eliminated in QF
+    "Paraguay":    ("QF", 0, 1, 1),  # JPN 0-0 (PK W) = D, ESP L
+    "Mexico":      ("R16",0, 0, 1),
+    "United States":("R16",0, 0, 1),
+    "England":     ("R16",0, 0, 1),
+    "South Korea": ("R16",0, 0, 1),
+    "Japan":       ("R16",0, 1, 0),  # PAR PK loss = D
+    "Slovakia":    ("R16",0, 0, 1),
+    "Chile":       ("R16",0, 0, 1),
+    "Portugal":    ("R16",0, 0, 1),
+}
+WC2010_GROUP_ONLY = {
+    "South Africa", "France",
+    "Nigeria", "Greece",
+    "Algeria", "Slovenia",
+    "Serbia", "Australia",
+    "Denmark", "Cameroon",
+    "Italy", "New Zealand",
+    "Côte d'Ivoire", "North Korea",
+    "Switzerland", "Honduras",
+}
+
+
 def all_teams_with_round(year: int) -> dict[str, tuple[str, int, int, int]]:
     """Return {team_name: (round_reached, ko_wins, ko_draws, ko_losses)}
     for every team in the tournament. Group-only teams get round='group'
@@ -106,6 +177,12 @@ def all_teams_with_round(year: int) -> dict[str, tuple[str, int, int, int]]:
     elif year == 2018:
         ko = WC2018_KNOCKOUT
         groups = WC2018_GROUP_ONLY
+    elif year == 2014:
+        ko = WC2014_KNOCKOUT
+        groups = WC2014_GROUP_ONLY
+    elif year == 2010:
+        ko = WC2010_KNOCKOUT
+        groups = WC2010_GROUP_ONLY
     else:
         raise ValueError(year)
 

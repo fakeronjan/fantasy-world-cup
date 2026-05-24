@@ -44,8 +44,14 @@ class ScoringWeights:
     bonus_champion: float = 15
     # Player scoring (per event)
     player_goal: float = 5
-    player_assist: float = 3       # not used yet — no assists data
-    player_clean_sheet: float = 4  # not used yet
+    player_assist: float = 0       # DROPPED — no free source for assists
+    # Clean sheet: GK gets player_clean_sheet_gk, all other squad members
+    # on the same team get player_clean_sheet_other.
+    player_clean_sheet_gk: float = 5
+    player_clean_sheet_other: float = 1
+    # Win share: every squad member of a team that wins a match gets this
+    # many points. Encourages drafting players from strong teams.
+    player_win_share: float = 1
 
 
 # ---------------------------------------------------------------------------
@@ -77,6 +83,31 @@ TEAM_PRICE_TIERS_2018 = {
     6:  ["Iran", "Egypt", "Morocco", "Tunisia", "Iceland", "Serbia", "Nigeria",
          "South Korea", "Japan", "Peru", "Australia", "Costa Rica"],
     3:  ["Saudi Arabia", "Panama"],
+}
+
+# 2014 pre-tournament tiers. Brazil host, Spain defending champ, Argentina with
+# peak Messi. Belgium "golden generation" — first major tournament since 2002.
+TEAM_PRICE_TIERS_2014 = {
+    15: ["Brazil", "Argentina", "Germany", "Spain"],
+    12: ["Belgium", "Netherlands", "France", "Italy", "Uruguay", "Portugal",
+         "Colombia", "England"],
+    9:  ["Mexico", "United States", "Russia", "Switzerland", "Chile",
+         "Côte d'Ivoire", "Bosnia and Herzegovina", "Ecuador"],
+    6:  ["Croatia", "Greece", "Costa Rica", "Algeria", "Nigeria", "Ghana",
+         "Japan", "South Korea", "Cameroon", "Iran", "Australia"],
+    3:  ["Honduras"],
+}
+
+# 2010 pre-tournament tiers. Italy defending, Spain Euro 2008 champs, Brazil
+# always favored. South Africa hosts. France made it via Henry-handball controversy.
+TEAM_PRICE_TIERS_2010 = {
+    15: ["Brazil", "Spain", "Argentina", "England", "Italy", "Germany"],
+    12: ["Netherlands", "France", "Portugal"],
+    9:  ["Mexico", "United States", "Uruguay", "Côte d'Ivoire", "Cameroon",
+         "Ghana", "Serbia", "Greece", "Chile", "Paraguay"],
+    6:  ["South Africa", "Japan", "South Korea", "Australia", "Denmark",
+         "Switzerland", "Slovenia", "Slovakia", "Nigeria"],
+    3:  ["Honduras", "New Zealand", "Algeria", "North Korea"],
 }
 
 # Player price tiers — top scorers/playmakers + GKs of top teams get higher tiers.
@@ -123,6 +154,48 @@ PLAYER_PRICE_TIERS_2018 = {
     3:  ["Yerry Mina", "Denis Cheryshev", "Artem Dzyuba", "Aleksandr Golovin"],
 }
 
+# 2014 player tiers. Pre-tournament: Messi/Ronaldo/Neymar/Suárez/Rooney at peak.
+# James Rodríguez was at Monaco, talented but NOT yet a global megastar — Tier 3.
+PLAYER_PRICE_TIERS_2014 = {
+    10: ["Lionel Messi", "Cristiano Ronaldo", "Neymar", "Luis Suárez",
+         "Wayne Rooney", "Arjen Robben"],
+    7:  ["Thomas Müller", "Andrés Iniesta", "Xavi", "Eden Hazard",
+         "Sergio Agüero", "Ángel Di María", "Juan Mata", "Andrea Pirlo",
+         "Mario Balotelli", "Arturo Vidal", "Alexis Sánchez",
+         "Edinson Cavani", "Radamel Falcao", "Toni Kroos", "Marco Reus",
+         "Mesut Özil", "Karim Benzema", "Franck Ribéry", "Cesc Fàbregas",
+         "Diego Costa", "David Silva", "Robin van Persie", "Wesley Sneijder",
+         "Yaya Touré", "Didier Drogba"],
+    5:  ["James Rodríguez", "Mario Götze", "André Schürrle", "Miroslav Klose",
+         "Mats Hummels", "Manuel Neuer", "Philipp Lahm", "Bastian Schweinsteiger",
+         "Pepe", "Bruno Alves", "Joel Campbell", "Gonzalo Higuaín",
+         "Javier Mascherano", "Sergio Romero", "Daniel Sturridge",
+         "Steven Gerrard", "Cesc Fàbregas", "Jordi Alba", "Andrés Guardado",
+         "Javier Hernández", "Ochoa", "Iker Casillas", "Joe Hart",
+         "Hugo Lloris", "Júlio César", "Asamoah Gyan", "Tim Cahill"],
+    3:  ["Enner Valencia", "Bryan Ruiz", "Keylor Navas", "Salomón Rondón"],
+}
+
+# 2010 player tiers. Pre-tournament: Messi was 22, world's best per most observers.
+# Forlán was respected La Liga top-scorer (Atletico) but not a Tier-1 global megastar.
+PLAYER_PRICE_TIERS_2010 = {
+    10: ["Lionel Messi", "Cristiano Ronaldo", "Kaká", "Wayne Rooney",
+         "Didier Drogba", "Fernando Torres"],
+    7:  ["David Villa", "Xavi", "Andrés Iniesta", "Frank Lampard",
+         "Steven Gerrard", "Carlos Tévez", "Diego Forlán", "Gonzalo Higuaín",
+         "Robinho", "Cesc Fàbregas", "Arjen Robben", "Wesley Sneijder",
+         "Robin van Persie", "Samuel Eto'o", "Andrea Pirlo", "Bastian Schweinsteiger",
+         "Michael Ballack", "Luís Fabiano"],
+    5:  ["Thomas Müller", "Mesut Özil", "Miroslav Klose", "Lukas Podolski",
+         "Philipp Lahm", "Sergio Ramos", "Iker Casillas", "Carles Puyol",
+         "Gianluigi Buffon", "John Terry", "Mark van Bommel",
+         "Bakary Sagna", "Patrice Évra", "Maicon", "Lúcio", "Dani Alves",
+         "Júlio César", "Javier Mascherano", "Ángel Di María", "Sergio Agüero",
+         "Edinson Cavani", "Luis Suárez", "Asamoah Gyan", "Kevin-Prince Boateng",
+         "Park Ji-sung", "Keisuke Honda"],
+    3:  ["Diego Pérez", "Diego Lugano", "Maximiliano Pereira"],  # Uruguay supporting cast
+}
+
 DEFAULT_TEAM_PRICE = 3
 DEFAULT_PLAYER_PRICE = 1  # also configurable per-run, see PlayerPricing below
 
@@ -164,6 +237,7 @@ class Team:
     matches_lost: int
     final_round: str  # group, R16, QF, SF, F, W
     price: int
+    goals_against: int = 0   # used to estimate clean sheets
 
     def points(self, w: ScoringWeights, format_2026: bool = False) -> float:
         pts = w.team_win * self.matches_won + w.team_draw * self.matches_drawn
@@ -201,13 +275,43 @@ class Player:
     name: str
     goals: int
     assists: int = 0
-    clean_sheets: int = 0
+    # Position: "GK" for goalkeepers, anything else (DEF/MID/FWD/None) means
+    # the player gets the non-GK clean sheet rate.
+    position: str | None = None
+    # Reference to which team's record drives the player's win-share + CS pts.
+    team_name: str | None = None
     price: int = DEFAULT_PLAYER_PRICE
 
-    def points(self, w: ScoringWeights) -> float:
-        return (w.player_goal * self.goals
-                + w.player_assist * self.assists
-                + w.player_clean_sheet * self.clean_sheets)
+    def points(self, w: ScoringWeights, team: Team | None = None) -> float:
+        pts = w.player_goal * self.goals + w.player_assist * self.assists
+        if team is not None:
+            # Win share (1 per team win)
+            pts += w.player_win_share * team.matches_won
+            # Clean sheet pts depend on position (GK vs other)
+            cs = team_clean_sheets_estimate(team)
+            cs_rate = w.player_clean_sheet_gk if self.position == "GK" else w.player_clean_sheet_other
+            pts += cs_rate * cs
+        return pts
+
+
+def team_clean_sheets_estimate(team: Team) -> int:
+    """Estimate clean sheets per team — always integer, since CS is binary per match.
+
+    Uses a Poisson approximation: assume goals_against are distributed
+    across matches with rate λ = GA/matches. Probability of any given
+    match being a clean sheet = e^(-λ). Expected CS count = matches * e^(-λ).
+    Rounded to nearest integer.
+
+    In the live game we'll use the actual per-match CS count (always
+    integer by nature); this estimate is only for historical-data sims.
+    """
+    import math
+    matches = team.matches_won + team.matches_drawn + team.matches_lost
+    if matches == 0:
+        return 0
+    ga = getattr(team, "goals_against", 0) or 0
+    rate = ga / matches
+    return round(matches * math.exp(-rate))
 
 
 def load_year(year: int, pricing: PlayerPricing | None = None,
@@ -220,7 +324,12 @@ def load_year(year: int, pricing: PlayerPricing | None = None,
     ko_data = all_teams_with_round(year)
     if format_2026:
         ko_data = apply_2026_format(ko_data)
-    team_tiers = TEAM_PRICE_TIERS_2022 if year == 2022 else TEAM_PRICE_TIERS_2018
+    team_tiers = {
+        2022: TEAM_PRICE_TIERS_2022,
+        2018: TEAM_PRICE_TIERS_2018,
+        2014: TEAM_PRICE_TIERS_2014,
+        2010: TEAM_PRICE_TIERS_2010,
+    }[year]
 
     # Wikipedia's column name varies across years ('Team' vs 'Teamvte')
     team_col = next(c for c in df.columns if c.startswith("Team"))
@@ -241,6 +350,7 @@ def load_year(year: int, pricing: PlayerPricing | None = None,
         round_reached, kw, kd, kl = ko
 
         price = _price_for(raw, team_tiers, DEFAULT_TEAM_PRICE)
+        ga = int(row["GA"]) if "GA" in row else 0
         teams.append(Team(
             name=norm,
             matches_won=gw + kw,
@@ -248,6 +358,7 @@ def load_year(year: int, pricing: PlayerPricing | None = None,
             matches_lost=gl + kl,
             final_round=round_reached,
             price=price,
+            goals_against=ga,
         ))
 
     if format_2026:
@@ -261,18 +372,238 @@ def load_year(year: int, pricing: PlayerPricing | None = None,
                 matches_lost=gl,
                 final_round="group",
                 price=DEFAULT_TEAM_PRICE,  # $3 — outsider tier
+                goals_against=max(3, 6 - 2 * gw),  # rough proxy
             ))
 
     # --- Players: goalscorers JSON ---
     scorers = json.loads((DATA_DIR / f"wc{year}_goalscorers.json").read_text())
-    player_tiers = PLAYER_PRICE_TIERS_2022 if year == 2022 else PLAYER_PRICE_TIERS_2018
+    player_tiers = {
+        2022: PLAYER_PRICE_TIERS_2022,
+        2018: PLAYER_PRICE_TIERS_2018,
+        2014: PLAYER_PRICE_TIERS_2014,
+        2010: PLAYER_PRICE_TIERS_2010,
+    }[year]
     players: list[Player] = []
+    # Build a map of team name → goalscorers we already have, so we can
+    # add "phantom squad" entries (non-scoring squad players) per team.
+    # Goalscorers JSON doesn't currently include team — we infer team from
+    # tier list mappings where possible, but for the simulation we just
+    # need an aggregate count, so we add phantoms attached to each team.
+    scorers_by_team: dict[str, list[dict]] = {}
     for p in scorers:
-        name = p["player"]
-        price = _price_for(name, player_tiers, DEFAULT_PLAYER_PRICE)
+        # Tag scorers to a team if known via tier list, else "Unknown"
+        team_name = _team_for_player(p["player"], year)
+        scorers_by_team.setdefault(team_name, []).append(p)
+        price = _price_for(p["player"], player_tiers, DEFAULT_PLAYER_PRICE)
         price = max(price, pricing.min_price)
-        players.append(Player(name=name, goals=int(p["goals"]), price=price))
+        # GKs: identify by name match in a small GK list (priced at tier 3 = $3)
+        position = "GK" if _is_known_gk(p["player"]) else None
+        players.append(Player(
+            name=p["player"], goals=int(p["goals"]),
+            position=position, team_name=team_name, price=price,
+        ))
+
+    # Add phantom squad players (~26 per team, minus known scorers, minus
+    # 3 GKs since each team has ~3 GKs in their squad). Used for win-share
+    # and clean-sheet point modeling. All at $2 minimum (cheapest tier).
+    SQUAD_SIZE = 26
+    GKS_PER_TEAM = 3
+    for t in teams:
+        existing = len(scorers_by_team.get(t.name, []))
+        existing_gks = sum(1 for p in scorers_by_team.get(t.name, [])
+                            if _is_known_gk(p["player"]))
+        # Add GKs to fill out 3 per team
+        gk_needed = max(0, GKS_PER_TEAM - existing_gks)
+        for i in range(gk_needed):
+            players.append(Player(
+                name=f"{t.name}-GK{i+1}", goals=0,
+                position="GK", team_name=t.name,
+                price=max(3, pricing.min_price),
+            ))
+        # Fill remaining squad slots with outfield phantoms
+        outfield_needed = max(0, SQUAD_SIZE - existing - gk_needed)
+        for i in range(outfield_needed):
+            players.append(Player(
+                name=f"{t.name}-sq{i+1}", goals=0,
+                position=None, team_name=t.name,
+                price=pricing.min_price,
+            ))
     return teams, players
+
+
+# Small helpers used by load_year for tagging team + position.
+
+def _team_for_player(name: str, year: int) -> str:
+    """Look up which team a player belonged to, via the price tier lists.
+    Returns 'Unknown' if not findable (rare — sim ignores those for win-share)."""
+    tiers = {
+        2022: PLAYER_PRICE_TIERS_2022,
+        2018: PLAYER_PRICE_TIERS_2018,
+        2014: PLAYER_PRICE_TIERS_2014,
+        2010: PLAYER_PRICE_TIERS_2010,
+    }[year]
+    # The price tier dict doesn't carry team info — fall back to known
+    # team lookups for the most prolific scorers.
+    KNOWN = {
+        # 2022
+        "Kylian Mbappé": "France", "Olivier Giroud": "France",
+        "Antoine Griezmann": "France", "Ousmane Dembélé": "France",
+        "Aurélien Tchouaméni": "France", "Theo Hernández": "France",
+        "Hugo Lloris": "France",
+        "Lionel Messi": "Argentina", "Julián Álvarez": "Argentina",
+        "Ángel Di María": "Argentina", "Lautaro Martínez": "Argentina",
+        "Alexis Mac Allister": "Argentina", "Enzo Fernández": "Argentina",
+        "Nahuel Molina": "Argentina", "Emiliano Martínez": "Argentina",
+        "Neymar": "Brazil", "Vinícius Júnior": "Brazil", "Richarlison": "Brazil",
+        "Casemiro": "Brazil", "Lucas Paquetá": "Brazil", "Rodrygo": "Brazil",
+        "Alisson": "Brazil",
+        "Harry Kane": "England", "Bukayo Saka": "England",
+        "Marcus Rashford": "England", "Mason Mount": "England",
+        "Phil Foden": "England", "Raheem Sterling": "England",
+        "Jude Bellingham": "England", "Jordan Henderson": "England",
+        "Declan Rice": "England",
+        "Álvaro Morata": "Spain", "Ferran Torres": "Spain",
+        "Pedri": "Spain", "Gavi": "Spain", "Unai Simón": "Spain",
+        "Cody Gakpo": "Netherlands", "Memphis Depay": "Netherlands",
+        "Frenkie de Jong": "Netherlands", "Andries Noppert": "Netherlands",
+        "Bruno Fernandes": "Portugal", "Cristiano Ronaldo": "Portugal",
+        "Gonçalo Ramos": "Portugal", "João Félix": "Portugal",
+        "Bernardo Silva": "Portugal", "Rafael Leão": "Portugal",
+        "Ivan Perišić": "Croatia", "Andrej Kramarić": "Croatia",
+        "Luka Modrić": "Croatia", "Dominik Livaković": "Croatia",
+        "Hakim Ziyech": "Morocco", "Achraf Hakimi": "Morocco",
+        "Sofyan Amrabat": "Morocco", "Youssef En-Nesyri": "Morocco",
+        "Yassine Bounou": "Morocco",
+        "Enner Valencia": "Ecuador",
+        "Vincent Aboubakar": "Cameroon",
+        "Robert Lewandowski": "Poland", "Wojciech Szczęsny": "Poland",
+        "Sadio Mané": "Senegal", "Édouard Mendy": "Senegal",
+        "Kalidou Koulibaly": "Senegal",
+        "Heung-min Son": "South Korea",
+        "Mohammed Kudus": "Ghana",
+        "Mehdi Taremi": "Iran",
+        "Ritsu Dōan": "Japan", "Cho Gue-sung": "South Korea",
+        "Wout Weghorst": "Netherlands",
+        "Salem Al-Dawsari": "Saudi Arabia",
+        "Aleksandar Mitrović": "Serbia",
+        "Breel Embolo": "Switzerland",
+        "Giorgian de Arrascaeta": "Uruguay",
+        "Niclas Füllkrug": "Germany", "Manuel Neuer": "Germany",
+        "Kai Havertz": "Germany", "Jamal Musiala": "Germany",
+        "Serge Gnabry": "Germany",
+        "Thibaut Courtois": "Belgium",
+        # 2018
+        "Romelu Lukaku": "Belgium", "Eden Hazard": "Belgium",
+        "Kevin De Bruyne": "Belgium", "Dries Mertens": "Belgium",
+        "Yannick Carrasco": "Belgium", "Nacer Chadli": "Belgium",
+        "Michy Batshuayi": "Belgium",
+        "Paul Pogba": "France", "Mbappé": "France",
+        "Diego Costa": "Spain", "Isco": "Spain", "Andrés Iniesta": "Spain",
+        "Sergio Busquets": "Spain", "David Silva": "Spain",
+        "Marco Asensio": "Spain", "David de Gea": "Spain",
+        "Luis Suárez": "Uruguay", "Edinson Cavani": "Uruguay",
+        "Toni Kroos": "Germany", "Thomas Müller": "Germany",
+        "Mesut Özil": "Germany", "Marc-André ter Stegen": "Germany",
+        "Yerry Mina": "Colombia", "James Rodríguez": "Colombia",
+        "Radamel Falcao": "Colombia", "Juan Cuadrado": "Colombia",
+        "Roberto Firmino": "Brazil", "Philippe Coutinho": "Brazil",
+        "Gabriel Jesus": "Brazil", "Willian": "Brazil", "Marcelo": "Brazil",
+        "Denis Cheryshev": "Russia", "Artem Dzyuba": "Russia",
+        "Mario Mandžukić": "Croatia", "Ivan Rakitić": "Croatia",
+        "Ante Rebić": "Croatia",
+        "Sergio Agüero": "Argentina",
+        "Dele Alli": "England", "Jesse Lingard": "England",
+        "Jordan Pickford": "England",
+        "Mohamed Salah": "Egypt",
+        "Mile Jedinak": "Australia",
+        "John Stones": "England",
+        "Takashi Inui": "Japan",
+        "Ahmed Musa": "Nigeria",
+        "Andreas Granqvist": "Sweden",
+        "Wahbi Khazri": "Tunisia",
+        "Aleksandr Golovin": "Russia",
+        # 2014
+        "Robin van Persie": "Netherlands", "Arjen Robben": "Netherlands",
+        "Wesley Sneijder": "Netherlands", "Memphis Depay": "Netherlands",
+        "Klaas-Jan Huntelaar": "Netherlands", "Stefan de Vrij": "Netherlands",
+        "Tim Cahill": "Australia",
+        "André Schürrle": "Germany", "Mario Götze": "Germany",
+        "Miroslav Klose": "Germany", "Mats Hummels": "Germany",
+        "Mesut Özil": "Germany",
+        "James Rodríguez": "Colombia", "Juan Cuadrado": "Colombia",
+        "Pablo Armero": "Colombia", "Juan Quintero": "Colombia",
+        "Jackson Martínez": "Colombia", "Carlos Bacca": "Colombia",
+        "Karim Benzema": "France",
+        "Mathieu Valbuena": "France", "Olivier Giroud": "France",
+        "Paul Pogba": "France", "Antoine Griezmann": "France",
+        "Blaise Matuidi": "France",
+        "Joel Campbell": "Costa Rica", "Bryan Ruiz": "Costa Rica",
+        "Keylor Navas": "Costa Rica", "Óscar Duarte": "Costa Rica",
+        "Marcos Ureña": "Costa Rica",
+        "Enner Valencia": "Ecuador",  # also a 2022 player; 2014 was Ecuador both times
+        "David Luiz": "Brazil", "Oscar": "Brazil", "Fred": "Brazil",
+        "Júlio César": "Brazil",
+        "Gonzalo Higuaín": "Argentina", "Marcos Rojo": "Argentina",
+        "Ángel Di María": "Argentina", "Sergio Agüero": "Argentina",
+        "Javier Mascherano": "Argentina", "Sergio Romero": "Argentina",
+        "Daniel Sturridge": "England", "Steven Gerrard": "England",
+        "Wayne Rooney": "England",
+        "Mario Balotelli": "Italy", "Andrea Pirlo": "Italy",
+        "Claudio Marchisio": "Italy",
+        "Andrés Guardado": "Mexico", "Javier Hernández": "Mexico",
+        "Oribe Peralta": "Mexico", "Rafael Márquez": "Mexico",
+        "Guillermo Ochoa": "Mexico",
+        "Andre Ayew": "Ghana", "Asamoah Gyan": "Ghana",
+        "Salomón Rondón": "Venezuela",  # not in 2014 actually — Venezuela didn't qualify
+        # 2010
+        "Diego Forlán": "Uruguay", "Luis Suárez": "Uruguay",
+        "Edinson Cavani": "Uruguay", "Diego Pérez": "Uruguay",
+        "Diego Lugano": "Uruguay", "Maximiliano Pereira": "Uruguay",
+        "Álvaro Pereira": "Uruguay",
+        "David Villa": "Spain", "Andrés Iniesta": "Spain", "Xavi": "Spain",
+        "Iker Casillas": "Spain", "Carles Puyol": "Spain",
+        "Sergio Ramos": "Spain", "Fernando Torres": "Spain",
+        "Cesc Fàbregas": "Spain",
+        "Wesley Sneijder": "Netherlands", "Arjen Robben": "Netherlands",
+        "Robin van Persie": "Netherlands", "Mark van Bommel": "Netherlands",
+        "Thomas Müller": "Germany", "Miroslav Klose": "Germany",
+        "Mesut Özil": "Germany", "Lukas Podolski": "Germany",
+        "Bastian Schweinsteiger": "Germany", "Philipp Lahm": "Germany",
+        "Michael Ballack": "Germany",  # didn't actually play — injured
+        "Luís Fabiano": "Brazil", "Robinho": "Brazil", "Kaká": "Brazil",
+        "Maicon": "Brazil", "Lúcio": "Brazil", "Dani Alves": "Brazil",
+        "Carlos Tévez": "Argentina", "Lionel Messi": "Argentina",
+        "Diego Maradona": "Argentina",  # coach
+        "Asamoah Gyan": "Ghana", "Kevin-Prince Boateng": "Ghana",
+        "Andre Ayew": "Ghana",  # was on 2010 squad? actually I'm not sure
+        "Park Ji-sung": "South Korea",
+        "Keisuke Honda": "Japan",
+        "Wayne Rooney": "England", "Frank Lampard": "England",
+        "Steven Gerrard": "England",
+        "Cristiano Ronaldo": "Portugal", "Pepe": "Portugal",
+        "Didier Drogba": "Côte d'Ivoire", "Samuel Eto'o": "Cameroon",
+        "Andrea Pirlo": "Italy", "Gianluigi Buffon": "Italy",
+        "Róbert Vittek": "Slovakia",
+    }
+    return KNOWN.get(name, "Unknown")
+
+
+_KNOWN_GKS = {
+    # 2022
+    "Emiliano Martínez", "Hugo Lloris", "Thibaut Courtois", "Alisson",
+    "Andries Noppert", "Dominik Livaković", "Édouard Mendy",
+    "Manuel Neuer", "Unai Simón", "Wojciech Szczęsny", "Yassine Bounou",
+    # 2018
+    "David de Gea", "Marc-André ter Stegen", "Jordan Pickford",
+    # 2014
+    "Keylor Navas", "Guillermo Ochoa", "Júlio César", "Sergio Romero",
+    "Iker Casillas", "Joe Hart", "Hugo Lloris",
+    # 2010
+    "Gianluigi Buffon",
+}
+
+def _is_known_gk(name: str) -> bool:
+    return name in _KNOWN_GKS
 
 
 # ---------------------------------------------------------------------------
@@ -289,8 +620,11 @@ class Asset:
 
 def to_assets(teams: list[Team], players: list[Player], w: ScoringWeights,
                format_2026: bool = False) -> list[Asset]:
+    teams_by_name = {t.name: t for t in teams}
     out = [Asset(t.name, "team", t.points(w, format_2026), t.price) for t in teams]
-    out += [Asset(p.name, "player", p.points(w), p.price) for p in players]
+    out += [Asset(p.name, "player",
+                  p.points(w, teams_by_name.get(p.team_name)), p.price)
+            for p in players]
     return out
 
 
@@ -373,13 +707,37 @@ def report(year: int, w: ScoringWeights, pricing: PlayerPricing | None = None,
     print(f"  Players: {len(players):3d} assets, ${total_player_price:5d} total price, "
           f"{total_player_pts:6.0f} total points  → {total_player_pts/total_player_price:.2f} pts/$")
 
-    # Top performers by points/$
-    all_assets = to_assets(teams, players, w, format_2026)
-    print(f"\nTop 15 value picks (points per dollar):")
-    print(f"  {'asset':<28} {'kind':<7} {'price':>5} {'pts':>5} {'pt/$':>5}")
-    for a in sorted(all_assets, key=lambda x: x.points / max(x.price, 1), reverse=True)[:15]:
-        print(f"  {a.name[:27]:<28} {a.kind:<7} {a.price:>5d} {a.points:>5.1f} "
-              f"{a.points/max(a.price,1):>5.2f}")
+    # Top 10 teams by raw points
+    print(f"\nTop 10 teams by raw points:")
+    print(f"  {'team':<22} {'final':<6} {'W-D-L':<7} {'GA':<3} {'CS~':<4} {'price':>5} {'pts':>5}")
+    for t in sorted(teams, key=lambda x: x.points(w, format_2026), reverse=True)[:10]:
+        cs = team_clean_sheets_estimate(t)
+        print(f"  {t.name[:21]:<22} {t.final_round:<6} "
+              f"{t.matches_won}-{t.matches_drawn}-{t.matches_lost:<3} "
+              f"{t.goals_against:<3d} {cs:<4.1f} "
+              f"${t.price:>4d} {t.points(w, format_2026):>5.1f}")
+
+    # Top 10 players by raw points (showing scoring breakdown)
+    print(f"\nTop 10 players by raw points (g=goal pts, w=win share, c=clean sheet pts):")
+    print(f"  {'player':<28} {'team':<14} {'pos':<3} {'price':>5} {'g':>2} {'goalpts':>7} {'winshr':>7} {'CSpts':>6} {'total':>6}")
+    teams_by_name = {t.name: t for t in teams}
+    scored_players = []
+    for p in players:
+        t = teams_by_name.get(p.team_name)
+        if t is None:
+            continue
+        goal_pts = w.player_goal * p.goals
+        win_share_pts = w.player_win_share * t.matches_won
+        cs = team_clean_sheets_estimate(t)
+        cs_rate = w.player_clean_sheet_gk if p.position == "GK" else w.player_clean_sheet_other
+        cs_pts = cs_rate * cs
+        total = goal_pts + win_share_pts + cs_pts + w.player_assist * p.assists
+        scored_players.append((p, t, goal_pts, win_share_pts, cs_pts, total))
+    for p, t, gp, wp, cp, tot in sorted(scored_players, key=lambda x: x[5], reverse=True)[:10]:
+        pos = p.position or "—"
+        team_short = (p.team_name or "?")[:13]
+        print(f"  {p.name[:27]:<28} {team_short:<14} {pos:<3} "
+              f"${p.price:>4d} {p.goals:>2d} {gp:>7.1f} {wp:>7.1f} {cp:>6.1f} {tot:>6.1f}")
 
     # Strategy comparison
     print(f"\nStrategy comparison (optimal ${BUDGET} roster, ≤{ROSTER_SIZE_CAP} picks):")
@@ -397,29 +755,24 @@ def report(year: int, w: ScoringWeights, pricing: PlayerPricing | None = None,
 
 
 PRESETS: list[tuple[str, ScoringWeights, PlayerPricing]] = [
-    # All presets now use player_assist=0 (no automated source for assists;
-    # see project_sports_api memory). Clean sheets still TBD (need position
-    # data to award correctly).
-    ("A. baseline (simple, no assists)",
-     ScoringWeights(player_assist=0, player_clean_sheet=0),
-     PlayerPricing(min_price=1)),
-    ("B. team-boosted",
-     ScoringWeights(
-        team_win=4, team_draw=2,
-        bonus_r16=4, bonus_qf=8, bonus_sf=12, bonus_final=20, bonus_champion=30,
-        player_goal=5, player_assist=0, player_clean_sheet=0),
-     PlayerPricing(min_price=1)),
-    ("C. team-boosted, no $1 players",
-     ScoringWeights(
-        team_win=4, team_draw=2,
-        bonus_r16=4, bonus_qf=8, bonus_sf=12, bonus_final=20, bonus_champion=30,
-        player_goal=5, player_assist=0, player_clean_sheet=0),
+    # Goals-only baseline (no CS, no win share) — for comparison.
+    ("A. goals-only baseline",
+     ScoringWeights(player_clean_sheet_gk=0, player_clean_sheet_other=0,
+                     player_win_share=0),
      PlayerPricing(min_price=2)),
-    ("D. lighter team boost, no $1 players",
+    # F. Calibrated to bring champion ROI in line with top scorer ROI.
+    # Smaller per-round bonuses, smaller champion premium. All integers.
+    # Target: champion ≈ 1.4x top scorer (not 2.2x). Same ~$15 price band.
+    ("F. RECOMMENDED: integer weights, less high-end team variance",
      ScoringWeights(
-        team_win=3, team_draw=1,
-        bonus_r16=3, bonus_qf=6, bonus_sf=10, bonus_final=15, bonus_champion=25,
-        player_goal=5, player_assist=0, player_clean_sheet=0),
+        team_win=4, team_draw=1,
+        bonus_r32=2, bonus_r16=3, bonus_qf=5, bonus_sf=8,
+        bonus_final=12, bonus_champion=20,
+        # Player scoring: user's design, all integer
+        player_goal=5, player_assist=0,
+        player_clean_sheet_gk=5, player_clean_sheet_other=1,
+        player_win_share=1,
+     ),
      PlayerPricing(min_price=2)),
 ]
 
