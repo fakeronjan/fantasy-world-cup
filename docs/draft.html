@@ -226,6 +226,7 @@
   let currentTab = "teams";
   let teamIdToFdId = {};   // slug → fdId, for flag URL lookup
   let teamHistory = {};    // slug → history blob
+  let playerHistory = {};  // playerId → history blob
 
   const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
 
@@ -239,6 +240,24 @@
     else if (h.tournaments === 0)    parts.push('WC debut');
     parts.push(`${h.tournaments} WC${h.tournaments === 1 ? '' : 's'}`);
     if (h.fifaRank) parts.push(`#${h.fifaRank} FIFA`);
+    return parts.join(' · ');
+  }
+
+  function playerHistoryBlurb(h) {
+    if (!h || h.notFound) return '';
+    const parts = [];
+    const wcs = h.wcsPlayed ?? 0;
+    if (wcs === 0)     parts.push('WC debut');
+    else               parts.push(`${wcs} WC${wcs === 1 ? '' : 's'}`);
+    if (h.goals != null && h.goals > 0) parts.push(`${h.goals} goal${h.goals === 1 ? '' : 's'}`);
+    if (h.titles > 0) {
+      const yrs = (h.titleYears || []).slice().sort();
+      parts.push(`Champion${yrs.length ? ' (' + yrs.join(', ') + ')' : ''}`);
+    }
+    if (h.runnerUps > 0) {
+      const yrs = (h.runnerUpYears || []).slice().sort();
+      parts.push(`RU${yrs.length ? ' (' + yrs.join(', ') + ')' : ''}`);
+    }
     return parts.join(' · ');
   }
 
@@ -283,6 +302,13 @@
       teamHistory = await res3.json();
     } catch (e) {
       teamHistory = {};
+    }
+    try {
+      const res4 = await fetch('./data/player_history.json');
+      playerHistory = await res4.json();
+    } catch (e) {
+      // File may not exist yet — gracefully no player history.
+      playerHistory = {};
     }
   }
 
@@ -392,10 +418,10 @@
       const fdId = kind === 'team' ? a.fdId : teamIdToFdId[a.teamId];
       const teamLabel = kind === 'player' && a.teamName ? ` <span class="muted" style="font-size:11px">${escape(a.teamName)}</span>` : '';
       const flagImg = fdId ? `<img class="flag" src="${flagUrl(fdId)}" alt="" onerror="this.style.display='none'">` : '';
-      // History blurb (teams only — players show their team name already)
+      // History blurb (team for team rows; player WC history for player rows)
       const histBlurb = kind === 'team'
         ? teamHistoryBlurb(teamHistory[a.id])
-        : '';
+        : playerHistoryBlurb(playerHistory[a.id]);
       const histLine = histBlurb
         ? `<div class="muted" style="font-size:11px; margin-top:2px; padding-left:32px">${escape(histBlurb)}</div>`
         : '';

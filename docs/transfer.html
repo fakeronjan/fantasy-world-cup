@@ -198,6 +198,7 @@
   let teams = {};                    // teamSlug → team doc
   let players = {};                  // playerId → player doc
   let teamHistory = {};
+  let playerHistory = {};
   let configDoc = null;
   const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
   const flagFor = (kind, asset) => {
@@ -215,6 +216,23 @@
     else if (h.tournaments === 0)    parts.push('WC debut');
     parts.push(`${h.tournaments} WC${h.tournaments === 1 ? '' : 's'}`);
     if (h.fifaRank) parts.push(`#${h.fifaRank} FIFA`);
+    return parts.join(' · ');
+  }
+  function playerHistoryBlurb(h) {
+    if (!h || h.notFound) return '';
+    const parts = [];
+    const wcs = h.wcsPlayed ?? 0;
+    if (wcs === 0) parts.push('WC debut');
+    else parts.push(`${wcs} WC${wcs === 1 ? '' : 's'}`);
+    if (h.goals != null && h.goals > 0) parts.push(`${h.goals} goal${h.goals === 1 ? '' : 's'}`);
+    if (h.titles > 0) {
+      const yrs = (h.titleYears || []).slice().sort();
+      parts.push(`Champion${yrs.length ? ' (' + yrs.join(', ') + ')' : ''}`);
+    }
+    if (h.runnerUps > 0) {
+      const yrs = (h.runnerUpYears || []).slice().sort();
+      parts.push(`RU${yrs.length ? ' (' + yrs.join(', ') + ')' : ''}`);
+    }
     return parts.join(' · ');
   }
 
@@ -268,6 +286,10 @@
       const r = await fetch('./data/team_history.json');
       teamHistory = await r.json();
     } catch { teamHistory = {}; }
+    try {
+      const r = await fetch('./data/player_history.json');
+      playerHistory = await r.json();
+    } catch { playerHistory = {}; }
 
     // User doc (current roster)
     const u = await getDoc(doc(window.fwc.db, 'users', currentUser.uid));
@@ -348,7 +370,9 @@
       const price = a.currentPrice ?? a.basePrice;
       const elim  = !!a.eliminated;
       const pts   = a.totalPoints || 0;
-      const histLine = a.kind === 'team' ? teamHistoryBlurb(teamHistory[a.id]) : '';
+      const histLine = a.kind === 'team'
+        ? teamHistoryBlurb(teamHistory[a.id])
+        : playerHistoryBlurb(playerHistory[a.id]);
       const histHtml = histLine ? `<div class="muted" style="font-size:10px; margin-top:2px; padding-left:46px">${escape(histLine)}</div>` : '';
       return `<div class="item-row ${elim ? 'eliminated' : ''}" style="flex-wrap:wrap">
         <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:200px">

@@ -153,6 +153,7 @@
   let players = [];
   let teamIdToFdId = {};
   let teamHistory = {};
+  let playerHistory = {};
   const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
   function teamHistoryBlurb(h) {
     if (!h) return '';
@@ -164,6 +165,23 @@
     else if (h.tournaments === 0)    parts.push('WC debut');
     parts.push(`${h.tournaments} WC${h.tournaments === 1 ? '' : 's'}`);
     if (h.fifaRank) parts.push(`#${h.fifaRank} FIFA`);
+    return parts.join(' · ');
+  }
+  function playerHistoryBlurb(h) {
+    if (!h || h.notFound) return '';
+    const parts = [];
+    const wcs = h.wcsPlayed ?? 0;
+    if (wcs === 0) parts.push('WC debut');
+    else parts.push(`${wcs} WC${wcs === 1 ? '' : 's'}`);
+    if (h.goals != null && h.goals > 0) parts.push(`${h.goals} goal${h.goals === 1 ? '' : 's'}`);
+    if (h.titles > 0) {
+      const yrs = (h.titleYears || []).slice().sort();
+      parts.push(`Champion${yrs.length ? ' (' + yrs.join(', ') + ')' : ''}`);
+    }
+    if (h.runnerUps > 0) {
+      const yrs = (h.runnerUpYears || []).slice().sort();
+      parts.push(`RU${yrs.length ? ' (' + yrs.join(', ') + ')' : ''}`);
+    }
     return parts.join(' · ');
   }
 
@@ -181,6 +199,10 @@
       const res = await fetch('./data/team_history.json');
       teamHistory = await res.json();
     } catch { teamHistory = {}; }
+    try {
+      const res = await fetch('./data/player_history.json');
+      playerHistory = await res.json();
+    } catch { playerHistory = {}; }
   }
 
   function getCatalogAsset(kind, id) {
@@ -251,10 +273,11 @@
       spent  += bought;
       totalP += pts;
 
-      // For team picks, show the WC history line; for player picks, show their team name.
+      // For team picks, show WC history; for player picks, show team name + WC history if available.
+      const pHist = pick.kind === 'player' ? playerHistoryBlurb(playerHistory[pick.assetId]) : '';
       const subline = pick.kind === 'team'
         ? teamHistoryBlurb(teamHistory[pick.assetId])
-        : (catalog && catalog.teamName ? catalog.teamName : '');
+        : ((catalog && catalog.teamName ? catalog.teamName : '') + (pHist ? ' · ' + pHist : ''));
       const sublineHtml = subline
         ? `<div class="muted" style="font-size:11px; margin-top:2px; padding-left:32px">${escape(subline)}</div>`
         : '';
