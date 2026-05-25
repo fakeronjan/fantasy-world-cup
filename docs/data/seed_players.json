@@ -38,7 +38,7 @@
     "teamName": "Argentina",
     "position": "MID",
     "tier": 1,
-    "basePrice": 8,
+    "basePrice": 7,
     "club": "Inter Miami CF"
   },
   {
@@ -438,7 +438,7 @@
     "teamName": "Brazil",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 7,
+    "basePrice": 6,
     "club": "Real Madrid"
   },
   {
@@ -931,7 +931,7 @@
     "teamName": "England",
     "position": "MID",
     "tier": 1,
-    "basePrice": 7,
+    "basePrice": 6,
     "club": "Real Madrid"
   },
   {
@@ -1052,7 +1052,7 @@
     "teamName": "France",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 9,
+    "basePrice": 8,
     "club": "Real Madrid"
   },
   {
@@ -1755,7 +1755,7 @@
     "teamName": "Norway",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 8,
+    "basePrice": 7,
     "club": "Man City"
   },
   {
@@ -2285,7 +2285,7 @@
     "teamName": "Spain",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 7,
+    "basePrice": 6,
     "club": "Barça"
   },
   {
@@ -2296,7 +2296,7 @@
     "teamName": "Spain",
     "position": "MID",
     "tier": 1,
-    "basePrice": 7,
+    "basePrice": 6,
     "club": "Man City"
   },
   {
