@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard · Fantasy World Cup 2026</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .lb-row-me { background: #fef0f7 !important; }
+  .lb-row-me td { font-weight: 700; }
+
+  .rank-cell.podium-1 { color: #b91c1c; }
+  .rank-cell.podium-2 { color: #6b7280; }
+  .rank-cell.podium-3 { color: #92400e; }
+
+  .last-updated {
+    font-size: 11px; color: var(--text-muted);
+    text-align: right; margin-top: 8px;
+  }
+
+  .empty-state {
+    text-align: center; padding: 48px 24px;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>LEADERBOARD</h1>
+  <p class="subtitle">Live rankings across the league · Auto-refreshes every 30s</p>
+  <p class="user-line" id="userLine"></p>
+</header>
+
+<nav class="site-nav" id="siteNav" style="display:none">
+  <a href="./index.html">Home</a>
+  <a href="./draft.html">Draft</a>
+  <a href="./roster.html">My Roster</a>
+  <a href="./leaderboard.html" class="active">Leaderboard</a>
+  <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+</nav>
+
+<main>
+  <section class="card signin-card" id="signinCard" style="display:none">
+    <h2>Sign in to view the leaderboard</h2>
+    <p>You need to sign in with Google.</p>
+    <button class="btn" id="signInBtn">Sign in with Google</button>
+  </section>
+
+  <div id="lbView" style="display:none">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th class="num">Picks</th>
+          <th class="num">Spent</th>
+          <th class="num">Points</th>
+        </tr>
+      </thead>
+      <tbody id="lbBody">
+        <tr><td colspan="5" class="empty-state">Loading…</td></tr>
+      </tbody>
+    </table>
+    <p class="last-updated" id="lastUpdated"></p>
+  </div>
+</main>
+
+<script type="module">
+  import "./shared.js";
+
+  const REFRESH_MS = 30_000;
+
+  const userLine    = document.getElementById('userLine');
+  const signinCard  = document.getElementById('signinCard');
+  const lbView      = document.getElementById('lbView');
+  const siteNav     = document.getElementById('siteNav');
+  const adminLink   = document.getElementById('adminLink');
+  const signInBtn   = document.getElementById('signInBtn');
+  const lbBody      = document.getElementById('lbBody');
+  const lastUpdated = document.getElementById('lastUpdated');
+
+  await new Promise(r => requestAnimationFrame(r));
+  signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
+
+  let currentUser = null;
+  let refreshTimer = null;
+
+  window.fwc.onAuth(async (user) => {
+    currentUser = user;
+    if (!user) {
+      signinCard.style.display = 'block';
+      lbView.style.display = 'none';
+      siteNav.style.display = 'none';
+      if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+      return;
+    }
+    userLine.innerHTML = `Signed in as <strong>${user.displayName || user.email}</strong>
+      <button id="signOutBtn">Sign out</button>`;
+    document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
+    siteNav.style.display = 'flex';
+    signinCard.style.display = 'none';
+    lbView.style.display = 'block';
+    if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+
+    await loadLeaderboard();
+    if (!refreshTimer) refreshTimer = setInterval(loadLeaderboard, REFRESH_MS);
+  });
+
+  async function loadLeaderboard() {
+    try {
+      const { collection, getDocs, query, orderBy } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      const q = query(
+        collection(window.fwc.db, 'users'),
+        orderBy('totalPoints', 'desc'),
+      );
+      const snap = await getDocs(q);
+      const rows = [];
+      snap.forEach(doc => rows.push({ uid: doc.id, ...doc.data() }));
+
+      if (!rows.length) {
+        lbBody.innerHTML = `<tr><td colspan="5" class="empty-state">
+          No players yet. Be the first to <a href="./draft.html">draft a roster</a>.
+        </td></tr>`;
+        return;
+      }
+
+      lbBody.innerHTML = rows.map((u, i) => {
+        const rank = i + 1;
+        const isMe = currentUser && u.uid === currentUser.uid;
+        const picks = (u.roster || []).length;
+        const spent = u.totalSpent ?? 0;
+        const pts   = u.totalPoints ?? 0;
+        const name  = u.displayName || u.email || u.uid;
+        const podiumClass = rank <= 3 ? `podium-${rank}` : '';
+        return `<tr class="${isMe ? 'lb-row-me' : ''}">
+          <td class="rank-cell ${podiumClass}">${rank}</td>
+          <td>${escape(name)}${isMe ? ' <span class="accent-text" style="font-size:11px">(you)</span>' : ''}</td>
+          <td class="num">${picks}</td>
+          <td class="num">$${spent}</td>
+          <td class="num"><strong>${pts}</strong></td>
+        </tr>`;
+      }).join('');
+
+      lastUpdated.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+    } catch (e) {
+      lbBody.innerHTML = `<tr><td colspan="5" class="empty-state">
+        Couldn't load leaderboard: ${escape(e.message)}
+      </td></tr>`;
+    }
+  }
+
+  function escape(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+  }
+</script>
+
+</body>
+</html>
