@@ -198,6 +198,12 @@
   let teams = {};                    // teamSlug → team doc
   let players = {};                  // playerId → player doc
   let configDoc = null;
+  const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
+  const flagFor = (kind, asset) => {
+    if (!asset) return '';
+    const fdId = kind === 'team' ? asset.fdId : (teams[asset.teamId]?.fdId);
+    return fdId ? `<img class="flag-sm" src="${flagUrl(fdId)}" alt="" onerror="this.style.display='none'">` : '';
+  };
 
   await new Promise(r => requestAnimationFrame(r));
   signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
@@ -286,6 +292,7 @@
       const pts   = a ? (a.totalPoints || 0) : (pick.points || 0);
       return `<div class="item-row ${elim ? 'eliminated' : ''}">
         <span class="kind-tag ${pick.kind}">${pick.kind === 'team' ? 'T' : 'P'}</span>
+        ${flagFor(pick.kind, a)}
         <span class="item-name">${escape(name)} <span class="pts">${pts} pts</span></span>
         <span class="item-price">$${cur}</span>
         <button data-sell-id="${escape(pick.assetId)}" data-sell-kind="${pick.kind}">Sell</button>
@@ -321,6 +328,7 @@
       const pts   = a.totalPoints || 0;
       return `<div class="item-row ${elim ? 'eliminated' : ''}">
         <span class="kind-tag ${a.kind}">${a.kind === 'team' ? 'T' : 'P'}</span>
+        ${flagFor(a.kind, a)}
         <span class="item-name">${escape(a.name)} <span class="pts">${pts} pts</span></span>
         <span class="item-price">$${price}</span>
         <button data-buy-id="${escape(a.id)}" data-buy-kind="${a.kind}" ${elim ? 'disabled' : ''}>Buy</button>

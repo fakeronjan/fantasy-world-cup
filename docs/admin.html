@@ -353,6 +353,8 @@
   // Cache players in memory once, then filter by teamId per match form.
   let playersByTeam = null;   // { teamId: [{id, name, position}, ...] }
   let teamsCache    = null;   // { fdId: { id, name } }
+  const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
+  const flagImg = (fdId) => fdId ? `<img class="flag-sm" src="${flagUrl(fdId)}" alt="" onerror="this.style.display='none'">` : '';
 
   async function loadGoalEntryData() {
     const { collection, getDocs, query, orderBy, where } = await import(
@@ -436,7 +438,7 @@
     return `<li class="match-row">
       <div class="match-summary">
         <span class="round-tag">${escape(m.round || '?')}</span>
-        <span class="teams"><strong>${escape(home)}</strong> vs <strong>${escape(away)}</strong></span>
+        <span class="teams">${flagImg(m.team1Id)}<strong>${escape(home)}</strong> vs ${flagImg(m.team2Id)}<strong>${escape(away)}</strong></span>
         <span class="score">${score}</span>
         ${entered ? '<span class="processed-tag">scorers in</span>' : ''}
         <button data-toggle="${m.docId}" data-entered="${entered}">

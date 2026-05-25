@@ -202,6 +202,18 @@ input[type="text"]:focus, input[type="search"]:focus, select:focus {
   border-color: var(--bg-header);
 }
 
+/* ---------- flag images (from football-data.org crests CDN) ---------- */
+.flag, .flag-sm {
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: 2px;
+  background: #fff;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+.flag    { width: 24px; height: 18px; margin-right: 8px; }
+.flag-sm { width: 16px; height: 12px; margin-right: 6px; }
+
 /* ---------- helpers ---------- */
 .muted { color: var(--text-muted); }
 .accent-text { color: var(--accent); font-weight: 700; }

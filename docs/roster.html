@@ -151,11 +151,14 @@
 
   let teams = [];
   let players = [];
+  let teamIdToFdId = {};
+  const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
 
   async function loadCatalog() {
     try {
       const res = await fetch('./data/seed_teams.json');
       teams = await res.json();
+      teamIdToFdId = Object.fromEntries(teams.map(t => [t.id, t.fdId]));
     } catch { teams = []; }
     try {
       const res = await fetch('./data/seed_players.json');
@@ -223,13 +226,17 @@
       const nowWorth = catalog ? catalog.basePrice : bought;
       const pts = pick.points ?? 0;
       const eliminated = pick.eliminated === true;
+      const fdId = catalog
+        ? (pick.kind === 'team' ? catalog.fdId : teamIdToFdId[catalog.teamId])
+        : null;
+      const flagImg = fdId ? `<img class="flag" src="${flagUrl(fdId)}" alt="" onerror="this.style.display='none'">` : '';
 
       spent  += bought;
       totalP += pts;
 
       return `<tr class="${eliminated ? 'eliminated' : ''}">
         <td class="rank-cell">${i + 1}</td>
-        <td class="team-cell">${escape(name)}</td>
+        <td class="team-cell">${flagImg}${escape(name)}${catalog && pick.kind === 'player' && catalog.teamName ? ` <span class="muted" style="font-size:11px">${escape(catalog.teamName)}</span>` : ''}</td>
         <td><span class="kind-badge kind-${pick.kind}">${pick.kind}</span></td>
         <td><span class="tier-badge tier-${tier}">T${tier}</span></td>
         <td class="num">$${bought}</td>
