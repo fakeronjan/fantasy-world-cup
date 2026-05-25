@@ -156,6 +156,16 @@
   let playerHistory = {};
   let playerAwards = {};
   const flagSpan = (emoji) => emoji ? `<span class="flag">${emoji}</span>` : '';
+
+  // East Asian convention: family name first.
+  const FAMILY_FIRST_TEAMS = new Set(['south-korea', 'japan']);
+  function displayName(player) {
+    if (!player) return '';
+    if (!FAMILY_FIRST_TEAMS.has(player.teamId)) return player.name;
+    const parts = player.name.split(/\s+/);
+    if (parts.length !== 2) return player.name;
+    return `${parts[1]} ${parts[0]}`;
+  }
   function teamHistoryBlurb(h) {
     if (!h) return '';
     const parts = [];
@@ -184,8 +194,14 @@
     if (!h || h.notFound) return '';
     const parts = [];
     const wcs = h.wcsPlayed ?? 0;
-    if (wcs === 0) parts.push('WC debut');
-    else parts.push(`${wcs} WC${wcs === 1 ? '' : 's'}`);
+    // Only claim "WC debut" when explicitly marked. The historical-goals
+    // scrape only catches scorers, so wcsPlayed=0 from that source is
+    // "unknown", not "debut". Real debutants are flagged via _source=manual.
+    if (wcs > 0) {
+      parts.push(`${wcs} WC${wcs === 1 ? '' : 's'}`);
+    } else if (h._source === 'manual' && h.debutant) {
+      parts.push('WC debut');
+    }
     if (h.goals != null && h.goals > 0) parts.push(`${h.goals} goal${h.goals === 1 ? '' : 's'}`);
     if (h.titles > 0) {
       const yrs = (h.titleYears || []).slice().sort();
@@ -274,7 +290,9 @@
 
     rosterBody.innerHTML = roster.map((pick, i) => {
       const catalog = getCatalogAsset(pick.kind, pick.assetId);
-      const name    = catalog ? catalog.name : pick.assetId;
+      const name    = catalog
+        ? (pick.kind === 'player' ? displayName(catalog) : catalog.name)
+        : pick.assetId;
       const tier    = catalog ? catalog.tier : '?';
       const bought  = pick.purchasePrice;
       // currentValue + pts will populate once teams/players are seeded

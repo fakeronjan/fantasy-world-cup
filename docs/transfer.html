@@ -205,6 +205,16 @@
     const emoji = kind === 'team' ? asset.emoji : (teams[asset.teamId]?.emoji);
     return emoji ? `<span class="flag-sm">${emoji}</span>` : '';
   };
+
+  // East Asian convention: family name first.
+  const FAMILY_FIRST_TEAMS = new Set(['south-korea', 'japan']);
+  function displayName(kind, asset) {
+    if (!asset) return '';
+    if (kind !== 'player' || !FAMILY_FIRST_TEAMS.has(asset.teamId)) return asset.name;
+    const parts = asset.name.split(/\s+/);
+    if (parts.length !== 2) return asset.name;
+    return `${parts[1]} ${parts[0]}`;
+  }
   function teamHistoryBlurb(h) {
     if (!h) return '';
     const parts = [];
@@ -331,7 +341,7 @@
     }
     portfolioList.innerHTML = workingRoster.map(pick => {
       const a = getAsset(pick.kind, pick.assetId);
-      const name  = a ? a.name : pick.assetId;
+      const name  = a ? displayName(pick.kind, a) : pick.assetId;
       const cur   = a ? (a.currentPrice ?? a.basePrice ?? pick.purchasePrice) : pick.purchasePrice;
       const elim  = a ? !!a.eliminated : false;
       const pts   = a ? (a.totalPoints || 0) : (pick.points || 0);
@@ -386,7 +396,7 @@
         <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:200px">
           <span class="kind-tag ${a.kind}">${a.kind === 'team' ? 'T' : 'P'}</span>
           ${flagFor(a.kind, a)}
-          <span class="item-name">${escape(a.name)} <span class="pts">${pts} pts</span></span>
+          <span class="item-name">${escape(displayName(a.kind, a))} <span class="pts">${pts} pts</span></span>
         </div>
         <span class="item-price">$${price}</span>
         <button data-buy-id="${escape(a.id)}" data-buy-kind="${a.kind}" ${elim ? 'disabled' : ''}>Buy</button>

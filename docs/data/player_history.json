@@ -2268,14 +2268,19 @@
     "_source": "historical-goals"
   },
   "170281-south-korea": {
-    "wcsPlayed": 0,
-    "wcYears": [],
-    "goals": 0,
+    "wcsPlayed": 3,
+    "wcYears": [
+      2014,
+      2018,
+      2022
+    ],
+    "goals": 3,
     "titles": 0,
     "titleYears": [],
     "runnerUps": 0,
     "runnerUpYears": [],
-    "_source": "historical-goals"
+    "tag": "3× WC",
+    "_source": "manual"
   },
   "189673-south-korea": {
     "wcsPlayed": 0,

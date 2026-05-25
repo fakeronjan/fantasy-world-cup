@@ -158,11 +158,9 @@
           <input type="search" id="searchBox" placeholder="Search…" style="flex:1; min-width:160px">
           <select id="tierFilter">
             <option value="">All tiers</option>
-            <option value="1">Tier 1 ($15 / $10)</option>
-            <option value="2">Tier 2 ($12 / $7)</option>
-            <option value="3">Tier 3 ($9 / $5)</option>
-            <option value="4">Tier 4 ($6 / $3)</option>
-            <option value="5">Tier 5 ($3 / $2)</option>
+          </select>
+          <select id="countryFilter" style="display:none">
+            <option value="">All countries</option>
           </select>
           <span class="count-label" id="resultCount"></span>
         </div>
@@ -231,6 +229,17 @@
 
   const flagSpan = (emoji, sm = false) => emoji ? `<span class="${sm ? 'flag-sm' : 'flag'}">${emoji}</span>` : '';
 
+  // East Asian convention: family name first. football-data API returns
+  // Western order; swap for Korean/Japanese/etc. players.
+  const FAMILY_FIRST_TEAMS = new Set(['south-korea', 'japan']);
+  function displayName(player) {
+    if (!player) return '';
+    if (!FAMILY_FIRST_TEAMS.has(player.teamId)) return player.name;
+    const parts = player.name.split(/\s+/);
+    if (parts.length !== 2) return player.name;
+    return `${parts[1]} ${parts[0]}`;
+  }
+
   function teamHistoryBlurb(h) {
     if (!h) return '';
     const parts = [];
@@ -255,8 +264,14 @@
     if (!h || h.notFound) return '';
     const parts = [];
     const wcs = h.wcsPlayed ?? 0;
-    if (wcs === 0)     parts.push('WC debut');
-    else               parts.push(`${wcs} WC${wcs === 1 ? '' : 's'}`);
+    // Only claim WC participation when we actually know it. The historical-
+    // goals scrape only catches scorers, so a wcsPlayed=0 from that source
+    // is "unknown", NOT "debut". Real debutants are marked via _source=manual.
+    if (wcs > 0) {
+      parts.push(`${wcs} WC${wcs === 1 ? '' : 's'}`);
+    } else if (h._source === 'manual' && h.debutant) {
+      parts.push('WC debut');
+    }
     if (h.goals != null && h.goals > 0) parts.push(`${h.goals} goal${h.goals === 1 ? '' : 's'}`);
     if (h.titles > 0) {
       const yrs = (h.titleYears || []).slice().sort();
@@ -285,6 +300,7 @@
   const tabPills    = document.getElementById('tabPills');
   const searchBox   = document.getElementById('searchBox');
   const tierFilter  = document.getElementById('tierFilter');
+  const countryFilter = document.getElementById('countryFilter');
   const resultCount = document.getElementById('resultCount');
   const assetBody   = document.getElementById('assetBody');
   const budgetLeft  = document.getElementById('budgetLeft');
@@ -347,6 +363,7 @@
       draftUI.style.display = 'block';
       if (window.fwc.isAdmin(user)) adminLink.style.display = '';
       if (!teams.length) await loadData();
+      refreshFilterDropdowns();
       render();
     } else {
       // Show draft UI in "preview" mode for signed-out users so they can
@@ -355,6 +372,7 @@
       draftUI.style.display = 'block';
       siteNav.style.display = 'none';
       if (!teams.length) await loadData();
+      refreshFilterDropdowns();
       render();
     }
     updateSaveHint();
@@ -386,7 +404,8 @@
       showToast(`Over budget by $${rosterSpent() + price - BUDGET}`, true);
       return;
     }
-    roster.push({ kind, id, name: asset.name, price });
+    const name = kind === 'player' ? displayName(asset) : asset.name;
+    roster.push({ kind, id, name, price });
     persist();
     render();
   }
@@ -411,9 +430,17 @@
     const source = currentTab === 'teams' ? teams : players;
     const q = searchBox.value.trim().toLowerCase();
     const tier = tierFilter.value;
+    const country = countryFilter.value;
     const filtered = source.filter(a => {
-      if (q && !a.name.toLowerCase().includes(q)) return false;
+      // Search by both stored name AND display name (so "Son" matches "Son Heung-min")
+      if (q) {
+        const haystack = currentTab === 'players'
+          ? (a.name + ' ' + displayName(a)).toLowerCase()
+          : a.name.toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
       if (tier && String(a.tier) !== tier) return false;
+      if (country && currentTab === 'players' && a.teamId !== country) return false;
       return true;
     }).sort((a, b) => b.basePrice - a.basePrice || a.name.localeCompare(b.name));
 
@@ -454,7 +481,7 @@
       }
       return `<tr class="${owned ? 'in-roster' : ''}">
         <td class="rank-cell">${i + 1}</td>
-        <td class="team-cell">${flagImg}${escape(a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}${teamLabel}${histLine}${honorsLine}</td>
+        <td class="team-cell">${flagImg}${escape(kind === 'player' ? displayName(a) : a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}${teamLabel}${histLine}${honorsLine}</td>
         <td><span class="tier-badge tier-${a.tier}">T${a.tier}</span></td>
         <td class="num">$${a.basePrice}</td>
         <td><button class="add-btn ${owned ? 'in-roster' : ''}" data-kind="${kind}" data-id="${escape(a.id)}" ${owned ? '' : (canAdd ? '' : 'disabled')}>
@@ -502,10 +529,51 @@
     if (e.target.tagName !== 'BUTTON') return;
     currentTab = e.target.dataset.tab;
     [...tabPills.children].forEach(b => b.classList.toggle('active', b === e.target));
+    refreshFilterDropdowns();
     render();
   });
   searchBox.addEventListener('input', renderAssetTable);
   tierFilter.addEventListener('change', renderAssetTable);
+  countryFilter.addEventListener('change', renderAssetTable);
+
+  // Build tier dropdown labels from the actual price ranges in the current
+  // tab's data, and show/hide the country filter for the players tab.
+  function refreshFilterDropdowns() {
+    const source = currentTab === 'teams' ? teams : players;
+    const byTier = {};
+    for (const a of source) {
+      if (!byTier[a.tier]) byTier[a.tier] = [];
+      byTier[a.tier].push(a.basePrice);
+    }
+    const tierOpts = ['<option value="">All tiers</option>'];
+    for (const tier of Object.keys(byTier).sort()) {
+      const prices = byTier[tier];
+      const min = Math.min(...prices), max = Math.max(...prices);
+      const range = min === max ? `$${min}` : `$${min}-${max}`;
+      tierOpts.push(`<option value="${tier}">Tier ${tier} (${range})</option>`);
+    }
+    const prevTier = tierFilter.value;
+    tierFilter.innerHTML = tierOpts.join('');
+    tierFilter.value = prevTier && byTier[prevTier] ? prevTier : '';
+
+    if (currentTab === 'players') {
+      const countriesWithPlayers = [...new Set(players.map(p => p.teamId))]
+        .map(id => teams.find(t => t.id === id))
+        .filter(Boolean)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      const opts = ['<option value="">All countries</option>'];
+      for (const t of countriesWithPlayers) {
+        opts.push(`<option value="${t.id}">${t.emoji || ''} ${t.name}</option>`);
+      }
+      const prevCountry = countryFilter.value;
+      countryFilter.innerHTML = opts.join('');
+      countryFilter.value = prevCountry;
+      countryFilter.style.display = '';
+    } else {
+      countryFilter.style.display = 'none';
+      countryFilter.value = '';
+    }
+  }
   assetBody.addEventListener('click', (e) => {
     const btn = e.target.closest('.add-btn');
     if (!btn || btn.disabled) return;
