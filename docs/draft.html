@@ -15,16 +15,51 @@
   }
   @media (max-width: 900px) {
     .draft-layout { grid-template-columns: 1fr; }
-    .roster-panel { position: sticky; top: 8px; }
+    .draft-sidebar { position: static !important; }
   }
 
-  .roster-panel {
+  .draft-sidebar {
+    position: sticky;
+    top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-self: start;
+  }
+  .roster-panel, .scoring-panel {
     background: var(--bg-card);
     border-radius: 6px;
     padding: 16px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    position: sticky;
-    top: 16px;
+  }
+
+  /* --- compact scoring summary, always visible alongside roster --- */
+  .scoring-panel h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--bg-header);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+  .scoring-panel .group-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin: 8px 0 3px;
+  }
+  .scoring-panel .group-label:first-of-type { margin-top: 4px; }
+  .scoring-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 2px 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .scoring-row .pts {
+    color: var(--accent);
+    font-weight: 700;
+    margin-left: 8px;
   }
   .roster-panel h2 {
     font-size: 16px;
@@ -189,27 +224,49 @@
         </table>
       </div>
 
-      <!-- RIGHT: roster panel -->
-      <aside class="roster-panel">
-        <h2>Your Roster</h2>
-        <div class="roster-stats">
-          <div class="stat">
-            <div class="label">Budget left</div>
-            <div class="val" id="budgetLeft">$60</div>
+<!-- RIGHT: roster + scoring sidebar -->
+      <aside class="draft-sidebar">
+        <div class="roster-panel">
+          <h2>Your Roster</h2>
+          <div class="roster-stats">
+            <div class="stat">
+              <div class="label">Budget left</div>
+              <div class="val" id="budgetLeft">$60</div>
+            </div>
+            <div class="stat">
+              <div class="label">Picks</div>
+              <div class="val" id="pickCount">0 / 12</div>
+            </div>
           </div>
-          <div class="stat">
-            <div class="label">Picks</div>
-            <div class="val" id="pickCount">0 / 12</div>
+          <ul class="roster-list" id="rosterList">
+            <li class="roster-empty" id="rosterEmpty">No picks yet — click a row to add</li>
+          </ul>
+          <div class="save-row">
+            <button class="btn" id="resetBtn" title="Clear all picks">Reset</button>
+            <button class="btn btn-accent" id="saveBtn">Save Roster</button>
           </div>
+          <p class="muted" style="font-size:11px;margin-top:8px;text-align:center" id="saveHint"></p>
         </div>
-        <ul class="roster-list" id="rosterList">
-          <li class="roster-empty" id="rosterEmpty">No picks yet — click a row to add</li>
-        </ul>
-        <div class="save-row">
-          <button class="btn" id="resetBtn" title="Clear all picks">Reset</button>
-          <button class="btn btn-accent" id="saveBtn">Save Roster</button>
+
+        <div class="scoring-panel">
+          <h3>Scoring</h3>
+          <div class="group-label">Teams</div>
+          <div class="scoring-row"><span>Win</span><span class="pts">+4</span></div>
+          <div class="scoring-row"><span>Draw</span><span class="pts">+1</span></div>
+          <div class="scoring-row"><span>Reach R32</span><span class="pts">+2</span></div>
+          <div class="scoring-row"><span>Reach R16</span><span class="pts">+3</span></div>
+          <div class="scoring-row"><span>Reach QF</span><span class="pts">+5</span></div>
+          <div class="scoring-row"><span>Reach SF</span><span class="pts">+8</span></div>
+          <div class="scoring-row"><span>Reach Final</span><span class="pts">+12</span></div>
+          <div class="scoring-row"><span>Champion</span><span class="pts">+20</span></div>
+
+          <div class="group-label">Players</div>
+          <div class="scoring-row"><span>Goal</span><span class="pts">+5</span></div>
+          <div class="scoring-row"><span>Assist</span><span class="pts">+3</span></div>
+          <div class="scoring-row"><span>Played in a win</span><span class="pts">+1</span></div>
+          <div class="scoring-row"><span>Clean sheet (GK)</span><span class="pts">+5</span></div>
+          <div class="scoring-row"><span>Clean sheet (DEF)</span><span class="pts">+2</span></div>
         </div>
-        <p class="muted" style="font-size:11px;margin-top:8px;text-align:center" id="saveHint"></p>
       </aside>
     </div>
   </div>
