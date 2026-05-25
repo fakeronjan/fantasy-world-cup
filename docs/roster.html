@@ -115,18 +115,43 @@
           <th>Pick</th>
           <th>Kind</th>
           <th>Tier</th>
-          <th class="num">Bought at</th>
-          <th class="num">Now worth</th>
+          <th>Bought</th>
+          <th class="num">Paid</th>
+          <th class="num">Now</th>
           <th class="num">Points</th>
           <th>Status</th>
         </tr>
       </thead>
       <tbody id="rosterBody">
-        <tr><td colspan="8" style="padding:24px;text-align:center;color:var(--text-muted)">Loading…</td></tr>
+        <tr><td colspan="9" style="padding:24px;text-align:center;color:var(--text-muted)">Loading…</td></tr>
       </tbody>
     </table>
 
     <p class="muted" style="text-align:center;font-size:12px;margin-top:16px" id="footerNote"></p>
+
+    <!-- Total roster value chart (Stage 3) -->
+    <div class="card" id="valueChartCard" style="margin-top:16px; display:none">
+      <div style="font-size:11px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; color:var(--bg-header); margin-bottom:4px">
+        Total Roster Value Over Time
+      </div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px" id="valueChartSub">
+        Cash on hand + current market value of held picks, snapshotted after each round.
+      </div>
+      <svg id="valueChart" style="width:100%; height:200px; display:block"></svg>
+    </div>
+
+    <!-- Transaction history (Stage 1) -->
+    <div class="card" id="historyCard" style="margin-top:16px">
+      <div style="font-size:11px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; color:var(--bg-header); margin-bottom:4px">
+        Transaction History
+      </div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px">
+        Every draft, transfer, and auto-sell that's affected your roster.
+      </div>
+      <ul id="historyList" style="list-style:none">
+        <li class="muted" style="font-size:12px">Loading…</li>
+      </ul>
+    </div>
   </div>
 </main>
 
@@ -296,7 +321,111 @@
     rosterView.style.display = 'block';
 
     renderRoster(roster, userDoc);
+    await loadTransactionHistory(user.uid);
+    renderValueChart(userDoc);
   });
+
+  // ---- transaction history ---------------------------------------------
+  async function loadTransactionHistory(uid) {
+    const historyList = document.getElementById('historyList');
+    try {
+      const { collection, getDocs, query, where, orderBy } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      const q = query(
+        collection(window.fwc.db, 'transactions'),
+        where('uid', '==', uid),
+        orderBy('timestamp', 'desc'),
+      );
+      const snap = await getDocs(q);
+      const txs = [];
+      snap.forEach(d => txs.push({ id: d.id, ...d.data() }));
+      if (!txs.length) {
+        historyList.innerHTML = `<li class="muted" style="font-size:12px">No transactions yet — save a roster to see your first entry here.</li>`;
+        return;
+      }
+      historyList.innerHTML = txs.map(tx => {
+        const date = shortDate(tx.timestamp);
+        const typeLabel = ({
+          'draft':                  ['Draft',     'var(--bg-header)'],
+          'draft-update':           ['Draft edit', 'var(--bg-header)'],
+          'auto-sell-elimination':  ['Auto-sell', 'var(--accent)'],
+        })[tx.type] || ['Transfer', '#16a34a'];
+        const buys = (tx.buys || []).map(b => assetDescription(b.kind, b.assetId, b.boughtAt, '+')).join(' · ');
+        const sells = (tx.sells || []).map(s => assetDescription(s.kind, s.assetId, s.soldAt ?? s.paidPrice, '−')).join(' · ');
+        const summary = [
+          tx.sells?.length ? `<span style="color:#991b1b">Sold:</span> ${sells}` : '',
+          tx.buys?.length  ? `<span style="color:#166534">Bought:</span> ${buys}` : '',
+        ].filter(Boolean).join(' &nbsp; ');
+        return `<li style="padding:8px 0; border-bottom:1px solid var(--border-row); font-size:12px">
+          <div style="display:flex; gap:10px; align-items:center; margin-bottom:3px">
+            <span style="font-weight:700; color:var(--text-muted); font-size:11px; min-width:60px">${date}</span>
+            <span style="display:inline-block; padding:1px 7px; border-radius:3px; font-size:10px; font-weight:700;
+                         text-transform:uppercase; letter-spacing:0.4px; background:${typeLabel[1]}; color:#fff">${typeLabel[0]}</span>
+          </div>
+          <div style="padding-left:70px; color:var(--text-body); line-height:1.6">${summary || '<span class="muted">(no asset changes)</span>'}</div>
+        </li>`;
+      }).join('');
+    } catch (e) {
+      historyList.innerHTML = `<li class="muted" style="font-size:12px">Couldn't load history: ${escape(e.message)}</li>`;
+    }
+  }
+
+  function assetDescription(kind, assetId, price, sign) {
+    const catalog = kind === 'team'
+      ? teams.find(t => t.id === assetId)
+      : players.find(p => p.id === assetId);
+    const name = catalog ? (kind === 'player' ? displayName(catalog) : catalog.name) : assetId;
+    const emoji = catalog ? (kind === 'team' ? catalog.emoji : teamIdToEmoji[catalog.teamId]) : '';
+    return `${emoji || ''} ${escape(name)} <span class="muted">(${sign === '+' ? '−' : '+'}$${price})</span>`;
+  }
+
+  function shortDate(iso) {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    } catch { return '—'; }
+  }
+
+  // ---- total roster value chart (Stage 3) ------------------------------
+  function renderValueChart(userDoc) {
+    const valueChartCard = document.getElementById('valueChartCard');
+    const svg = document.getElementById('valueChart');
+    const hist = userDoc.valueByRound || {};
+    const points = Object.entries(hist).sort();
+    if (points.length < 2) {
+      valueChartCard.style.display = 'none';
+      return;
+    }
+    valueChartCard.style.display = 'block';
+    const W = svg.parentElement.clientWidth - 32;
+    const H = 200;
+    const padL = 40, padR = 12, padT = 12, padB = 30;
+    const values = points.map(([_, v]) => v);
+    const yMax = Math.max(60, Math.ceil((Math.max(...values) + 1) / 10) * 10);
+    const yMin = Math.min(0, Math.floor(Math.min(...values) / 10) * 10);
+    const px = i => padL + (i / Math.max(1, points.length - 1)) * (W - padL - padR);
+    const py = v => padT + (1 - (v - yMin) / (yMax - yMin)) * (H - padT - padB);
+    let grid = '', ylab = '';
+    const yStep = (yMax - yMin) <= 60 ? 10 : 20;
+    for (let v = yMin; v <= yMax; v += yStep) {
+      const y = py(v);
+      grid += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#eee" stroke-width="1"/>`;
+      ylab += `<text x="${padL - 4}" y="${y + 3}" font-size="10" fill="#999" text-anchor="end">$${v}</text>`;
+    }
+    let xlab = '';
+    points.forEach(([round, _], i) => {
+      const x = px(i);
+      xlab += `<text x="${x}" y="${H - padB + 14}" font-size="10" fill="#999" text-anchor="middle">${escape(round)}</text>`;
+    });
+    const pts = points.map(([_, v], i) => `${px(i)},${py(v)}`).join(' ');
+    const dots = points.map(([_, v], i) =>
+      `<circle cx="${px(i)}" cy="${py(v)}" r="3" fill="var(--accent)"/>`
+    ).join('');
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.innerHTML = grid + ylab + xlab +
+      `<polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2"/>` + dots;
+  }
 
   function renderRoster(roster, userDoc) {
     let totalP = 0, spent = 0;
@@ -317,6 +446,7 @@
         ? (pick.kind === 'team' ? catalog.emoji : teamIdToEmoji[catalog.teamId])
         : null;
       const flagImg = flagSpan(emoji);
+      const purchasedAt = pick.purchasedAt ? shortDate(pick.purchasedAt) : '—';
 
       spent  += bought;
       totalP += pts;
@@ -355,6 +485,7 @@
         <td class="team-cell">${flagImg}${escape(name)}${sublineHtml}${topPlayersHtml}${honorsHtml}</td>
         <td><span class="kind-badge kind-${pick.kind}">${pick.kind}</span></td>
         <td><span class="tier-badge tier-${tier}">T${tier}</span></td>
+        <td style="font-size:11px; color:var(--text-muted)">${purchasedAt}</td>
         <td class="num">$${bought}</td>
         <td class="num">${eliminated ? '$0' : '$' + nowWorth}</td>
         <td class="num"><strong>${pts}</strong></td>

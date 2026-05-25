@@ -566,6 +566,7 @@
     workingRoster.push({
       assetId, kind,
       purchasePrice: price,
+      purchasedAt: new Date().toISOString(),
       currentlyHeld: true,
     });
     render();

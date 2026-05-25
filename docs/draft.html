@@ -705,16 +705,46 @@
     if (!currentUser || window.fwc.configIsPlaceholder) return;
     saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
     try {
-      const ref = window.fwc.doc(window.fwc.db, 'users', currentUser.uid);
-      await window.fwc.setDoc(ref, {
+      const now = new Date().toISOString();
+      const userRef = window.fwc.doc(window.fwc.db, 'users', currentUser.uid);
+
+      // Check if this is the user's first save (so we write a 'draft'
+      // transaction once, not every re-save).
+      const existing = await window.fwc.getDoc(userRef);
+      const hadPriorRoster = existing.exists() && (existing.data().roster || []).length > 0;
+
+      await window.fwc.setDoc(userRef, {
         email: currentUser.email,
         displayName: currentUser.displayName,
-        roster: roster.map(r => ({ assetId: r.id, kind: r.kind, purchasePrice: r.price, currentlyHeld: true })),
+        roster: roster.map(r => ({
+          assetId: r.id, kind: r.kind,
+          purchasePrice: r.price,
+          purchasedAt: now,
+          currentlyHeld: true,
+        })),
         totalSpent: rosterSpent(),
         currentBudget: BUDGET - rosterSpent(),
         totalPoints: 0,
-        joinedAt: new Date().toISOString(),
+        joinedAt: existing.exists() ? (existing.data().joinedAt || now) : now,
       }, { merge: true });
+
+      // Write a transaction record so the history is complete from day one.
+      // 'draft' on first save, 'draft-update' on subsequent pre-kickoff edits.
+      const { doc, collection, setDoc } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      const txRef = doc(collection(window.fwc.db, 'transactions'));
+      await setDoc(txRef, {
+        uid: currentUser.uid,
+        round: 'pre',
+        timestamp: now,
+        type: hadPriorRoster ? 'draft-update' : 'draft',
+        sells: [],
+        buys: roster.map(r => ({
+          kind: r.kind, assetId: r.id, boughtAt: r.price,
+        })),
+      });
+
       showToast('Roster saved!', false);
     } catch (e) {
       console.error(e);
