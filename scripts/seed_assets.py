@@ -53,11 +53,14 @@ INITIAL_CONFIG = {
 }
 
 
-def _load_json(path: Path) -> list[dict]:
+def _load_json(path: Path, required: bool = True) -> list[dict]:
     if not path.exists():
-        sys.exit(f"missing seed file: {path}\n"
-                 "Curate the 2026 tiers and write them to this path first "
-                 "(see SIMULATION_FINDINGS.md for the recommended tier shape).")
+        if required:
+            sys.exit(f"missing seed file: {path}\n"
+                     "Curate the 2026 tiers and write them to this path first "
+                     "(see SIMULATION_FINDINGS.md for the recommended tier shape).")
+        print(f"  (no {path.name} yet — skipping)")
+        return []
     return json.loads(path.read_text())
 
 
@@ -75,10 +78,12 @@ def _init_firebase():
 
 
 def seed(dry_run: bool = False) -> None:
-    teams = _load_json(SEED_TEAMS)
-    players = _load_json(SEED_PLAYERS)
+    teams = _load_json(SEED_TEAMS, required=True)
+    players = _load_json(SEED_PLAYERS, required=False)
 
     print(f"Loaded {len(teams)} teams, {len(players)} players from seed files.")
+    if not players:
+        print("  (player tiers not yet curated — run pull_wc2026_squads.py + tier the players, then re-run this script)")
 
     if dry_run:
         print("[dry-run] Skipping Firestore writes. Sample team:")
