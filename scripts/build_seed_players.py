@@ -309,7 +309,76 @@ def _resolve_tier_for_squad(squad_names: list[str]) -> dict[str, int]:
     return assigned
 
 
-TIER_PRICE = {1: 10, 2: 7, 3: 5, 4: 3, 5: 2}
+TIER_PRICE = {1: 10, 2: 7, 3: 5, 4: 3, 5: 2}  # legacy buckets — kept only for tier-meets-floor logic
+
+# Continuous pricing — every player gets a unique-ish price in [$1, $25].
+# Top ~40 marquee names get hand-curated explicit prices; everyone else
+# goes through a formula that combines (team strength rank, within-team
+# rank, position).
+PLAYER_PRICE_OVERRIDES = {
+    "Kylian Mbappé":      25,
+    "Lionel Messi":       22,
+    "Erling Haaland":     22,
+    "Jude Bellingham":    20,
+    "Vinícius Júnior":    20,
+    "Vinicius Junior":    20,
+    "Lamine Yamal":       18,
+    "Phil Foden":         18,
+    "Heung-Min Son":      17,
+    "Heung-min Son":      17,
+    "Cristiano Ronaldo":  17,
+    "Harry Kane":         15,
+    "Bukayo Saka":        14,
+    "Luka Modrić":        14,
+    "Kevin De Bruyne":    13,
+    "Pedri":              13,
+    "Julián Álvarez":     12,
+    "Enzo Fernández":     11,
+    "Romelu Lukaku":      11,
+    "Emiliano Martínez":  11,
+    "Bruno Fernandes":    10,
+    "Bernardo Silva":     10,
+    "Rodri":              10,
+    "Achraf Hakimi":      10,
+    "Manuel Neuer":       10,
+    "Alisson Becker":     10,
+    "Casemiro":            9,
+    "Alexis Mac Allister": 9,
+    "Marquinhos":          9,
+    "Virgil van Dijk":     9,
+    "Antonio Rüdiger":     9,
+    "Joshua Kimmich":      9,
+    "Luis Díaz":           9,
+    "Thibaut Courtois":    8,
+    "Federico Valverde":   8,
+    "Darwin Núñez":        8,
+    "Jordan Pickford":     7,
+    "Dani Olmo":           7,
+    "Vitinha":             7,
+    "Mateo Kovačić":       7,
+    "Dani Carvajal":       7,
+    "Yassine Bounou":      7,
+    "Édouard Mendy":       7,
+    "Edouard Mendy":       7,
+    "Diogo Costa":         7,
+}
+
+
+# Position multiplier — forwards have goal-scoring upside, GKs have CS
+# upside but capped, defenders are most-discounted.
+_POS_MULT = {"FWD": 1.15, "MID": 1.00, "GK": 0.95, "DEF": 0.85, "?": 0.95}
+
+
+def formula_price(team_rank: int, total_teams: int,
+                   within_rank: int, squad_size: int,
+                   position: str) -> int:
+    """Continuous pricing formula. Returns an integer $1-$22 (top names
+    get higher via the explicit override list)."""
+    import math
+    team_factor = max(0.04, (1 - (team_rank - 1) / max(1, total_teams - 1)) ** 1.3)
+    within_factor = max(0.05, (1 - (within_rank - 1) / max(1, squad_size)) ** 1.5)
+    base = 18.0 * team_factor * within_factor * _POS_MULT.get(position, 1.0)
+    return max(1, round(base))
 
 
 def _missing_overrides(assigned_names: set[str]) -> dict[int, list[str]]:
@@ -394,6 +463,12 @@ def build() -> None:
 
     name_to_slug: dict[str, str] = {t["name"]: t["id"] for t in teams_data}
 
+    # Build a team strength index from seed_teams.json — sorted by basePrice
+    # descending. Used by the formula to get team_rank.
+    teams_by_strength = sorted(teams_data, key=lambda t: -t["basePrice"])
+    team_rank_by_slug = {t["id"]: i + 1 for i, t in enumerate(teams_by_strength)}
+    total_teams = len(teams_by_strength)
+
     out = []
     counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
     per_team_tiered = {}
@@ -401,6 +476,7 @@ def build() -> None:
 
     for team_name, info in squads_data.items():
         team_slug = name_to_slug.get(team_name) or _norm_name(team_name).replace(" ", "-")
+        team_rank = team_rank_by_slug.get(team_slug, total_teams)
         squad = info.get("squad", []) or []
         squad_names = [p["name"] for p in squad]
         tier_assignments = _resolve_tier_for_squad(squad_names)
@@ -408,6 +484,14 @@ def build() -> None:
         tiered_count = sum(1 for n in squad_names if tier_assignments.get(n, 5) < 5)
         if tiered_count < PER_TEAM_FLOOR:
             _promote_to_meet_floor(squad, tier_assignments, tiered_count, PER_TEAM_FLOOR)
+
+        # Within-team rank: sort by tier (1 best) then by name for determinism.
+        squad_sorted = sorted(
+            squad,
+            key=lambda p: (tier_assignments.get(p["name"], 5), p["name"])
+        )
+        within_rank_map = {p["name"]: i + 1 for i, p in enumerate(squad_sorted)}
+        squad_size = len(squad_sorted)
 
         for p in squad:
             tier = tier_assignments.get(p["name"], 5)
@@ -418,15 +502,32 @@ def build() -> None:
                 assigned_names.add(p["name"])
             counts[tier] += 1
             doc_id = f"{p['id']}-{team_slug}"
+            position = simplify_position(p.get("position"))
+
+            # Resolve explicit override or formula price
+            override = PLAYER_PRICE_OVERRIDES.get(p["name"])
+            if override is None:
+                # Try a normalized-name override match too
+                pn = _norm_name(p["name"])
+                for k, v in PLAYER_PRICE_OVERRIDES.items():
+                    if _norm_name(k) == pn:
+                        override = v
+                        break
+            if override is not None:
+                base_price = override
+            else:
+                within = within_rank_map[p["name"]]
+                base_price = formula_price(team_rank, total_teams, within, squad_size, position)
+
             out.append({
                 "id": doc_id,
                 "fdId": p["id"],
                 "name": p["name"],
                 "teamId": team_slug,
                 "teamName": team_name,
-                "position": simplify_position(p.get("position")),
+                "position": position,
                 "tier": tier,
-                "basePrice": TIER_PRICE[tier],
+                "basePrice": base_price,
             })
 
         per_team_tiered[team_name] = sum(1 for p in squad if tier_assignments.get(p["name"], 5) < 5)
@@ -437,6 +538,13 @@ def build() -> None:
     print(f"Wrote {len(out)} DRAFTABLE players → {OUT_PATH}")
     print(f"(non-draftable squad members dropped: {counts[5]})")
     print(f"Per-tier counts (draftable): T1={counts[1]}  T2={counts[2]}  T3={counts[3]}  T4={counts[4]}")
+    # Price distribution
+    from collections import Counter
+    price_dist = Counter(p["basePrice"] for p in out)
+    print(f"\nPrice distribution ({len(price_dist)} distinct values):")
+    for price in sorted(price_dist.keys(), reverse=True):
+        bar = "▌" * min(50, price_dist[price])
+        print(f"  ${price:>2}: {price_dist[price]:>3}  {bar}")
 
     print(f"\nPer-team draftable counts (floor = {PER_TEAM_FLOOR}):")
     under = [(t, n) for t, n in per_team_tiered.items() if n < PER_TEAM_FLOOR]
