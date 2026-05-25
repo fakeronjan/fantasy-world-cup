@@ -89,6 +89,25 @@
 
   <!-- Roster view -->
   <div id="rosterView" style="display:none">
+
+    <!-- Auto-sell notification banner — shown when unseen elimination
+         auto-sells exist. Dismissible. -->
+    <div id="autoSellBanner" style="display:none; background:#fef0f7; border:1px solid #ff6eb4;
+         border-radius:6px; padding:14px 16px; margin-bottom:16px;
+         box-shadow:0 1px 4px rgba(255,110,180,0.15)">
+      <div style="display:flex; align-items:start; gap:12px">
+        <div style="font-size:20px">⚠️</div>
+        <div style="flex:1; font-size:13px; color:var(--text-body)">
+          <div style="font-weight:700; color:var(--accent); margin-bottom:4px" id="autoSellTitle"></div>
+          <div id="autoSellBody"></div>
+        </div>
+        <button id="autoSellDismiss" style="background:var(--accent); color:#fff; border:none;
+                padding:6px 14px; border-radius:3px; font-size:12px; font-weight:600; cursor:pointer">
+          Got it
+        </button>
+      </div>
+    </div>
+
     <div class="summary-strip">
       <div class="stat-card">
         <div class="label">Total Points</div>
@@ -342,7 +361,69 @@
     renderRoster(roster, userDoc);
     await loadTransactionHistory(user.uid);
     renderValueChart(userDoc);
+    await checkUnseenAutoSells(user, userDoc);
   });
+
+  // ---- auto-sell notification banner -----------------------------------
+  async function checkUnseenAutoSells(user, userDoc) {
+    const banner = document.getElementById('autoSellBanner');
+    const sinceTime = userDoc.lastSeenAutoSellAt || userDoc.joinedAt || '2000-01-01';
+    try {
+      const { collection, getDocs, query, where } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      const q = query(
+        collection(window.fwc.db, 'transactions'),
+        where('uid', '==', user.uid),
+      );
+      const snap = await getDocs(q);
+      const unseen = [];
+      snap.forEach(d => {
+        const tx = d.data();
+        if (tx.type === 'auto-sell-elimination' && tx.timestamp > sinceTime) {
+          unseen.push(tx);
+        }
+      });
+      if (!unseen.length) return;
+
+      // Aggregate the affected assets across all unseen auto-sell events
+      const sells = [];
+      let totalRefund = 0;
+      let latestTimestamp = sinceTime;
+      for (const tx of unseen) {
+        for (const s of (tx.sells || [])) {
+          sells.push({ ...s, when: tx.timestamp });
+          totalRefund += Number(s.soldAt || 0);
+        }
+        if (tx.timestamp > latestTimestamp) latestTimestamp = tx.timestamp;
+      }
+
+      const title = `${sells.length} ${sells.length === 1 ? 'pick was' : 'picks were'} auto-sold after elimination · $${totalRefund} refunded to your budget`;
+      const bodyLines = sells.map(s => {
+        const catalog = s.kind === 'team'
+          ? teams.find(t => t.id === s.assetId)
+          : players.find(p => p.id === s.assetId);
+        const name = catalog ? (s.kind === 'player' ? displayName(catalog) : catalog.name) : s.assetId;
+        const emoji = catalog ? (s.kind === 'team' ? catalog.emoji : teamIdToEmoji[catalog.teamId]) : '';
+        return `${emoji || ''} ${escape(name)} (paid $${s.paidPrice}, refunded $${s.soldAt})`;
+      }).join(' · ');
+
+      document.getElementById('autoSellTitle').textContent = title;
+      document.getElementById('autoSellBody').innerHTML = bodyLines +
+        ` &nbsp; <span class="muted">— scroll down to Transaction History for the full record.</span>`;
+      banner.style.display = 'block';
+
+      document.getElementById('autoSellDismiss').addEventListener('click', async () => {
+        banner.style.display = 'none';
+        try {
+          const ref = window.fwc.doc(window.fwc.db, 'users', user.uid);
+          await window.fwc.setDoc(ref, { lastSeenAutoSellAt: latestTimestamp }, { merge: true });
+        } catch (e) { console.error('Failed to dismiss banner:', e); }
+      });
+    } catch (e) {
+      console.error('Auto-sell notification check failed:', e);
+    }
+  }
 
   // ---- transaction history ---------------------------------------------
   async function loadTransactionHistory(uid) {
