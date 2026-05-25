@@ -4,8 +4,13 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
-# Firebase secrets — service-account keys must never be committed
+# Firebase secrets — service-account keys must never be committed.
+# These patterns cover Firebase's auto-generated filenames + common variants.
 *-service-account.json
+*-firebase-adminsdk-*.json
+*-adminsdk-*.json
+firebase-key*.json
+serviceAccount*.json
 .firebaserc.local
 .env
 .env.local
