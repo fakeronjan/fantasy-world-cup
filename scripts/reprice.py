@@ -252,14 +252,18 @@ def live_advancers(db, start_round):
 
 def write_prices_to_firestore(db, prices, advancers, all_teams):
     """Persist marketValue/buyPrice/sellPrice to each team + player doc.
-    Eliminated assets get marketValue=0 + sellPrice = floor(last MV * 0.25).
+    Eliminated assets get marketValue=0 + sellPrice = liquidationValue.
+
+    liquidationValue is captured ONCE per asset on first detection of
+    elimination — subsequent reruns leave it alone. This guarantees that
+    auto-sell refunds users the same amount no matter how many times we
+    reprice after an elimination event.
     """
-    import math
     alive_ids = {t["id"] for t in advancers}
 
     # Teams
     teams_batch = db.batch()
-    n_alive = n_elim = 0
+    n_alive = n_elim_new = n_elim_existing = 0
     for tdoc in db.collection("teams").stream():
         tid = tdoc.id
         t = tdoc.to_dict() or {}
@@ -273,27 +277,30 @@ def write_prices_to_firestore(db, prices, advancers, all_teams):
                 "meanFuturePoints": p["meanFuturePoints"],
             }, merge=True)
             n_alive += 1
+        elif t.get("liquidationValue") is not None:
+            # Already processed in a prior run — leave it alone
+            n_elim_existing += 1
         else:
-            # Eliminated team — liquidation refund
+            # Newly eliminated — capture liquidation value FROM LAST KNOWN MV
             last_mv = t.get("marketValue") or t.get("currentPrice") or t.get("basePrice", 0)
             liquidation = liquidation_price(last_mv)
             teams_batch.set(tdoc.reference, {
-                "marketValue":  0,
-                "buyPrice":     None,
-                "sellPrice":    liquidation,
-                "currentPrice": 0,
+                "marketValue":      0,
+                "liquidationValue": liquidation,   # frozen; never updated again
+                "buyPrice":         None,
+                "sellPrice":        liquidation,
+                "currentPrice":     0,
             }, merge=True)
-            n_elim += 1
+            n_elim_new += 1
     teams_batch.commit()
-    print(f"  teams: {n_alive} repriced, {n_elim} eliminated → liquidation")
+    print(f"  teams: {n_alive} repriced, {n_elim_new} newly eliminated, {n_elim_existing} already-eliminated")
 
     # Players (inherit team's alive/eliminated state)
     players_batch = db.batch()
-    n_p_alive = n_p_elim = 0
+    n_p_alive = n_p_elim_new = n_p_elim_existing = 0
     for pdoc in db.collection("players").stream():
         pid = pdoc.id
         p = pdoc.to_dict() or {}
-        team_id = p.get("teamId")
         if pid in prices:
             pr = prices[pid]
             players_batch.set(pdoc.reference, {
@@ -304,19 +311,104 @@ def write_prices_to_firestore(db, prices, advancers, all_teams):
                 "meanFuturePoints": pr["meanFuturePoints"],
             }, merge=True)
             n_p_alive += 1
+        elif p.get("liquidationValue") is not None:
+            n_p_elim_existing += 1
         else:
             last_mv = p.get("marketValue") or p.get("currentPrice") or p.get("basePrice", 0)
             liquidation = liquidation_price(last_mv)
             players_batch.set(pdoc.reference, {
-                "marketValue":  0,
-                "buyPrice":     None,
-                "sellPrice":    liquidation,
-                "currentPrice": 0,
-                "eliminated":   True,
+                "marketValue":      0,
+                "liquidationValue": liquidation,
+                "buyPrice":         None,
+                "sellPrice":        liquidation,
+                "currentPrice":     0,
+                "eliminated":       True,
             }, merge=True)
-            n_p_elim += 1
+            n_p_elim_new += 1
     players_batch.commit()
-    print(f"  players: {n_p_alive} repriced, {n_p_elim} eliminated → liquidation")
+    print(f"  players: {n_p_alive} repriced, {n_p_elim_new} newly eliminated, {n_p_elim_existing} already-eliminated")
+
+
+def auto_sell_eliminated_picks(db):
+    """For every user, remove picks that reference an eliminated asset and
+    credit currentBudget with the asset's liquidationValue. Records each
+    auto-sell as a transaction row so users can see what happened.
+
+    Idempotent: a pick is only auto-sold once because removing it from the
+    roster means there's nothing to process on the next run."""
+    from datetime import datetime, timezone
+
+    # Build lookup of all eliminated assets and their liquidation values
+    elim_teams = {}
+    for tdoc in db.collection("teams").stream():
+        t = tdoc.to_dict() or {}
+        if t.get("eliminated") or t.get("marketValue") == 0:
+            elim_teams[tdoc.id] = t.get("liquidationValue", 0)
+    elim_players = {}
+    for pdoc in db.collection("players").stream():
+        p = pdoc.to_dict() or {}
+        if p.get("eliminated") or p.get("marketValue") == 0:
+            elim_players[pdoc.id] = p.get("liquidationValue", 0)
+
+    n_users_affected = 0
+    n_picks_sold = 0
+    total_refund_paid = 0
+    now = datetime.now(timezone.utc).isoformat()
+
+    for udoc in db.collection("users").stream():
+        u = udoc.to_dict() or {}
+        roster = u.get("roster") or []
+        if not roster:
+            continue
+
+        eliminated_picks = []
+        surviving_picks = []
+        for pick in roster:
+            elim_map = elim_teams if pick["kind"] == "team" else elim_players
+            if pick["assetId"] in elim_map:
+                eliminated_picks.append(pick)
+            else:
+                surviving_picks.append(pick)
+
+        if not eliminated_picks:
+            continue
+
+        # Compute total refund
+        sells_record = []
+        total_refund = 0
+        for pick in eliminated_picks:
+            elim_map = elim_teams if pick["kind"] == "team" else elim_players
+            refund = elim_map[pick["assetId"]] or 0
+            total_refund += refund
+            sells_record.append({
+                "kind":      pick["kind"],
+                "assetId":   pick["assetId"],
+                "paidPrice": pick.get("purchasePrice", 0),
+                "soldAt":    refund,
+                "reason":    "auto-sell-elimination",
+            })
+
+        new_budget = (u.get("currentBudget") or 0) + total_refund
+        udoc.reference.set({
+            "roster":        surviving_picks,
+            "currentBudget": new_budget,
+        }, merge=True)
+
+        tx_ref = db.collection("transactions").document()
+        tx_ref.set({
+            "uid":       udoc.id,
+            "round":     "auto-sell",
+            "timestamp": now,
+            "sells":     sells_record,
+            "buys":      [],
+            "type":      "auto-sell-elimination",
+        })
+
+        n_users_affected += 1
+        n_picks_sold += len(eliminated_picks)
+        total_refund_paid += total_refund
+
+    print(f"  auto-sell: dropped {n_picks_sold} eliminated picks across {n_users_affected} users (${total_refund_paid} total refunds)")
 
 
 def main():
@@ -329,6 +421,11 @@ def main():
                     help="Show top N priced assets in dry-run output")
     ap.add_argument("--write", action="store_true",
                     help="Read live state from Firestore + persist prices back")
+    ap.add_argument("--skip-auto-sell", action="store_true",
+                    help="With --write, skip the auto-sell step that removes "
+                         "eliminated picks from user rosters and refunds "
+                         "liquidation values to currentBudget. Useful for "
+                         "price-only repricing without touching users.")
     args = ap.parse_args()
 
     teams, players = load_seed()
@@ -383,6 +480,9 @@ def main():
     if args.write and db is not None:
         print(f"\nWriting prices to Firestore...")
         write_prices_to_firestore(db, prices, advancers, teams)
+        if not args.skip_auto_sell:
+            print(f"Auto-selling eliminated picks from user rosters...")
+            auto_sell_eliminated_picks(db)
         print("Done.")
     elif not args.write:
         print(f"\n[Dry-run only. Pass --write to persist to Firestore.]")
