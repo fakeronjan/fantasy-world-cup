@@ -430,7 +430,16 @@ def recompute_users(db) -> list[dict]:
             total += pts
             pick["points"] = pts
             pick["eliminated"] = bool(ast.get("eliminated", False))
-        batch.set(udoc.reference, {"roster": roster, "totalPoints": total}, merge=True)
+        # Snapshot today's cumulative total into pointsByDate so the
+        # leaderboard chart can draw a real trajectory over time.
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        points_by_date = dict(u.get("pointsByDate") or {})
+        points_by_date[today] = int(total)
+        batch.set(
+            udoc.reference,
+            {"roster": roster, "totalPoints": total, "pointsByDate": points_by_date},
+            merge=True,
+        )
         leaderboard.append({
             "uid":         udoc.id,
             "displayName": u.get("displayName") or u.get("email"),

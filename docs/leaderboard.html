@@ -22,6 +22,74 @@
     text-align: center; padding: 48px 24px;
     color: var(--text-muted);
   }
+
+  /* --- chart card (modeled on the tennis Power Rankings site) --- */
+  .chart-card {
+    background: var(--bg-card);
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .chart-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--bg-header);
+    margin-bottom: 4px;
+  }
+  .chart-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  svg.chart {
+    width: 100%;
+    height: 360px;
+    display: block;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin-top: 8px;
+    font-size: 11px;
+  }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .legend-swatch {
+    display: inline-block;
+    width: 11px; height: 11px;
+    border-radius: 2px;
+  }
+  .legend-swatch.dashed {
+    height: 3px;
+    background: transparent;
+    border-top: 2px dashed #1a1a1a;
+    width: 18px;
+  }
+  .chart-empty {
+    text-align: center;
+    padding: 80px 24px 64px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .chart-empty .big {
+    font-size: 16px;
+    color: var(--bg-header);
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+  @media (max-width: 600px) {
+    svg.chart { height: 260px; }
+  }
 </style>
 </head>
 <body>
@@ -49,6 +117,19 @@
   </section>
 
   <div id="lbView" style="display:none">
+    <div class="chart-card" id="chartCard" style="display:none">
+      <div class="chart-title">POINT TRAJECTORIES</div>
+      <div class="chart-sub" id="chartSub">Cumulative fantasy points by match day</div>
+      <div id="chartHost">
+        <svg class="chart" id="lbChart" style="display:none"></svg>
+        <div class="chart-empty" id="chartEmpty" style="display:none">
+          <div class="big">📊 Race begins June 11</div>
+          <div>Trajectories will draw as match-day points roll in.</div>
+        </div>
+      </div>
+      <div class="legend" id="lbLegend"></div>
+    </div>
+
     <table class="data">
       <thead>
         <tr>
@@ -72,6 +153,15 @@
 
   const REFRESH_MS = 30_000;
 
+  // Palette mirrors the tennis Power Rankings — distinct, color-blind-friendly,
+  // keeps the FWC teal + pink at the top of the rotation.
+  const PALETTE = [
+    '#1a6b8a', '#ff6eb4', '#16a34a', '#ea580c', '#4f46e5',
+    '#0891b2', '#ca8a04', '#be185d', '#7c3aed', '#059669',
+    '#dc2626', '#0284c7', '#a16207', '#9333ea', '#15803d',
+  ];
+  const LEADER_COLOR = '#1a1a1a';
+
   const userLine    = document.getElementById('userLine');
   const signinCard  = document.getElementById('signinCard');
   const lbView      = document.getElementById('lbView');
@@ -80,6 +170,10 @@
   const signInBtn   = document.getElementById('signInBtn');
   const lbBody      = document.getElementById('lbBody');
   const lastUpdated = document.getElementById('lastUpdated');
+  const chartCard   = document.getElementById('chartCard');
+  const chartSvg    = document.getElementById('lbChart');
+  const chartEmpty  = document.getElementById('chartEmpty');
+  const chartLegend = document.getElementById('lbLegend');
 
   await new Promise(r => requestAnimationFrame(r));
   signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
@@ -121,29 +215,8 @@
       const rows = [];
       snap.forEach(doc => rows.push({ uid: doc.id, ...doc.data() }));
 
-      if (!rows.length) {
-        lbBody.innerHTML = `<tr><td colspan="5" class="empty-state">
-          No players yet. Be the first to <a href="./draft.html">draft a roster</a>.
-        </td></tr>`;
-        return;
-      }
-
-      lbBody.innerHTML = rows.map((u, i) => {
-        const rank = i + 1;
-        const isMe = currentUser && u.uid === currentUser.uid;
-        const picks = (u.roster || []).length;
-        const spent = u.totalSpent ?? 0;
-        const pts   = u.totalPoints ?? 0;
-        const name  = u.displayName || u.email || u.uid;
-        const podiumClass = rank <= 3 ? `podium-${rank}` : '';
-        return `<tr class="${isMe ? 'lb-row-me' : ''}">
-          <td class="rank-cell ${podiumClass}">${rank}</td>
-          <td>${escape(name)}${isMe ? ' <span class="accent-text" style="font-size:11px">(you)</span>' : ''}</td>
-          <td class="num">${picks}</td>
-          <td class="num">$${spent}</td>
-          <td class="num"><strong>${pts}</strong></td>
-        </tr>`;
-      }).join('');
+      renderTable(rows);
+      renderChart(rows);
 
       lastUpdated.textContent = `Updated ${new Date().toLocaleTimeString()}`;
     } catch (e) {
@@ -151,6 +224,154 @@
         Couldn't load leaderboard: ${escape(e.message)}
       </td></tr>`;
     }
+  }
+
+  function renderTable(rows) {
+    if (!rows.length) {
+      lbBody.innerHTML = `<tr><td colspan="5" class="empty-state">
+        No players yet. Be the first to <a href="./draft.html">draft a roster</a>.
+      </td></tr>`;
+      return;
+    }
+    lbBody.innerHTML = rows.map((u, i) => {
+      const rank = i + 1;
+      const isMe = currentUser && u.uid === currentUser.uid;
+      const picks = (u.roster || []).length;
+      const spent = u.totalSpent ?? 0;
+      const pts   = u.totalPoints ?? 0;
+      const name  = u.displayName || u.email || u.uid;
+      const podiumClass = rank <= 3 ? `podium-${rank}` : '';
+      return `<tr class="${isMe ? 'lb-row-me' : ''}">
+        <td class="rank-cell ${podiumClass}">${rank}</td>
+        <td>${escape(name)}${isMe ? ' <span class="accent-text" style="font-size:11px">(you)</span>' : ''}</td>
+        <td class="num">${picks}</td>
+        <td class="num">$${spent}</td>
+        <td class="num"><strong>${pts}</strong></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderChart(rows) {
+    if (!rows.length) {
+      chartCard.style.display = 'none';
+      return;
+    }
+    chartCard.style.display = 'block';
+
+    // Aggregate every (uid, date, cumulativePoints) sample we have.
+    // pointsByDate is written by ingest_results.py as { 'YYYY-MM-DD': total }.
+    const allDates = new Set();
+    const usersWithHistory = [];
+    for (const u of rows) {
+      const hist = u.pointsByDate || {};
+      const keys = Object.keys(hist).sort();
+      if (keys.length) {
+        usersWithHistory.push({ u, hist, keys });
+        keys.forEach(d => allDates.add(d));
+      }
+    }
+
+    if (!allDates.size) {
+      // Pre-kickoff: no data yet
+      chartSvg.style.display = 'none';
+      chartEmpty.style.display = 'block';
+      chartLegend.innerHTML = '';
+      return;
+    }
+    chartSvg.style.display = 'block';
+    chartEmpty.style.display = 'none';
+
+    const dates = [...allDates].sort();
+    const W = chartSvg.parentElement.clientWidth - 32;
+    const H = chartSvg.clientHeight || 360;
+    const padL = 40, padR = 80, padT = 12, padB = 30;
+
+    // Y range: max points across all users at any time
+    let yMax = 1;
+    for (const { hist } of usersWithHistory) {
+      for (const v of Object.values(hist)) yMax = Math.max(yMax, v);
+    }
+    yMax = Math.max(5, Math.ceil((yMax + 1) / 5) * 5);
+
+    const dateIdx = Object.fromEntries(dates.map((d, i) => [d, i]));
+    const px = i => padL + (i / Math.max(1, dates.length - 1)) * (W - padL - padR);
+    const py = v => padT + (1 - v / yMax) * (H - padT - padB);
+
+    // Y gridlines + labels
+    let grid = '', ylab = '';
+    const yStep = yMax <= 25 ? 5 : yMax <= 100 ? 10 : 25;
+    for (let v = 0; v <= yMax; v += yStep) {
+      const y = py(v);
+      grid += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="#eee" stroke-width="1"/>`;
+      ylab += `<text x="${padL - 4}" y="${(y + 3).toFixed(1)}" font-size="10" fill="#999" text-anchor="end">${v}</text>`;
+    }
+
+    // X-axis date ticks — label up to ~6 dates evenly
+    let xtick = '', xlab = '';
+    const tickStride = Math.max(1, Math.ceil(dates.length / 6));
+    for (let i = 0; i < dates.length; i += tickStride) {
+      const x = px(i);
+      const d = dates[i];
+      const label = d.slice(5); // MM-DD
+      xtick += `<line x1="${x.toFixed(1)}" y1="${H - padB}" x2="${x.toFixed(1)}" y2="${H - padB + 4}" stroke="#bbb" stroke-width="1"/>`;
+      xlab += `<text x="${x.toFixed(1)}" y="${H - padB + 16}" font-size="10" fill="#999" text-anchor="middle">${label}</text>`;
+    }
+
+    // Compute leader at each date — for dashed leader line
+    const leaderPts = [];
+    for (const d of dates) {
+      let leaderV = 0;
+      for (const { hist } of usersWithHistory) {
+        const v = lastValueAtOrBefore(hist, d);
+        if (v > leaderV) leaderV = v;
+      }
+      leaderPts.push(`${px(dateIdx[d]).toFixed(1)},${py(leaderV).toFixed(1)}`);
+    }
+    const leaderLine = `<polyline points="${leaderPts.join(' ')}" fill="none" stroke="${LEADER_COLOR}" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.65"/>`;
+
+    // Per-user lines + endpoint dots + legend
+    let lines = '', endLabels = '', legendHTML = '';
+    usersWithHistory
+      .sort((a, b) => (b.u.totalPoints ?? 0) - (a.u.totalPoints ?? 0))
+      .forEach(({ u, hist }, idx) => {
+        const col = PALETTE[idx % PALETTE.length];
+        const pts = [];
+        let lastVal = 0, lastX = 0, lastY = 0;
+        for (const d of dates) {
+          const v = lastValueAtOrBefore(hist, d);
+          const x = px(dateIdx[d]), y = py(v);
+          pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+          lastVal = v; lastX = x; lastY = y;
+        }
+        const name = u.displayName || u.email || u.uid;
+        const isMe = currentUser && u.uid === currentUser.uid;
+        const strokeWidth = isMe ? 3 : 2;
+        lines += `<polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="${strokeWidth}" stroke-linejoin="round" opacity="0.92"/>`;
+        endLabels += `<circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="3.5" fill="${col}"/>`;
+        endLabels += `<text x="${(lastX + 6).toFixed(1)}" y="${(lastY + 3).toFixed(1)}" font-size="10" fill="${col}" font-weight="700">${lastVal}</text>`;
+        legendHTML += `<span class="legend-item" style="color:${col}">
+          <span class="legend-swatch" style="background:${col}"></span>${escape(name)} (${u.totalPoints ?? 0})
+        </span>`;
+      });
+
+    legendHTML += `<span class="legend-item" style="color:#555">
+      <span class="legend-swatch dashed"></span>Current leader
+    </span>`;
+
+    chartSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    chartSvg.innerHTML = grid + ylab + xtick + xlab + leaderLine + lines + endLabels;
+    chartLegend.innerHTML = legendHTML;
+  }
+
+  // pointsByDate may be sparse — for any target date d, take the most recent
+  // value at or before d (treating unrecorded days as "no change since last
+  // known total").
+  function lastValueAtOrBefore(hist, d) {
+    let best = 0;
+    for (const [k, v] of Object.entries(hist)) {
+      if (k <= d && v >= best) best = v;
+    }
+    return best;
   }
 
   function escape(s) {
