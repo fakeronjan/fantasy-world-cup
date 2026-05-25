@@ -430,17 +430,19 @@
   async function loadTransactionHistory(uid) {
     const historyList = document.getElementById('historyList');
     try {
-      const { collection, getDocs, query, where, orderBy } = await import(
+      const { collection, getDocs, query, where } = await import(
         "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
       );
+      // Avoid where+orderBy combo (would need a composite index). Volume
+      // per user is small (handful of txs), so just sort client-side.
       const q = query(
         collection(window.fwc.db, 'transactions'),
         where('uid', '==', uid),
-        orderBy('timestamp', 'desc'),
       );
       const snap = await getDocs(q);
       const txs = [];
       snap.forEach(d => txs.push({ id: d.id, ...d.data() }));
+      txs.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
       if (!txs.length) {
         historyList.innerHTML = `<li class="muted" style="font-size:12px">No transactions yet — save a roster to see your first entry here.</li>`;
         return;
