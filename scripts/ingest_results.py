@@ -1,66 +1,66 @@
-"""Live update pipeline: pull match results, recompute scoring, refresh leaderboard.
+"""Live update pipeline — Deep Data edition.
 
-Runs idempotently — designed for a cron schedule (every 15 min during match
-windows). Each invocation:
+Runs idempotently on a cron (every 15 min during match windows). Each run:
 
-  1. Loads `config/global` (scoring weights, current round).
-  2. Fetches all WC matches from football-data.org and refreshes the
-     matches collection (score, status, etc.).
-  3. For each team, recomputes W/D/L/GF/GA from its finished matches,
-     then recomputes totalPoints using the locked scoring weights.
-  4. Recomputes each player's totalPoints (goals * weight + win share +
-     CS bonus). NOTE: player goal counts come from admin entry or the
-     v1.1 Wikipedia scraper — this script only RECOMPUTES totals from
-     whatever counts are already in the player docs.
-  5. For each user, recomputes totalPoints by summing their roster.
-  6. Writes a denormalized leaderboard/snapshot doc.
+  1. Loads `config/global` for scoring weights.
+  2. Pulls match-list summary from football-data.org `/v4/competitions/WC/matches`.
+  3. For each match that's newly FINISHED (or whose lastUpdated has advanced),
+     fetches detail via `/v4/matches/{id}` and persists:
+       - Score, status, winner
+       - Per-goal: scorerFdId, assistFdId, minute, type, team
+       - Effective lineup fdIds (starters ∪ subs-in) per team
+       - Clean-sheet flags per team
+  4. Recomputes team W/D/L + advancement bonus + totalPoints idempotently.
+  5. Recomputes player goals + assists + winsPlayedIn + cleanSheetsPlayedIn
+     idempotently by scanning all FINISHED matches' persisted data.
+  6. Recomputes user totals + writes leaderboard snapshot.
 
-Usage (same auth setup as seed_assets.py):
-  GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json \
-    ./venv/bin/python scripts/ingest_results.py
+Idempotent: re-running produces the same Firestore state (no double-counting).
+
+Usage (cron uses these env vars):
+  GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json
+  FOOTBALL_DATA_KEY=...
+  ./venv/bin/python scripts/ingest_results.py
 """
 from __future__ import annotations
 
-import math
 import sys
+import time
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _fwc_lib import fd_get, firestore_client, normalize_match
+from _fwc_lib import fd_get, firestore_client
 
 
 # ---------------------------------------------------------------------------
-# Step 1: pull match catalog updates
+# Constants
 # ---------------------------------------------------------------------------
 
-def sync_matches(db) -> list[dict]:
-    """Pull match catalog, write any updates, and return the normalized list."""
-    payload = fd_get("/competitions/WC/matches")
-    matches = payload.get("matches") or []
-    print(f"  fetched {len(matches)} matches from football-data.org")
+ADVANCEMENT_ORDER = ["group", "R32", "R16", "QF", "SF", "F", "W"]
 
-    normalized = [normalize_match(m) for m in matches]
-    batch = db.batch()
-    n = 0
-    for nm in normalized:
-        ref = db.collection("matches").document(str(nm["fdId"]))
-        batch.set(ref, nm, merge=True)
-        n += 1
-        if n % 400 == 0:
-            batch.commit()
-            batch = db.batch()
-    batch.commit()
-    return normalized
+_STAGE_MAP = {
+    "GROUP_STAGE": "group",
+    "LAST_32":     "R32",
+    "LAST_16":     "R16",
+    "ROUND_OF_16": "R16",
+    "QUARTER_FINALS": "QF",
+    "SEMI_FINALS":   "SF",
+    "THIRD_PLACE":   "third",
+    "FINAL":         "F",
+}
 
 
 # ---------------------------------------------------------------------------
-# Step 2: recompute team records + points
+# Step 1: sync match catalog + fetch detail for newly-finished matches
 # ---------------------------------------------------------------------------
 
-# Map football-data team id -> our team doc id slug.
-# Built once from teams collection metadata.
-def _team_id_index(db) -> dict[int, str]:
+def _our_round(stage: str) -> str:
+    return _STAGE_MAP.get(stage or "", stage or "group")
+
+
+def _index_teams_by_fdid(db):
     out = {}
     for doc in db.collection("teams").stream():
         d = doc.to_dict() or {}
@@ -69,12 +69,184 @@ def _team_id_index(db) -> dict[int, str]:
     return out
 
 
-def recompute_teams(db, matches: list[dict], weights: dict) -> dict[str, dict]:
-    """For each team, walk its FINISHED matches and recompute W/D/L/GF/GA/CS
-    and totalPoints. Returns {team_doc_id: stats dict} for downstream use."""
-    fd_to_slug = _team_id_index(db)
+def _index_players_by_fdid(db):
+    out = {}
+    for doc in db.collection("players").stream():
+        d = doc.to_dict() or {}
+        if d.get("fdId") is not None:
+            out[int(d["fdId"])] = doc.id
+    return out
 
-    # Aggregate stats per team
+
+def _effective_lineup(team_data: dict, substitutions: list, team_fd_id: int) -> list[int]:
+    """All fdIds who played for this team — starters ∪ subs in."""
+    ids = []
+    seen = set()
+    for p in team_data.get("lineup") or []:
+        pid = p.get("id")
+        if pid and pid not in seen:
+            ids.append(int(pid)); seen.add(pid)
+    for sub in substitutions or []:
+        if (sub.get("team") or {}).get("id") == team_fd_id:
+            pin = sub.get("playerIn") or {}
+            pid = pin.get("id")
+            if pid and pid not in seen:
+                ids.append(int(pid)); seen.add(pid)
+    return ids
+
+
+def _normalize_match_summary(m: dict, team_fd_to_slug: dict) -> dict:
+    """Shape returned by competition-list endpoint (no goals/lineups)."""
+    score = m.get("score", {}) or {}
+    full  = score.get("fullTime", {}) or {}
+    stage = m.get("stage") or "GROUP_STAGE"
+    h_fd  = (m.get("homeTeam") or {}).get("id")
+    a_fd  = (m.get("awayTeam") or {}).get("id")
+    return {
+        "fdId":          int(m["id"]),
+        "round":         _our_round(stage),
+        "stage":         stage,
+        "group":         m.get("group"),
+        "team1Id":       team_fd_to_slug.get(h_fd),
+        "team2Id":       team_fd_to_slug.get(a_fd),
+        "team1Name":     (m.get("homeTeam") or {}).get("name"),
+        "team2Name":     (m.get("awayTeam") or {}).get("name"),
+        "team1FdId":     h_fd,
+        "team2FdId":     a_fd,
+        "score1":        full.get("home"),
+        "score2":        full.get("away"),
+        "winner":        score.get("winner"),
+        "status":        m.get("status"),
+        "kickoff":       m.get("utcDate"),
+        "lastUpdated":   m.get("lastUpdated"),
+    }
+
+
+def _enrich_with_detail(detail: dict, summary: dict) -> dict:
+    """Take a /v4/matches/{id} response and produce the rich Firestore shape."""
+    goals_raw = detail.get("goals") or []
+    home_team = detail.get("homeTeam") or {}
+    away_team = detail.get("awayTeam") or {}
+    subs      = detail.get("substitutions") or []
+
+    home_fd = (home_team.get("id"))
+    away_fd = (away_team.get("id"))
+
+    goals = []
+    for g in goals_raw:
+        team_obj = g.get("team") or {}
+        side = "home" if team_obj.get("id") == home_fd else "away"
+        scorer = g.get("scorer") or {}
+        assist = g.get("assist") or {}
+        goals.append({
+            "minute":      g.get("minute"),
+            "injuryTime":  g.get("injuryTime"),
+            "type":        g.get("type"),
+            "side":        side,
+            "scorerFdId":  scorer.get("id"),
+            "scorerName":  scorer.get("name"),
+            "assistFdId":  assist.get("id") if assist else None,
+            "assistName":  assist.get("name") if assist else None,
+        })
+
+    bookings = []
+    for b in detail.get("bookings") or []:
+        player = b.get("player") or {}
+        team   = b.get("team") or {}
+        bookings.append({
+            "minute":     b.get("minute"),
+            "playerFdId": player.get("id"),
+            "playerName": player.get("name"),
+            "teamFdId":   team.get("id"),
+            "card":       b.get("card"),
+        })
+
+    home_lineup = _effective_lineup(home_team, subs, home_fd)
+    away_lineup = _effective_lineup(away_team, subs, away_fd)
+
+    score = detail.get("score", {}) or {}
+    full  = score.get("fullTime", {}) or {}
+    s1 = full.get("home") if full.get("home") is not None else summary.get("score1")
+    s2 = full.get("away") if full.get("away") is not None else summary.get("score2")
+
+    return {
+        **summary,
+        "goals":             goals,
+        "bookings":          bookings,
+        "homeLineupFdIds":   home_lineup,
+        "awayLineupFdIds":   away_lineup,
+        "cleanSheetHome":    (s2 == 0) if s2 is not None else False,
+        "cleanSheetAway":    (s1 == 0) if s1 is not None else False,
+        "detailIngestedAt":  datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def sync_matches(db, team_fd_to_slug: dict) -> int:
+    """Sync match list + fetch details for FINISHED matches whose detail
+    we haven't ingested yet (or whose lastUpdated has changed).
+    Returns count of detail-fetches performed."""
+    payload = fd_get("/competitions/WC/matches")
+    matches_raw = payload.get("matches") or []
+    print(f"  fetched {len(matches_raw)} matches from football-data.org")
+
+    detail_fetches = 0
+    batch = db.batch()
+    n = 0
+
+    for m_raw in matches_raw:
+        summary = _normalize_match_summary(m_raw, team_fd_to_slug)
+        doc_id = str(summary["fdId"])
+        ref = db.collection("matches").document(doc_id)
+
+        # Check if we need to fetch the detailed event data
+        existing_snap = ref.get()
+        existing = existing_snap.to_dict() if existing_snap.exists else {}
+        needs_detail = (
+            summary["status"] == "FINISHED"
+            and (
+                "goals" not in existing
+                or existing.get("lastUpdated") != summary["lastUpdated"]
+            )
+        )
+
+        if needs_detail:
+            try:
+                detail = fd_get(f"/matches/{summary['fdId']}")
+                enriched = _enrich_with_detail(detail, summary)
+                batch.set(ref, enriched, merge=True)
+                detail_fetches += 1
+                # Be polite to API — 30/min cap, sleep briefly between calls
+                time.sleep(2.5)
+            except Exception as e:
+                print(f"  ! detail fetch failed for {summary['fdId']}: {e}", file=sys.stderr)
+                batch.set(ref, summary, merge=True)
+        else:
+            batch.set(ref, summary, merge=True)
+
+        n += 1
+        if n % 400 == 0:
+            batch.commit()
+            batch = db.batch()
+
+    batch.commit()
+    print(f"  synced {n} matches; fetched detail for {detail_fetches} newly-finished")
+    return detail_fetches
+
+
+# ---------------------------------------------------------------------------
+# Step 2: recompute team stats
+# ---------------------------------------------------------------------------
+
+def recompute_teams(db, weights: dict) -> dict[str, dict]:
+    """Walk all FINISHED matches, recompute W/D/L/GF/GA/CS per team.
+    Determine deepest round reached. Compute totalPoints.
+    Returns {team_doc_id: stats} for downstream player computation."""
+    matches = []
+    for mdoc in db.collection("matches").stream():
+        m = mdoc.to_dict() or {}
+        if m.get("status") == "FINISHED" and m.get("score1") is not None:
+            matches.append(m)
+
     stats: dict[str, dict] = {}
     def _row(slug):
         if slug not in stats:
@@ -85,133 +257,152 @@ def recompute_teams(db, matches: list[dict], weights: dict) -> dict[str, dict]:
             )
         return stats[slug]
 
-    round_order = ["group", "R32", "R16", "QF", "SF", "third", "F", "W"]
-
     for m in matches:
-        if m["status"] != "FINISHED":
-            continue
-        if m["score1"] is None or m["score2"] is None:
-            continue
-        t1 = fd_to_slug.get(m["team1Id"])
-        t2 = fd_to_slug.get(m["team2Id"])
-        if not (t1 and t2):
-            continue
+        t1, t2 = m.get("team1Id"), m.get("team2Id")
+        if not (t1 and t2): continue
+        s1, s2 = m["score1"], m["score2"]
         r1 = _row(t1); r2 = _row(t2)
-        r1["goalsFor"] += m["score1"]; r1["goalsAgainst"] += m["score2"]
-        r2["goalsFor"] += m["score2"]; r2["goalsAgainst"] += m["score1"]
-
-        winner = m["winner"]
-        if winner == "HOME_TEAM":
-            r1["matchesWon"]   += 1; r2["matchesLost"]  += 1
-        elif winner == "AWAY_TEAM":
-            r2["matchesWon"]   += 1; r1["matchesLost"]  += 1
-        else:  # DRAW or PK shootout (FIFA convention: counts as draw)
+        r1["goalsFor"] += s1; r1["goalsAgainst"] += s2
+        r2["goalsFor"] += s2; r2["goalsAgainst"] += s1
+        w = m.get("winner")
+        if w == "HOME_TEAM":
+            r1["matchesWon"] += 1; r2["matchesLost"] += 1
+        elif w == "AWAY_TEAM":
+            r2["matchesWon"] += 1; r1["matchesLost"] += 1
+        else:
             r1["matchesDrawn"] += 1; r2["matchesDrawn"] += 1
-
-        if m["score2"] == 0: r1["cleanSheets"] += 1
-        if m["score1"] == 0: r2["cleanSheets"] += 1
-
-        # Track deepest round reached for advancement bonus calculation.
-        cur_r = m["round"]
-        # The team that "won" the match reached the round AT LEAST. If they
-        # advanced further, a later match will update them. For 3rd-place
-        # match, the WINNER reached SF and lost; bonus is SF.
+        if s2 == 0: r1["cleanSheets"] += 1
+        if s1 == 0: r2["cleanSheets"] += 1
+        # Track deepest round
+        cur_r = m.get("round", "group")
         for slug in (t1, t2):
-            row = stats[slug]
-            # Special case for 3rd-place match — both teams reached SF.
             r = "SF" if cur_r == "third" else cur_r
-            if round_order.index(r) > round_order.index(row["finalRound"]):
-                row["finalRound"] = r
-        # If this was the FINAL, the WINNER moves to "W".
-        if cur_r == "F" and winner in ("HOME_TEAM", "AWAY_TEAM"):
-            champ = t1 if winner == "HOME_TEAM" else t2
+            if r in ADVANCEMENT_ORDER:
+                if ADVANCEMENT_ORDER.index(r) > ADVANCEMENT_ORDER.index(stats[slug]["finalRound"]):
+                    stats[slug]["finalRound"] = r
+        if cur_r == "F" and w in ("HOME_TEAM", "AWAY_TEAM"):
+            champ = t1 if w == "HOME_TEAM" else t2
             stats[champ]["finalRound"] = "W"
 
-    # Compute points + write back to Firestore.
+    # Compute totalPoints + eliminated, write back
+    BONUSES = {
+        "R32": weights["bonus_r32"], "R16": weights["bonus_r16"],
+        "QF":  weights["bonus_qf"],  "SF":  weights["bonus_sf"],
+        "F":   weights["bonus_final"], "W":  weights["bonus_champion"],
+    }
     batch = db.batch()
     n = 0
+    fd_to_slug = _index_teams_by_fdid(db)
+    matches_by_team_pending = defaultdict(int)  # team_slug → count of non-FINISHED matches
+    for m in db.collection("matches").stream():
+        md = m.to_dict() or {}
+        if md.get("status") != "FINISHED":
+            for slug in (md.get("team1Id"), md.get("team2Id")):
+                if slug:
+                    matches_by_team_pending[slug] += 1
+
     for slug, row in stats.items():
-        pts = compute_team_points(row, weights)
-        row["totalPoints"] = pts
-        row["eliminated"] = (
-            row["finalRound"] not in ("group",)
-            and not _team_still_alive(slug, matches, fd_to_slug)
-        )
+        pts = weights["team_win"] * row["matchesWon"] + weights["team_draw"] * row["matchesDrawn"]
+        fr = row["finalRound"]
+        idx = ADVANCEMENT_ORDER.index(fr) if fr in ADVANCEMENT_ORDER else 0
+        for r in ADVANCEMENT_ORDER[1:idx + 1]:
+            pts += BONUSES.get(r, 0)
+        row["totalPoints"] = int(pts)
+        row["eliminated"] = (matches_by_team_pending.get(slug, 0) == 0) and fr != "W" and fr != "group"
         ref = db.collection("teams").document(slug)
         batch.set(ref, row, merge=True)
         n += 1
         if n % 400 == 0:
-            batch.commit()
-            batch = db.batch()
+            batch.commit(); batch = db.batch()
     batch.commit()
-    print(f"  updated {n} teams with current records + points")
+    print(f"  updated {n} teams")
     return stats
 
 
-def _team_still_alive(slug: str, matches: list[dict], fd_to_slug: dict[int, str]) -> bool:
-    """A team is alive if any non-FINISHED match has them in it."""
-    # Find their fdId
-    fd_id = None
-    for fid, s in fd_to_slug.items():
-        if s == slug: fd_id = fid; break
-    if fd_id is None: return True
-    for m in matches:
-        if m["status"] == "FINISHED": continue
-        if m["team1Id"] == fd_id or m["team2Id"] == fd_id:
-            return True
-    return False
-
-
-def compute_team_points(row: dict, w: dict) -> int:
-    pts  = w["team_win"]  * row["matchesWon"]
-    pts += w["team_draw"] * row["matchesDrawn"]
-    bonuses = {
-        "R32": w["bonus_r32"], "R16": w["bonus_r16"], "QF": w["bonus_qf"],
-        "SF": w["bonus_sf"], "F": w["bonus_final"], "W": w["bonus_champion"],
-    }
-    order = ["group", "R32", "R16", "QF", "SF", "F", "W"]
-    idx = order.index(row["finalRound"]) if row["finalRound"] in order else 0
-    for r in order[1:idx + 1]:
-        pts += bonuses.get(r, 0)
-    return int(pts)
-
-
 # ---------------------------------------------------------------------------
-# Step 3: recompute player points
+# Step 3: recompute player stats from per-match data (idempotent)
 # ---------------------------------------------------------------------------
 
-def recompute_players(db, team_stats: dict[str, dict], weights: dict) -> None:
-    """Recompute every player's totalPoints from their existing goal count
-    (admin-entered or scraped) + win share + CS bonus from their team."""
+def recompute_players(db, team_stats: dict, weights: dict) -> None:
+    """For every player, recompute totals from match data:
+       goals, assists, winsPlayedIn, cleanSheetsPlayedIn."""
+    players_by_fd = _index_players_by_fdid(db)
+    teams_fd_to_slug = _index_teams_by_fdid(db)
+
+    # Pre-load all FINISHED match docs into memory
+    finished_matches = []
+    for mdoc in db.collection("matches").stream():
+        m = mdoc.to_dict() or {}
+        if m.get("status") == "FINISHED":
+            finished_matches.append(m)
+
+    # Per-player accumulators
+    counts = defaultdict(lambda: {"goals": 0, "assists": 0, "wins_played": 0, "cs_played": 0})
+
+    for m in finished_matches:
+        winner_slug = (
+            m.get("team1Id") if m.get("winner") == "HOME_TEAM"
+            else m.get("team2Id") if m.get("winner") == "AWAY_TEAM"
+            else None
+        )
+        cs_home = m.get("cleanSheetHome", False)
+        cs_away = m.get("cleanSheetAway", False)
+        team1_slug = m.get("team1Id")
+        team2_slug = m.get("team2Id")
+
+        # Goals + assists
+        for g in m.get("goals", []):
+            scorer_fd = g.get("scorerFdId")
+            if scorer_fd and scorer_fd in players_by_fd:
+                counts[players_by_fd[scorer_fd]]["goals"] += 1
+            assist_fd = g.get("assistFdId")
+            if assist_fd and assist_fd in players_by_fd:
+                counts[players_by_fd[assist_fd]]["assists"] += 1
+
+        # Lineup-based win share + CS
+        for fd in m.get("homeLineupFdIds", []):
+            if fd in players_by_fd:
+                pid = players_by_fd[fd]
+                if winner_slug == team1_slug: counts[pid]["wins_played"] += 1
+                if cs_home: counts[pid]["cs_played"] += 1
+        for fd in m.get("awayLineupFdIds", []):
+            if fd in players_by_fd:
+                pid = players_by_fd[fd]
+                if winner_slug == team2_slug: counts[pid]["wins_played"] += 1
+                if cs_away: counts[pid]["cs_played"] += 1
+
+    # Write player updates
     batch = db.batch()
     n = 0
     for pdoc in db.collection("players").stream():
         p = pdoc.to_dict() or {}
-        team_slug = p.get("teamId")
-        stats = team_stats.get(team_slug) or {}
-        wins = stats.get("matchesWon", 0)
-        cs = stats.get("cleanSheets", 0)
-        goals = p.get("goals", 0) or 0
-        is_gk = (p.get("position") or "").lower().startswith("goalkeep")
+        s = counts.get(pdoc.id, {})
+        goals       = s.get("goals", 0)
+        assists     = s.get("assists", 0)
+        wins_played = s.get("wins_played", 0)
+        cs_played   = s.get("cs_played", 0)
+        is_gk = (p.get("position") or "").upper() == "GK"
         cs_rate = weights["player_clean_sheet_gk"] if is_gk else weights["player_clean_sheet_other"]
-        pts = (
-            weights["player_goal"] * goals
-            + weights["player_win_share"] * wins
-            + cs_rate * cs
+        total_pts = (
+            goals * weights["player_goal"]
+            + assists * weights["player_assist"]
+            + wins_played * weights["player_win_share"]
+            + cs_played * cs_rate
         )
-        eliminated = (stats.get("finalRound") in ("group",)) and not _team_still_alive(team_slug, [], {})
-        # We can't easily compute alive here without re-fetching matches; the
-        # team record's eliminated flag is the source of truth.
+        team_stats_row = team_stats.get(p.get("teamId"), {})
         batch.set(pdoc.reference, {
-            "totalPoints": int(pts),
-            "eliminated": stats.get("eliminated", False),
+            "goals":              goals,
+            "assists":            assists,
+            "winsPlayedIn":       wins_played,
+            "cleanSheetsPlayedIn": cs_played,
+            "totalPoints":        int(total_pts),
+            "eliminated":         team_stats_row.get("eliminated", False),
         }, merge=True)
         n += 1
         if n % 400 == 0:
-            batch.commit()
-            batch = db.batch()
+            batch.commit(); batch = db.batch()
     batch.commit()
-    print(f"  updated {n} players with current points")
+    print(f"  updated {n} players")
 
 
 # ---------------------------------------------------------------------------
@@ -219,10 +410,7 @@ def recompute_players(db, team_stats: dict[str, dict], weights: dict) -> None:
 # ---------------------------------------------------------------------------
 
 def recompute_users(db) -> list[dict]:
-    """Read each user's roster, sum the points from the catalog's current
-    state, write back totalPoints to the user doc."""
-    # Cache catalog so we don't re-read for each user.
-    teams_cache = {d.id: d.to_dict() or {} for d in db.collection("teams").stream()}
+    teams_cache   = {d.id: d.to_dict() or {} for d in db.collection("teams").stream()}
     players_cache = {d.id: d.to_dict() or {} for d in db.collection("players").stream()}
 
     leaderboard: list[dict] = []
@@ -234,26 +422,22 @@ def recompute_users(db) -> list[dict]:
         total = 0
         for pick in roster:
             kind = pick.get("kind")
-            asset_id = pick.get("assetId")
-            if kind == "team":
-                ast = teams_cache.get(asset_id) or {}
-            else:
-                ast = players_cache.get(asset_id) or {}
-            total += int(ast.get("totalPoints", 0))
-            # Stamp current points on the pick for the roster UI to render.
-            pick["points"] = int(ast.get("totalPoints", 0))
+            ast_id = pick.get("assetId")
+            ast = (teams_cache if kind == "team" else players_cache).get(ast_id) or {}
+            pts = int(ast.get("totalPoints", 0))
+            total += pts
+            pick["points"] = pts
             pick["eliminated"] = bool(ast.get("eliminated", False))
         batch.set(udoc.reference, {"roster": roster, "totalPoints": total}, merge=True)
         leaderboard.append({
-            "uid": udoc.id,
+            "uid":         udoc.id,
             "displayName": u.get("displayName") or u.get("email"),
             "totalPoints": total,
-            "picks": len(roster),
+            "picks":       len(roster),
         })
         n += 1
         if n % 400 == 0:
-            batch.commit()
-            batch = db.batch()
+            batch.commit(); batch = db.batch()
     batch.commit()
     print(f"  updated {n} users")
     return leaderboard
@@ -265,7 +449,7 @@ def write_leaderboard_snapshot(db, entries: list[dict]) -> None:
         e["rank"] = i
     db.collection("leaderboard").document("snapshot").set({
         "updatedAt": datetime.now(timezone.utc).isoformat(),
-        "entries": entries,
+        "entries":   entries,
     })
     print(f"  leaderboard snapshot written ({len(entries)} entries)")
 
@@ -284,13 +468,14 @@ def main() -> None:
     cfg = cfg_doc.to_dict()
     weights = cfg["scoringWeights"]
 
-    print("Step 1: sync matches from football-data.org…")
-    matches = sync_matches(db)
+    print("Step 1: sync match catalog + fetch details for finished matches…")
+    team_fd_to_slug = _index_teams_by_fdid(db)
+    sync_matches(db, team_fd_to_slug)
 
     print("Step 2: recompute team records + points…")
-    team_stats = recompute_teams(db, matches, weights)
+    team_stats = recompute_teams(db, weights)
 
-    print("Step 3: recompute player points (from existing goal counts)…")
+    print("Step 3: recompute player goals/assists/wins/CS from match data…")
     recompute_players(db, team_stats, weights)
 
     print("Step 4: recompute user totals + leaderboard snapshot…")
@@ -298,9 +483,6 @@ def main() -> None:
     write_leaderboard_snapshot(db, leaderboard)
 
     print("\nDone. Live state refreshed.")
-    print("NOTE: player goal counts are NOT automatically scraped yet. Use")
-    print("admin.html (coming in v1.1) to enter goalscorers per match, or")
-    print("write directly to players/{id}.goals in Firestore.")
 
 
 if __name__ == "__main__":

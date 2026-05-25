@@ -185,14 +185,13 @@
       <pre class="json" id="configDump">loading…</pre>
     </section>
 
-    <!-- Goalscorer entry per finished match -->
+    <!-- Recent ingested matches (read-only) -->
     <section class="card" style="margin-top:16px">
-      <h2>Goalscorer entry <span class="pill-status ok" id="goalsStatus">live</span></h2>
+      <h2>Recent ingested matches <span class="pill-status ok" id="goalsStatus">auto</span></h2>
       <p class="muted" style="font-size:13px; margin-bottom:12px">
-        Match scores come from the football-data.org API automatically. Per-goal scorers
-        don't — enter them here after each match. Submitting updates each player's goal
-        count + flags the match as processed. The next ingest run will recompute
-        leaderboard points.
+        Match results + goalscorers + assists are pulled automatically from
+        football-data.org Deep Data after each match completes. The cron runs
+        every 15 minutes during match windows. No manual entry needed.
       </p>
       <ul class="match-list" id="matchList">
         <li class="muted" style="list-style:none">Loading…</li>
@@ -348,51 +347,21 @@
     patchConfig({ currentRound: r });
   });
 
-  // ---- goalscorer entry --------------------------------------------------
+  // ---- recent ingested matches (read-only) ------------------------------
 
-  // Cache players in memory once, then filter by teamId per match form.
-  let playersByTeam = null;   // { teamId: [{id, name, position}, ...] }
-  let teamsCache    = null;   // { fdId: { id, name } }
   const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
   const flagImg = (fdId) => fdId ? `<img class="flag-sm" src="${flagUrl(fdId)}" alt="" onerror="this.style.display='none'">` : '';
 
   async function loadGoalEntryData() {
-    const { collection, getDocs, query, orderBy, where } = await import(
+    const { collection, getDocs, query, where } = await import(
       "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
     );
-
-    // Load players grouped by team
-    if (!playersByTeam) {
-      playersByTeam = {};
-      const psnap = await getDocs(collection(window.fwc.db, 'players'));
-      psnap.forEach(d => {
-        const p = d.data();
-        if (!playersByTeam[p.teamId]) playersByTeam[p.teamId] = [];
-        playersByTeam[p.teamId].push({
-          id: d.id, name: p.name, position: p.position, goals: p.goals || 0,
-        });
-      });
-      for (const tid in playersByTeam) {
-        playersByTeam[tid].sort((a, b) => a.name.localeCompare(b.name));
-      }
-    }
-
-    if (!teamsCache) {
-      teamsCache = {};
-      const tsnap = await getDocs(collection(window.fwc.db, 'teams'));
-      tsnap.forEach(d => {
-        const t = d.data();
-        if (t.fdId != null) teamsCache[t.fdId] = { id: d.id, name: t.name };
-      });
-    }
-
-    // Load finished matches
     const msnap = await getDocs(
       query(collection(window.fwc.db, 'matches'), where('status', '==', 'FINISHED'))
     );
     const matches = [];
     msnap.forEach(d => matches.push({ docId: d.id, ...d.data() }));
-    matches.sort((a, b) => (a.kickoff || '').localeCompare(b.kickoff || ''));
+    matches.sort((a, b) => (b.kickoff || '').localeCompare(a.kickoff || '')); // newest first
     renderMatchList(matches);
   }
 
@@ -400,152 +369,56 @@
     const matchList = document.getElementById('matchList');
     if (!matches.length) {
       matchList.innerHTML = `<li class="muted" style="list-style:none">
-        No FINISHED matches yet. Once matches end, they'll show here for scorer entry.
+        No FINISHED matches yet. Once matches end and the cron processes them,
+        they'll appear here with full event data.
       </li>`;
       document.getElementById('goalsStatus').textContent = 'idle';
       document.getElementById('goalsStatus').className = 'pill-status idle';
       return;
     }
     matchList.innerHTML = matches.map(m => renderMatchRow(m)).join('');
-    matchList.querySelectorAll('[data-toggle]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.toggle;
-        const form = document.getElementById('mform-' + id);
-        form.classList.toggle('open');
-        btn.textContent = form.classList.contains('open') ? 'Cancel' : (
-          btn.dataset.entered === 'true' ? 'Re-enter scorers' : 'Enter scorers'
-        );
-      });
-    });
-    matchList.querySelectorAll('[data-add-scorer]').forEach(btn => {
-      btn.addEventListener('click', () => addScorerRow(btn));
-    });
-    matchList.querySelectorAll('[data-save-match]').forEach(btn => {
-      btn.addEventListener('click', () => saveMatchScorers(btn.dataset.saveMatch));
-    });
   }
 
   function renderMatchRow(m) {
-    const home = (m.team1Name || '?');
-    const away = (m.team2Name || '?');
+    const home = m.team1Name || '?';
+    const away = m.team2Name || '?';
     const score = `${m.score1 ?? '?'}–${m.score2 ?? '?'}`;
-    const entered = m.scorersEntered === true;
-    const t1Slug = teamsCache[m.team1Id]?.id;
-    const t2Slug = teamsCache[m.team2Id]?.id;
-    const t1Players = playersByTeam[t1Slug] || [];
-    const t2Players = playersByTeam[t2Slug] || [];
+    const goals = m.goals || [];
+    const ingested = (goals.length > 0) || Boolean(m.detailIngestedAt);
+
+    let goalsHtml = '';
+    if (goals.length) {
+      const homeGoals = goals.filter(g => g.side === 'home');
+      const awayGoals = goals.filter(g => g.side === 'away');
+      goalsHtml = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px; font-size:12px">
+          <div>
+            ${homeGoals.map(g => `
+              <div>${escape(g.scorerName || '?')} ${g.minute || ''}'${g.type && g.type !== 'REGULAR' ? ' (' + g.type.toLowerCase() + ')' : ''}
+              ${g.assistName ? `<span class="muted">— assist: ${escape(g.assistName)}</span>` : ''}</div>
+            `).join('') || '<span class="muted">no goals</span>'}
+          </div>
+          <div>
+            ${awayGoals.map(g => `
+              <div>${escape(g.scorerName || '?')} ${g.minute || ''}'${g.type && g.type !== 'REGULAR' ? ' (' + g.type.toLowerCase() + ')' : ''}
+              ${g.assistName ? `<span class="muted">— assist: ${escape(g.assistName)}</span>` : ''}</div>
+            `).join('') || '<span class="muted">no goals</span>'}
+          </div>
+        </div>
+      `;
+    } else if (m.status === 'FINISHED') {
+      goalsHtml = `<div class="muted" style="font-size:12px; margin-top:4px">Pending ingest…</div>`;
+    }
 
     return `<li class="match-row">
       <div class="match-summary">
         <span class="round-tag">${escape(m.round || '?')}</span>
-        <span class="teams">${flagImg(m.team1Id)}<strong>${escape(home)}</strong> vs ${flagImg(m.team2Id)}<strong>${escape(away)}</strong></span>
+        <span class="teams">${flagImg(m.team1FdId)}<strong>${escape(home)}</strong> vs ${flagImg(m.team2FdId)}<strong>${escape(away)}</strong></span>
         <span class="score">${score}</span>
-        ${entered ? '<span class="processed-tag">scorers in</span>' : ''}
-        <button data-toggle="${m.docId}" data-entered="${entered}">
-          ${entered ? 'Re-enter scorers' : 'Enter scorers'}
-        </button>
+        ${ingested ? '<span class="processed-tag">ingested</span>' : '<span class="muted">awaiting ingest</span>'}
       </div>
-      <div class="match-entry-form" id="mform-${m.docId}">
-        <div class="scorer-grid">
-          ${scorerColumn(m.docId, 'home', home, m.score1, t1Slug, t1Players, m.scorers || [])}
-          ${scorerColumn(m.docId, 'away', away, m.score2, t2Slug, t2Players, m.scorers || [])}
-        </div>
-        <div class="form-actions">
-          <button class="add-scorer" data-add-scorer="home" data-match="${m.docId}" data-team="${t1Slug}">+ ${escape(home)} scorer</button>
-          <button class="add-scorer" data-add-scorer="away" data-match="${m.docId}" data-team="${t2Slug}">+ ${escape(away)} scorer</button>
-          <span style="flex:1"></span>
-          <button class="btn btn-accent" data-save-match="${m.docId}">Save</button>
-        </div>
-      </div>
+      ${goalsHtml}
     </li>`;
-  }
-
-  function scorerColumn(matchId, side, teamName, score, teamSlug, players, savedScorers) {
-    const existing = (savedScorers || []).filter(s => s.side === side);
-    const optsFor = (selectedId) => players.map(p =>
-      `<option value="${escape(p.id)}"${p.id === selectedId ? ' selected' : ''}>${escape(p.name)} (${escape(p.position || '?')})</option>`
-    ).join('');
-    const rows = existing.map(s => `
-      <div class="scorer-row" data-side="${side}">
-        <select data-player>${optsFor(s.playerId)}</select>
-        <input type="number" min="1" value="${s.count || 1}" data-count>
-        <button data-remove="x">×</button>
-      </div>
-    `).join('');
-    return `<div class="scorer-col" data-side="${side}">
-      <h3>${escape(teamName)} <span class="muted">(score: ${score ?? '?'})</span></h3>
-      <div class="scorer-rows" id="rows-${matchId}-${side}">${rows}</div>
-      <div class="goal-count" id="count-${matchId}-${side}"></div>
-    </div>`;
-  }
-
-  function addScorerRow(btn) {
-    const side = btn.dataset.addScorer;
-    const matchId = btn.dataset.match;
-    const teamSlug = btn.dataset.team;
-    const players = (playersByTeam[teamSlug] || []);
-    const optsHtml = players.map(p =>
-      `<option value="${escape(p.id)}">${escape(p.name)} (${escape(p.position || '?')})</option>`
-    ).join('');
-    const container = document.getElementById(`rows-${matchId}-${side}`);
-    const row = document.createElement('div');
-    row.className = 'scorer-row';
-    row.dataset.side = side;
-    row.innerHTML = `
-      <select data-player>${optsHtml}</select>
-      <input type="number" min="1" value="1" data-count>
-      <button data-remove="x">×</button>
-    `;
-    container.appendChild(row);
-    row.querySelector('[data-remove]').addEventListener('click', () => row.remove());
-  }
-
-  async function saveMatchScorers(matchId) {
-    const homeRows = document.querySelectorAll(`#rows-${matchId}-home .scorer-row`);
-    const awayRows = document.querySelectorAll(`#rows-${matchId}-away .scorer-row`);
-    const scorers = [];
-    homeRows.forEach(r => scorers.push({
-      side: 'home',
-      playerId: r.querySelector('[data-player]').value,
-      count: parseInt(r.querySelector('[data-count]').value, 10) || 1,
-    }));
-    awayRows.forEach(r => scorers.push({
-      side: 'away',
-      playerId: r.querySelector('[data-player]').value,
-      count: parseInt(r.querySelector('[data-count]').value, 10) || 1,
-    }));
-
-    if (!confirm(`Save ${scorers.length} scorer entries for this match?\n\n` +
-                 `This will increment each player's .goals count in Firestore. ` +
-                 `If you re-enter for a match that was already saved, goals will double-count — ` +
-                 `consider whether you need to first decrement the previous entries.`)) {
-      return;
-    }
-
-    try {
-      const { writeBatch, doc, increment } = await import(
-        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
-      );
-      const batch = writeBatch(window.fwc.db);
-      // Increment each scorer's goals
-      for (const s of scorers) {
-        batch.update(doc(window.fwc.db, 'players', s.playerId), {
-          goals: increment(s.count),
-        });
-      }
-      // Mark match as processed and save the scorers list
-      batch.update(doc(window.fwc.db, 'matches', matchId), {
-        scorersEntered: true,
-        scorers,
-        scorersEnteredAt: new Date().toISOString(),
-      });
-      await batch.commit();
-      showToast('Scorers saved. Run ingest_results.py (or wait for cron) to refresh leaderboard.', false);
-      await loadGoalEntryData();
-    } catch (e) {
-      console.error(e);
-      showToast(`Save failed: ${e.message}`, true);
-    }
   }
 
   function showToast(msg, isWarn) {
