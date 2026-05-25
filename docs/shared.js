@@ -29,15 +29,16 @@ import {
   setDoc,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-// ⚠️  PASTE YOUR FIREBASE CONFIG HERE.
-//     You'll get this from the Firebase console after creating a web app.
+// Firebase web config. These values are intentionally PUBLIC — security
+// comes from Firestore rules + Auth provider restrictions, NOT from
+// keeping these secret. Safe to commit.
 const FIREBASE_CONFIG = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME.firebaseapp.com",
-  projectId: "REPLACE_ME",
-  storageBucket: "REPLACE_ME.appspot.com",
-  messagingSenderId: "REPLACE_ME",
-  appId: "REPLACE_ME",
+  apiKey: "AIzaSyC5MojM3xkLTeeFjy8yhBKm6In7Zvq6Udk",
+  authDomain: "fantasy-world-cup-2026.firebaseapp.com",
+  projectId: "fantasy-world-cup-2026",
+  storageBucket: "fantasy-world-cup-2026.firebasestorage.app",
+  messagingSenderId: "155847257242",
+  appId: "1:155847257242:web:a674e2aa741e9705c74323",
 };
 
 // Admin uid(s) — these accounts can write to teams, players, matches, config.
