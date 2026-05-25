@@ -379,11 +379,12 @@ def formula_price(team_rank: int, total_teams: int,
     """Continuous pricing formula. Returns an integer in [1, FORMULA_CAP].
     Top hand-priced names ($17+) sit above this cap so the formula never
     crowds out the marquee tier."""
-    FORMULA_CAP = 14   # any formula-derived price is capped here; hand
-                       # overrides sit above to anchor top of the scale
-    BASE = 26.0        # raised from 18 after 2026-05-25 ROI analysis
-                       # showed mid/low-tier players were systematically
-                       # under-priced (2.10 / 3.23 pts/$ vs ~1.5 target)
+    FORMULA_CAP = 17   # raised from 14 to spread out the formerly-clumped
+                       # "top of top team" players. Still below the marquee
+                       # hand-priced tier ($17 Son/Ronaldo, $18+ Yamal/Foden).
+    BASE = 22.0        # softened from 26 to reduce how many players hit
+                       # the cap. Combined with cap=17, this gives more
+                       # price differentiation without losing the mid lift.
     team_factor = max(0.04, (1 - (team_rank - 1) / max(1, total_teams - 1)) ** 1.3)
     within_factor = max(0.05, (1 - (within_rank - 1) / max(1, squad_size)) ** 1.5)
     base = BASE * team_factor * within_factor * _POS_MULT.get(position, 1.0)
