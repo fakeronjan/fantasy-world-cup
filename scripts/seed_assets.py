@@ -43,11 +43,12 @@ INITIAL_CONFIG = {
         "player_assist": 3,                # restored after Deep Data tier unlocked assist data
         "player_win_share": 1,             # +1 per match the player PLAYED IN that team won (lineup-based)
         "player_clean_sheet_gk": 5,        # +5 to GK who played in a clean-sheet match
-        "player_clean_sheet_other": 1,     # +1 to non-GK who played in a clean-sheet match
+        "player_clean_sheet_def": 2,       # +2 to defenders who played in a CS match
+        "player_clean_sheet_other": 0,     # 0 — MID/FWD/Unknown don't earn CS (FPL-style)
     },
     "kickoffTimestamp": None,         # set to the WC 2026 kickoff datetime (Firestore Timestamp)
-    "budget": 100,
-    "rosterCap": 20,
+    "budget": 60,
+    "rosterCap": 12,
     "playerMinPrice": 2,
 }
 

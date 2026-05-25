@@ -316,55 +316,53 @@ TIER_PRICE = {1: 10, 2: 7, 3: 5, 4: 3, 5: 2}  # legacy buckets — kept only for
 # goes through a formula that combines (team strength rank, within-team
 # rank, position).
 PLAYER_PRICE_OVERRIDES = {
-    # Top tier — anchored to top team ($30). Mbappé as ceiling (89% of top team).
-    "Kylian Mbappé":      25,
-    "Lionel Messi":       22,
-    "Erling Haaland":     22,
-    "Jude Bellingham":    20,
-    "Vinícius Júnior":    20,
-    "Vinicius Junior":    20,
-    "Lamine Yamal":       18,
-    "Phil Foden":         18,
-    "Heung-Min Son":      17,
-    "Heung-min Son":      17,
-    "Cristiano Ronaldo":  17,
-    # Mid-upper — lifted to balance ROI (was 13-15 before lift)
-    "Harry Kane":         16,
-    "Bukayo Saka":        15,
-    "Luka Modrić":        15,
-    "Kevin De Bruyne":    14,
-    "Pedri":              14,
-    # Mid — lifted ~40% per ROI analysis
-    "Julián Álvarez":     14,
-    "Enzo Fernández":     13,
-    "Romelu Lukaku":      14,
-    "Emiliano Martínez":  13,
-    "Bruno Fernandes":    13,
-    "Bernardo Silva":     13,
-    "Rodri":              13,
-    "Achraf Hakimi":      13,
-    "Manuel Neuer":       13,
-    "Alisson Becker":     13,
-    "Casemiro":           12,
-    "Alexis Mac Allister":12,
-    "Marquinhos":         12,
-    "Virgil van Dijk":    12,
-    "Antonio Rüdiger":    12,
-    "Joshua Kimmich":     12,
-    "Luis Díaz":          12,
-    "Thibaut Courtois":   11,
-    "Federico Valverde":  11,
-    "Darwin Núñez":       11,
-    # Solid starters — lifted ~40%
-    "Jordan Pickford":    10,
-    "Dani Olmo":          10,
-    "Vitinha":            10,
-    "Mateo Kovačić":      10,
-    "Dani Carvajal":      10,
-    "Yassine Bounou":     10,
-    "Édouard Mendy":      10,
-    "Edouard Mendy":      10,
-    "Diogo Costa":        10,
+    # Rebalanced again 2026-05-25 — scaled 0.85× after DEF-only CS rule
+    # widened teams-vs-players gap. Compresses further to $3-$9 range.
+    "Kylian Mbappé":       9,
+    "Lionel Messi":        8,
+    "Erling Haaland":      8,
+    "Jude Bellingham":     7,
+    "Vinícius Júnior":     7,
+    "Vinicius Junior":     7,
+    "Lamine Yamal":        6,
+    "Phil Foden":          6,
+    "Heung-Min Son":       6,
+    "Heung-min Son":       6,
+    "Cristiano Ronaldo":   6,
+    "Harry Kane":          5,
+    "Bukayo Saka":         5,
+    "Luka Modrić":         5,
+    "Kevin De Bruyne":     5,
+    "Pedri":               5,
+    "Julián Álvarez":      5,
+    "Enzo Fernández":      5,
+    "Romelu Lukaku":       5,
+    "Emiliano Martínez":   5,
+    "Bruno Fernandes":     5,
+    "Bernardo Silva":      5,
+    "Rodri":               5,
+    "Achraf Hakimi":       5,
+    "Manuel Neuer":        5,
+    "Alisson Becker":      5,
+    "Casemiro":            4,
+    "Alexis Mac Allister": 4,
+    "Marquinhos":          4,
+    "Virgil van Dijk":     4,
+    "Antonio Rüdiger":     4,
+    "Joshua Kimmich":      4,
+    "Luis Díaz":           4,
+    "Thibaut Courtois":    4,
+    "Federico Valverde":   4,
+    "Darwin Núñez":        4,
+    "Jordan Pickford":     3,
+    "Dani Olmo":           3,
+    "Vitinha":             3,
+    "Mateo Kovačić":       3,
+    "Dani Carvajal":       3,
+    "Yassine Bounou":      3,
+    "Édouard Mendy":       3,
+    "Edouard Mendy":       3,
+    "Diogo Costa":         3,
 }
 
 
@@ -376,19 +374,14 @@ _POS_MULT = {"FWD": 1.15, "MID": 1.00, "GK": 0.95, "DEF": 0.85, "?": 0.95}
 def formula_price(team_rank: int, total_teams: int,
                    within_rank: int, squad_size: int,
                    position: str) -> int:
-    """Continuous pricing formula. Returns an integer in [1, FORMULA_CAP].
-    Top hand-priced names ($17+) sit above this cap so the formula never
-    crowds out the marquee tier."""
-    FORMULA_CAP = 17   # raised from 14 to spread out the formerly-clumped
-                       # "top of top team" players. Still below the marquee
-                       # hand-priced tier ($17 Son/Ronaldo, $18+ Yamal/Foden).
-    BASE = 22.0        # softened from 26 to reduce how many players hit
-                       # the cap. Combined with cap=17, this gives more
-                       # price differentiation without losing the mid lift.
+    """Continuous pricing formula for $50 budget. Returns int in [PLAYER_FLOOR, FORMULA_CAP]."""
+    FORMULA_CAP   = 5     # 6 × 0.85 → 5
+    BASE          = 8.0   # 9 × 0.85 = 7.65 → 8
+    PLAYER_FLOOR  = 3     # kept at $3 (matches team floor)
     team_factor = max(0.04, (1 - (team_rank - 1) / max(1, total_teams - 1)) ** 1.3)
     within_factor = max(0.05, (1 - (within_rank - 1) / max(1, squad_size)) ** 1.5)
     base = BASE * team_factor * within_factor * _POS_MULT.get(position, 1.0)
-    return max(1, min(FORMULA_CAP, round(base)))
+    return max(PLAYER_FLOOR, min(FORMULA_CAP, round(base)))
 
 
 def _missing_overrides(assigned_names: set[str]) -> dict[int, list[str]]:

@@ -125,7 +125,7 @@
     <div class="summary">
       <div class="stat"><div class="label">Picks (new)</div><div class="val" id="newPicks">0</div></div>
       <div class="stat"><div class="label">Spent (new)</div><div class="val" id="newSpent">$0</div></div>
-      <div class="stat"><div class="label">Budget left</div><div class="val" id="newBudget">$100</div></div>
+      <div class="stat"><div class="label">Budget left</div><div class="val" id="newBudget">$60</div></div>
       <div class="stat"><div class="label">Net change</div><div class="val" id="netChange">$0</div></div>
     </div>
 
@@ -169,8 +169,8 @@
 <script type="module">
   import "./shared.js";
 
-  const BUDGET = 100;
-  const ROSTER_CAP = 20;
+  const BUDGET = 60;  // 2026-05-25: was 100, halved to 50, then bumped to 60
+  const ROSTER_CAP = 12;  // reduced from 20 to suppress cinderella spam
 
   const userLine    = document.getElementById('userLine');
   const signinCard  = document.getElementById('signinCard');

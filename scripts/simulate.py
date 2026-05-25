@@ -21,8 +21,8 @@ from knockout_results import (
 )
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-BUDGET = 100
-ROSTER_SIZE_CAP = 20  # max picks — keeps strategy meaningful (vs. spam $1 players)
+BUDGET = 60  # 2026-05-25 final
+ROSTER_SIZE_CAP = 12  # reduced from 20 on 2026-05-25 to suppress cinderella
 
 
 # ---------------------------------------------------------------------------
@@ -45,13 +45,13 @@ class ScoringWeights:
     # Player scoring (per event) — Deep Data unlocked 2026-05-25
     player_goal: float = 5
     player_assist: float = 3       # restored after football-data.org Deep Data upgrade
-    # Clean sheet: GK gets player_clean_sheet_gk, all other squad members
-    # on the same team get player_clean_sheet_other.
+    # Clean sheet: GK > DEF > everyone else (FPL-style, defensive-only).
     # NOTE: live game uses lineup-based (only players who actually played).
     # This historical sim is approximated as squad-based since we don't have
     # historical lineup data — treat results as a directional sanity check.
     player_clean_sheet_gk: float = 5
-    player_clean_sheet_other: float = 1
+    player_clean_sheet_def: float = 2
+    player_clean_sheet_other: float = 0
     # Win share — see CS note above; live game is lineup-based, sim is squad-based.
     player_win_share: float = 1
 
@@ -284,7 +284,9 @@ class Player:
             pts += w.player_win_share * team.matches_won
             # Clean sheet pts depend on position (GK vs other)
             cs = team_clean_sheets_estimate(team)
-            cs_rate = w.player_clean_sheet_gk if self.position == "GK" else w.player_clean_sheet_other
+            if   self.position == "GK":  cs_rate = w.player_clean_sheet_gk
+            elif self.position == "DEF": cs_rate = w.player_clean_sheet_def
+            else:                          cs_rate = w.player_clean_sheet_other
             pts += cs_rate * cs
         return pts
 
@@ -724,7 +726,9 @@ def report(year: int, w: ScoringWeights, pricing: PlayerPricing | None = None,
         goal_pts = w.player_goal * p.goals
         win_share_pts = w.player_win_share * t.matches_won
         cs = team_clean_sheets_estimate(t)
-        cs_rate = w.player_clean_sheet_gk if p.position == "GK" else w.player_clean_sheet_other
+        if   p.position == "GK":  cs_rate = w.player_clean_sheet_gk
+        elif p.position == "DEF": cs_rate = w.player_clean_sheet_def
+        else:                       cs_rate = w.player_clean_sheet_other
         cs_pts = cs_rate * cs
         total = goal_pts + win_share_pts + cs_pts + w.player_assist * p.assists
         scored_players.append((p, t, goal_pts, win_share_pts, cs_pts, total))
@@ -752,7 +756,7 @@ def report(year: int, w: ScoringWeights, pricing: PlayerPricing | None = None,
 PRESETS: list[tuple[str, ScoringWeights, PlayerPricing]] = [
     # Goals-only baseline (no CS, no win share) — for comparison.
     ("A. goals-only baseline",
-     ScoringWeights(player_clean_sheet_gk=0, player_clean_sheet_other=0,
+     ScoringWeights(player_clean_sheet_gk=0, player_clean_sheet_def=0, player_clean_sheet_other=0,
                      player_win_share=0),
      PlayerPricing(min_price=2)),
     # F. Calibrated to bring champion ROI in line with top scorer ROI.
@@ -765,7 +769,7 @@ PRESETS: list[tuple[str, ScoringWeights, PlayerPricing]] = [
         bonus_final=12, bonus_champion=20,
         # Player scoring: user's design, all integer
         player_goal=5, player_assist=0,
-        player_clean_sheet_gk=5, player_clean_sheet_other=1,
+        player_clean_sheet_gk=5, player_clean_sheet_def=2, player_clean_sheet_other=0,
         player_win_share=1,
      ),
      PlayerPricing(min_price=2)),

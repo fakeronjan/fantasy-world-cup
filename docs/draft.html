@@ -124,7 +124,7 @@
 
 <header class="site-header">
   <h1>DRAFT YOUR ROSTER</h1>
-  <p class="subtitle">Pick up to 20 teams + players · $100 budget · Locked at kickoff</p>
+  <p class="subtitle">Pick up to 12 teams + players · $60 budget · Locked at kickoff</p>
   <p class="user-line" id="userLine"></p>
 </header>
 
@@ -189,11 +189,11 @@
         <div class="roster-stats">
           <div class="stat">
             <div class="label">Budget left</div>
-            <div class="val" id="budgetLeft">$100</div>
+            <div class="val" id="budgetLeft">$60</div>
           </div>
           <div class="stat">
             <div class="label">Picks</div>
-            <div class="val" id="pickCount">0 / 20</div>
+            <div class="val" id="pickCount">0 / 12</div>
           </div>
         </div>
         <ul class="roster-list" id="rosterList">
@@ -214,8 +214,8 @@
 <script type="module">
   import "./shared.js";
 
-  const BUDGET     = 100;
-  const ROSTER_CAP = 20;
+  const BUDGET     = 60;
+  const ROSTER_CAP = 12;
   const PLAYER_MIN_PRICE = 2;
 
   // ---- state -------------------------------------------------------------

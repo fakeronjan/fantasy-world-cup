@@ -381,8 +381,10 @@ def recompute_players(db, team_stats: dict, weights: dict) -> None:
         assists     = s.get("assists", 0)
         wins_played = s.get("wins_played", 0)
         cs_played   = s.get("cs_played", 0)
-        is_gk = (p.get("position") or "").upper() == "GK"
-        cs_rate = weights["player_clean_sheet_gk"] if is_gk else weights["player_clean_sheet_other"]
+        pos = (p.get("position") or "").upper()
+        if   pos == "GK":  cs_rate = weights["player_clean_sheet_gk"]
+        elif pos == "DEF": cs_rate = weights.get("player_clean_sheet_def", 2)
+        else:                cs_rate = weights.get("player_clean_sheet_other", 0)
         total_pts = (
             goals * weights["player_goal"]
             + assists * weights["player_assist"]

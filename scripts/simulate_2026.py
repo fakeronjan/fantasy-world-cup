@@ -47,7 +47,8 @@ WEIGHTS = {
     "player_assist": 3,           # restored after Deep Data unlocked assist data
     "player_win_share": 1,        # lineup-based — only players who played
     "player_clean_sheet_gk": 5,   # lineup-based
-    "player_clean_sheet_other": 1,
+    "player_clean_sheet_def": 2,  # FPL-style: defenders earn CS bonus
+    "player_clean_sheet_other": 0,  # MID/FWD/Unknown earn nothing for CS
 }
 
 # Match simulation lineup parameters
@@ -487,8 +488,10 @@ def score_asset_points(teams_dicts, team_stats, players_by_team,
     player_pts = {}
     for tid, ps in players_by_team.items():
         for p in ps:
-            is_gk = p.get("position") == "GK"
-            cs_rate = WEIGHTS["player_clean_sheet_gk"] if is_gk else WEIGHTS["player_clean_sheet_other"]
+            pos = p.get("position")
+            if   pos == "GK":  cs_rate = WEIGHTS["player_clean_sheet_gk"]
+            elif pos == "DEF": cs_rate = WEIGHTS["player_clean_sheet_def"]
+            else:                cs_rate = WEIGHTS["player_clean_sheet_other"]
             pts = (
                 WEIGHTS["player_goal"]       * player_goals.get(p["id"], 0)
                 + WEIGHTS["player_assist"]    * player_assists.get(p["id"], 0)
@@ -503,17 +506,20 @@ def score_asset_points(teams_dicts, team_stats, players_by_team,
 # Contestants
 # ---------------------------------------------------------------------------
 
+BUDGET = 60  # 2026-05-25 final
+
+
 def _top_up_to_100(picks, teams, players, used_ids):
     """Fill unspent budget by picking the LARGEST price that fits in remaining
-    budget (greedy descending). Keeps strategies focused — we don't dilute
-    a "few stars" roster with 12 random $1 fillers."""
+    budget (greedy descending). Despite the function name (kept for compat),
+    it tops up to BUDGET (currently 50)."""
     teams_by_slug = {t["id"]: t for t in teams}
     players_by_id = {p["id"]: p for p in players}
     cost = sum(
         (teams_by_slug if kind == "team" else players_by_id)[id_]["basePrice"]
         for kind, id_ in picks
     )
-    remaining = 100 - cost
+    remaining = BUDGET - cost
     if remaining <= 0:
         return picks
     pool = []
@@ -524,7 +530,7 @@ def _top_up_to_100(picks, teams, players, used_ids):
         if ("player", p["id"]) not in used_ids:
             pool.append(("player", p["id"], p["basePrice"]))
     pool.sort(key=lambda x: -x[2])  # descending
-    while remaining > 0 and len(picks) < 20:
+    while remaining > 0 and len(picks) < 12:  # was 20
         # Pick the highest-priced asset that fits
         best = None
         for kind, id_, price in pool:
@@ -554,7 +560,7 @@ def build_controlled_contestants(teams, players):
     teams_mid    = [t for t in teams   if 8 <= t["basePrice"] <= 15]
     players_mid  = [p for p in players if 8 <= p["basePrice"] <= 14]
 
-    def fill_greedy(pool, kind, budget=100, cap=20):
+    def fill_greedy(pool, kind, budget=60, cap=12):
         """Greedy: walk pool in given order, take each that fits."""
         picks, spent = [], 0
         for a in pool:
