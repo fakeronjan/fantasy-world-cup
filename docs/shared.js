@@ -14,7 +14,7 @@
 //   5. In Build → Firestore Database, create the database in production
 //      mode and apply the rules from firestore.rules.
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -23,13 +23,13 @@ import {
   getRedirectResult,
   signOut as fbSignOut,
   onAuthStateChanged,
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import {
   getFirestore,
   doc,
   getDoc,
   setDoc,
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 // Firebase web config. These values are intentionally PUBLIC — security
 // comes from Firestore rules + Auth provider restrictions, NOT from
@@ -61,11 +61,6 @@ if (!configIsPlaceholder) {
 }
 
 const googleProvider = new GoogleAuthProvider();
-// Explicitly request both scopes — older SDKs default to "profile" only,
-// which Firebase Auth's handler can reject as missing the email field it
-// needs to identify the user. Setting both makes the request unambiguous.
-googleProvider.addScope('profile');
-googleProvider.addScope('email');
 
 // Mobile + in-app browsers (iOS Safari, Instagram/Spotify webviews) break
 // signInWithPopup because they sandbox popups in ways that prevent the

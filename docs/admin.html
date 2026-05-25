@@ -304,7 +304,7 @@
     const items = [];
     try {
       const { collection, getDocs, getCountFromServer } = await import(
-        "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
       );
       async function safeCount(name) {
         try {
@@ -368,7 +368,7 @@
 
   async function loadGoalEntryData() {
     const { collection, getDocs, query, where } = await import(
-      "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
+      "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
     );
     const msnap = await getDocs(
       query(collection(window.fwc.db, 'matches'), where('status', '==', 'FINISHED'))

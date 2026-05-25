@@ -331,7 +331,7 @@
 
   async function loadEverything() {
     const { collection, getDocs, doc, getDoc } = await import(
-      "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
+      "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
     );
 
     const cfg = await getDoc(doc(window.fwc.db, 'config', 'global'));
@@ -586,7 +586,7 @@
     saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
     try {
       const { writeBatch, doc, collection } = await import(
-        "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
       );
       const batch = writeBatch(window.fwc.db);
 
