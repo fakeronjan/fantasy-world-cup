@@ -224,11 +224,11 @@
   let players = [];   // loaded from data/seed_players.json when available
   let roster = JSON.parse(localStorage.getItem("fwc_draft_roster") || "[]");
   let currentTab = "teams";
-  let teamIdToFdId = {};   // slug → fdId, for flag URL lookup
+  let teamIdToEmoji = {};  // slug → flag emoji
   let teamHistory = {};    // slug → history blob
   let playerHistory = {};  // playerId → history blob
 
-  const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
+  const flagSpan = (emoji, sm = false) => emoji ? `<span class="${sm ? 'flag-sm' : 'flag'}">${emoji}</span>` : '';
 
   function teamHistoryBlurb(h) {
     if (!h) return '';
@@ -294,7 +294,7 @@
     try {
       const res = await fetch('./data/seed_teams.json');
       teams = await res.json();
-      teamIdToFdId = Object.fromEntries(teams.map(t => [t.id, t.fdId]));
+      teamIdToEmoji = Object.fromEntries(teams.map(t => [t.id, t.emoji]));
     } catch (e) {
       console.error('seed_teams.json failed to load', e);
     }
@@ -421,10 +421,10 @@
       const remainsBudget = rosterSpent() + a.basePrice <= BUDGET;
       const room = roster.length < ROSTER_CAP;
       const canAdd = !owned && remainsBudget && room;
-      // Flag: for team rows, use the team's fdId. For player rows, use their team's fdId.
-      const fdId = kind === 'team' ? a.fdId : teamIdToFdId[a.teamId];
+      // Flag emoji: for team rows from the team itself, for player rows from their team
+      const emoji = kind === 'team' ? a.emoji : teamIdToEmoji[a.teamId];
       const teamLabel = kind === 'player' && a.teamName ? ` <span class="muted" style="font-size:11px">${escape(a.teamName)}</span>` : '';
-      const flagImg = fdId ? `<img class="flag" src="${flagUrl(fdId)}" alt="" onerror="this.style.display='none'">` : '';
+      const flagImg = flagSpan(emoji);
       // History blurb (team for team rows; player WC history for player rows)
       const histBlurb = kind === 'team'
         ? teamHistoryBlurb(teamHistory[a.id])

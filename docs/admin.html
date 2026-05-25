@@ -268,9 +268,18 @@
 
   // ---- data loading ------------------------------------------------------
   async function loadAll() {
+    await loadTeamEmojis();
     await loadConfig();
     await loadStateCounts();
     try { await loadGoalEntryData(); } catch (e) { console.error('goal entry load failed', e); }
+  }
+
+  async function loadTeamEmojis() {
+    try {
+      const res = await fetch('./data/seed_teams.json');
+      const teams = await res.json();
+      fdidToEmoji = Object.fromEntries(teams.filter(t => t.fdId).map(t => [t.fdId, t.emoji]));
+    } catch (e) { console.error('seed_teams.json load failed', e); }
   }
 
   async function loadConfig() {
@@ -349,8 +358,12 @@
 
   // ---- recent ingested matches (read-only) ------------------------------
 
-  const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
-  const flagImg = (fdId) => fdId ? `<img class="flag-sm" src="${flagUrl(fdId)}" alt="" onerror="this.style.display='none'">` : '';
+  // Emoji map keyed by football-data fdId, populated when we load teams
+  let fdidToEmoji = {};
+  const flagImg = (fdId) => {
+    const emoji = fdidToEmoji[fdId];
+    return emoji ? `<span class="flag-sm">${emoji}</span>` : '';
+  };
 
   async function loadGoalEntryData() {
     const { collection, getDocs, query, where } = await import(

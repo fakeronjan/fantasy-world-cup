@@ -202,17 +202,19 @@ input[type="text"]:focus, input[type="search"]:focus, select:focus {
   border-color: var(--bg-header);
 }
 
-/* ---------- flag images (from football-data.org crests CDN) ---------- */
+/* ---------- flag emojis (replaces broken football-data.org crests) ----- */
+/* Apple Color Emoji renders flags consistently on Mac/iOS. Other OSes fall
+ * back to Segoe UI Emoji / Noto Color Emoji which also handle country
+ * flags. Subdivision flags (England/Scotland) may degrade on Windows. */
 .flag, .flag-sm {
   display: inline-block;
   vertical-align: middle;
-  border-radius: 2px;
-  background: #fff;
   flex-shrink: 0;
-  object-fit: contain;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  line-height: 1;
 }
-.flag    { width: 24px; height: 18px; margin-right: 8px; }
-.flag-sm { width: 16px; height: 12px; margin-right: 6px; }
+.flag    { font-size: 20px; margin-right: 8px; }
+.flag-sm { font-size: 14px; margin-right: 6px; }
 
 /* ---------- helpers ---------- */
 .muted { color: var(--text-muted); }

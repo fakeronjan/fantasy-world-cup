@@ -200,11 +200,10 @@
   let teamHistory = {};
   let playerHistory = {};
   let configDoc = null;
-  const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
   const flagFor = (kind, asset) => {
     if (!asset) return '';
-    const fdId = kind === 'team' ? asset.fdId : (teams[asset.teamId]?.fdId);
-    return fdId ? `<img class="flag-sm" src="${flagUrl(fdId)}" alt="" onerror="this.style.display='none'">` : '';
+    const emoji = kind === 'team' ? asset.emoji : (teams[asset.teamId]?.emoji);
+    return emoji ? `<span class="flag-sm">${emoji}</span>` : '';
   };
   function teamHistoryBlurb(h) {
     if (!h) return '';
