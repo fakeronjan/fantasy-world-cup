@@ -46,7 +46,7 @@ const FIREBASE_CONFIG = {
 // (sign in once with the admin Google account, look up the uid in Firebase
 // console → Authentication, paste it here AND in firestore.rules).
 export const ADMIN_UIDS = new Set([
-  // "PASTE_ADMIN_UID_HERE",
+  "mixdmNZGD3YnzSFOJ077AKfQKXL2",  // rjsikdar@gmail.com
 ]);
 
 const configIsPlaceholder = FIREBASE_CONFIG.apiKey === "REPLACE_ME";

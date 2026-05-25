@@ -21,11 +21,10 @@ service cloud.firestore {
       return request.auth != null;
     }
     function isAdmin() {
-      // PASTE ADMIN UIDS BELOW. Get them from Firebase Console →
-      // Authentication → Users. Mirror this list in docs/shared.js
-      // (the ADMIN_UIDS Set), used to gate UI links.
+      // Mirror this list with ADMIN_UIDS in docs/shared.js (used to gate
+      // UI links). Both must match for admin powers to work end-to-end.
       return isSignedIn() && request.auth.uid in [
-        // 'PASTE_ADMIN_UID_HERE',
+        'mixdmNZGD3YnzSFOJ077AKfQKXL2',  // rjsikdar@gmail.com
       ];
     }
     function configDoc() {
