@@ -255,9 +255,3 @@ input[type="text"]:focus, input[type="search"]:focus, select:focus {
 .signin-card p { margin-bottom: 24px; color: var(--text-muted); }
 .signin-card .btn { padding: 12px 24px; font-size: 15px; }
 
-footer.site-footer {
-  text-align: center;
-  padding: 24px;
-  font-size: 11px;
-  color: var(--text-muted);
-}
