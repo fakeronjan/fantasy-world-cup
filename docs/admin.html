@@ -256,12 +256,25 @@
       </ul>
     </section>
 
+    <!-- Groups summary panel -->
+    <section class="card" style="margin-top:16px">
+      <h2>Groups <span class="pill-status idle" id="groupsCount">…</span></h2>
+      <p class="muted" style="font-size:13px; margin-bottom:12px">
+        Optional group labels for users. Foundation only — visibility
+        scoping (group-only leaderboards etc.) is wired up separately.
+        Today this just stores the label.
+      </p>
+      <ul class="kv-list" id="groupsList">
+        <li class="muted">Loading…</li>
+      </ul>
+    </section>
+
     <!-- Users panel -->
     <section class="card" style="margin-top:16px">
       <h2>League members <span class="pill-status idle" id="usersCount">…</span></h2>
       <p class="muted" style="font-size:13px; margin-bottom:12px">
-        Every signed-up user. Click a row to expand and view/edit their roster.
-        Admin edits bypass the normal transfer-window gates.
+        Every signed-up user. Click a row to expand, view their roster,
+        and assign a group. Admin edits bypass the transfer-window gates.
       </p>
       <ul class="user-list" id="userList" style="list-style:none">
         <li class="muted">Loading…</li>
@@ -301,6 +314,8 @@
   const advanceBtn   = document.getElementById('advanceBtn');
   const userList     = document.getElementById('userList');
   const usersCount   = document.getElementById('usersCount');
+  const groupsList   = document.getElementById('groupsList');
+  const groupsCount  = document.getElementById('groupsCount');
   const toast        = document.getElementById('toast');
 
   // Local caches for the Users panel (loaded once + lazy-refreshed on edits)
@@ -372,9 +387,42 @@
       allUsers.sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0)
                               || (a.displayName || '').localeCompare(b.displayName || ''));
       renderUserList();
+      renderGroupsList();
     } catch (e) {
       userList.innerHTML = `<li class="muted">Couldn't load users: ${escape(e.message)}</li>`;
     }
+  }
+
+  function knownGroups() {
+    const set = new Set();
+    for (const u of allUsers) {
+      const g = (u.groupId || '').trim();
+      if (g) set.add(g);
+    }
+    return [...set].sort();
+  }
+
+  function renderGroupsList() {
+    const groups = knownGroups();
+    const counts = {};
+    let ungrouped = 0;
+    for (const u of allUsers) {
+      const g = (u.groupId || '').trim();
+      if (g) counts[g] = (counts[g] || 0) + 1;
+      else ungrouped++;
+    }
+    groupsCount.textContent = `${groups.length} group${groups.length === 1 ? '' : 's'}`;
+    if (!groups.length && !ungrouped) {
+      groupsList.innerHTML = `<li class="muted">No users yet.</li>`;
+      return;
+    }
+    const rows = groups.map(g =>
+      `<li><span class="k">${escape(g)}</span><span class="v">${counts[g]} member${counts[g] === 1 ? '' : 's'}</span></li>`
+    );
+    if (ungrouped) {
+      rows.push(`<li><span class="k" style="color:var(--text-muted); font-style:italic">(ungrouped)</span><span class="v">${ungrouped}</span></li>`);
+    }
+    groupsList.innerHTML = rows.join('');
   }
 
   function renderUserList() {
@@ -383,21 +431,40 @@
       userList.innerHTML = `<li class="muted">No users have signed up yet.</li>`;
       return;
     }
+    const existingGroups = knownGroups();
     userList.innerHTML = allUsers.map(u => {
       const name = window.fwc.nameFor(u);
       const picks = (u.roster || []).length;
       const pts = u.totalPoints ?? 0;
       const budget = u.currentBudget ?? '?';
       const email = u.email || '';
+      const group = u.groupId || '';
+      const groupBadge = group
+        ? `<span class="kind-tag" style="background:#e0e7ff;color:#3730a3">${escape(group)}</span>`
+        : '';
+      // Build datalist suggestions from existing group names so admin
+      // doesn't have to retype "college-buddies" 12 times.
+      const dataListId = `groups-${escape(u.uid)}`;
+      const dataListOpts = existingGroups.map(g => `<option value="${escape(g)}">`).join('');
       return `<li class="user-row" data-uid="${escape(u.uid)}">
         <div class="user-header" data-toggle="${escape(u.uid)}">
           <span class="caret">▸</span>
           <span class="name">${escape(name)}</span>
+          ${groupBadge}
           <span class="meta">${picks} picks · $${budget} left · ${pts} pts</span>
         </div>
         <div class="user-detail" id="detail-${escape(u.uid)}">
           <div class="muted" style="font-size:11px; margin-bottom:6px">
             ${escape(email)} · UID ${escape(u.uid.slice(0, 12))}…
+          </div>
+          <div style="display:flex; gap:6px; align-items:center; margin-bottom:8px; font-size:12px">
+            <label style="color:var(--text-muted)">Group:</label>
+            <input type="text" list="${dataListId}" value="${escape(group)}"
+                   placeholder="(none)" maxlength="40"
+                   data-group-input="${escape(u.uid)}"
+                   style="flex:1; min-width:120px; max-width:240px; padding:4px 8px; font-size:12px">
+            <datalist id="${dataListId}">${dataListOpts}</datalist>
+            <button class="btn" style="padding:3px 10px; font-size:11px" data-set-group="${escape(u.uid)}">Set</button>
           </div>
           ${(u.roster || []).map(p => renderPickRow(u.uid, p)).join('') || '<div class="muted" style="font-size:12px">No picks.</div>'}
           <div class="admin-actions">
@@ -422,6 +489,30 @@
     userList.querySelectorAll('[data-delete-user]').forEach(b => {
       b.addEventListener('click', () => deleteUser(b.dataset.deleteUser));
     });
+    userList.querySelectorAll('[data-set-group]').forEach(b => {
+      b.addEventListener('click', () => {
+        const uid = b.dataset.setGroup;
+        const input = document.querySelector(`[data-group-input="${uid}"]`);
+        setGroup(uid, input ? input.value : '');
+      });
+    });
+  }
+
+  async function setGroup(uid, newGroup) {
+    const user = allUsers.find(u => u.uid === uid);
+    if (!user) return;
+    const cleaned = (newGroup || '').trim().slice(0, 40);
+    try {
+      const ref = window.fwc.doc(window.fwc.db, 'users', uid);
+      await window.fwc.setDoc(ref, { groupId: cleaned }, { merge: true });
+      user.groupId = cleaned;
+      renderUserList();
+      renderGroupsList();
+      document.querySelector(`[data-uid="${uid}"]`)?.classList.add('open');
+      showToast(cleaned ? `Group set to "${cleaned}"` : 'Group cleared');
+    } catch (e) {
+      showToast(`Failed: ${e.message}`, true);
+    }
   }
 
   function renderPickRow(uid, pick) {
