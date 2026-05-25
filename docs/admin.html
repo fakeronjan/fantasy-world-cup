@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Fantasy World Cup 2026</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .admin-grid { grid-template-columns: 1fr; } }
+  .kv-list { list-style: none; }
+  .kv-list li {
+    display: flex; justify-content: space-between;
+    padding: 6px 0; border-bottom: 1px solid var(--border-row);
+    font-size: 13px;
+  }
+  .kv-list li:last-child { border-bottom: none; }
+  .kv-list .k { color: var(--text-muted); font-weight: 600; }
+  .kv-list .v { font-variant-numeric: tabular-nums; }
+
+  .action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .action-row .btn { flex: 0 0 auto; }
+
+  pre.json {
+    background: #f8f8f6; padding: 10px; border-radius: 4px;
+    font-size: 11px; overflow-x: auto; font-family: ui-monospace, monospace;
+  }
+
+  .pill-status {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pill-status.live  { background: var(--accent); color: #fff; }
+  .pill-status.idle  { background: #e5e7eb; color: #4b5563; }
+  .pill-status.ok    { background: #10b981; color: #fff; }
+  .pill-status.warn  { background: #f59e0b; color: #fff; }
+
+  .access-denied {
+    text-align: center; padding: 48px 24px;
+    max-width: 480px; margin: 40px auto;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>ADMIN CONSOLE</h1>
+  <p class="subtitle">League management · Owner only</p>
+  <p class="user-line" id="userLine"></p>
+</header>
+
+<nav class="site-nav" id="siteNav" style="display:none">
+  <a href="./index.html">Home</a>
+  <a href="./draft.html">Draft</a>
+  <a href="./roster.html">My Roster</a>
+  <a href="./leaderboard.html">Leaderboard</a>
+  <a href="./admin.html" class="active">Admin</a>
+</nav>
+
+<main>
+  <!-- Not signed in / not admin -->
+  <section class="card access-denied" id="accessDenied" style="display:none">
+    <h2 id="deniedTitle">Sign in required</h2>
+    <p id="deniedMsg" class="muted" style="margin-bottom:24px">You need to be signed in as an admin to view this page.</p>
+    <button class="btn" id="signInBtn">Sign in with Google</button>
+  </section>
+
+  <!-- Admin UI -->
+  <div id="adminUI" style="display:none">
+
+    <div class="admin-grid">
+      <!-- LEFT: state summary -->
+      <section class="card">
+        <h2>League state</h2>
+        <ul class="kv-list" id="leagueState">
+          <li><span class="k">Loading…</span><span class="v"></span></li>
+        </ul>
+        <div class="action-row">
+          <button class="btn" id="refreshBtn">Refresh</button>
+        </div>
+      </section>
+
+      <!-- RIGHT: round controls -->
+      <section class="card">
+        <h2>Round controls</h2>
+        <p class="muted" style="font-size:13px; margin-bottom:12px">
+          Toggle the transfer window between rounds. Advance the current
+          round once a stage of the tournament is over.
+        </p>
+        <div class="action-row">
+          <button class="btn" id="openTxBtn">Open transfer window</button>
+          <button class="btn" id="closeTxBtn">Close transfer window</button>
+        </div>
+        <div class="action-row">
+          <label class="muted" style="font-size:12px;align-self:center">Advance round to:</label>
+          <select id="advanceRoundSel">
+            <option value="">…</option>
+            <option value="group">Group</option>
+            <option value="R32">R32</option>
+            <option value="R16">R16</option>
+            <option value="QF">QF</option>
+            <option value="SF">SF</option>
+            <option value="F">Final</option>
+            <option value="done">Done</option>
+          </select>
+          <button class="btn btn-accent" id="advanceBtn">Set</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Live config dump -->
+    <section class="card" style="margin-top:16px">
+      <h2>config/global (raw)</h2>
+      <pre class="json" id="configDump">loading…</pre>
+    </section>
+
+    <!-- Coming soon stubs -->
+    <section class="card" style="margin-top:16px">
+      <h2>Match results entry <span class="pill-status warn">Coming next</span></h2>
+      <p class="muted" style="font-size:13px">
+        Once we seed the matches collection (from football-data.org +
+        Wikipedia scrape), this section will list every match with controls
+        to enter / override scores and scorers.
+      </p>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <h2>Scoring weights <span class="pill-status warn">Read-only for now</span></h2>
+      <p class="muted" style="font-size:13px">
+        Current weights are shown in the config dump above. In-place edits
+        will be wired up after match-entry lands, so we can re-score
+        existing data when weights change.
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<div class="toast" id="toast" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg-header);color:#fff;padding:10px 18px;border-radius:4px;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,0.2);opacity:0;transition:opacity .2s;pointer-events:none"></div>
+
+<script type="module">
+  import "./shared.js";
+
+  const userLine     = document.getElementById('userLine');
+  const accessDenied = document.getElementById('accessDenied');
+  const adminUI      = document.getElementById('adminUI');
+  const siteNav      = document.getElementById('siteNav');
+  const deniedTitle  = document.getElementById('deniedTitle');
+  const deniedMsg    = document.getElementById('deniedMsg');
+  const signInBtn    = document.getElementById('signInBtn');
+  const leagueState  = document.getElementById('leagueState');
+  const configDump   = document.getElementById('configDump');
+  const refreshBtn   = document.getElementById('refreshBtn');
+  const openTxBtn    = document.getElementById('openTxBtn');
+  const closeTxBtn   = document.getElementById('closeTxBtn');
+  const advanceSel   = document.getElementById('advanceRoundSel');
+  const advanceBtn   = document.getElementById('advanceBtn');
+  const toast        = document.getElementById('toast');
+
+  await new Promise(r => requestAnimationFrame(r));
+  signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
+
+  let currentUser = null;
+  let currentConfig = null;
+
+  window.fwc.onAuth(async (user) => {
+    currentUser = user;
+    if (!user) {
+      accessDenied.style.display = 'block';
+      adminUI.style.display = 'none';
+      siteNav.style.display = 'none';
+      return;
+    }
+
+    userLine.innerHTML = `Signed in as <strong>${user.displayName || user.email}</strong>
+      <button id="signOutBtn">Sign out</button>`;
+    document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
+
+    if (!window.fwc.isAdmin(user)) {
+      deniedTitle.textContent = 'Admin only';
+      deniedMsg.textContent = `Your account (${user.email}) isn't on the admin list.`;
+      signInBtn.style.display = 'none';
+      accessDenied.style.display = 'block';
+      adminUI.style.display = 'none';
+      siteNav.style.display = 'flex';
+      return;
+    }
+
+    accessDenied.style.display = 'none';
+    adminUI.style.display = 'block';
+    siteNav.style.display = 'flex';
+    await loadAll();
+  });
+
+  // ---- data loading ------------------------------------------------------
+  async function loadAll() {
+    await loadConfig();
+    await loadStateCounts();
+  }
+
+  async function loadConfig() {
+    try {
+      const ref = window.fwc.doc(window.fwc.db, 'config', 'global');
+      const snap = await window.fwc.getDoc(ref);
+      if (snap.exists()) {
+        currentConfig = snap.data();
+        configDump.textContent = JSON.stringify(currentConfig, null, 2);
+      } else {
+        currentConfig = null;
+        configDump.textContent = '(config/global doc does not exist — run scripts/seed_assets.py to initialize)';
+      }
+    } catch (e) {
+      configDump.textContent = `error: ${e.message}`;
+    }
+  }
+
+  async function loadStateCounts() {
+    // Best-effort counts — uses Firestore JS SDK getDocs.
+    const items = [];
+    try {
+      const { collection, getDocs, getCountFromServer } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      async function safeCount(name) {
+        try {
+          const snap = await getCountFromServer(collection(window.fwc.db, name));
+          return snap.data().count;
+        } catch { return '?'; }
+      }
+      const [users, teams, players, matches] = await Promise.all([
+        safeCount('users'), safeCount('teams'),
+        safeCount('players'), safeCount('matches'),
+      ]);
+      items.push(['Users registered', users]);
+      items.push(['Teams seeded', teams]);
+      items.push(['Players seeded', players]);
+      items.push(['Matches recorded', matches]);
+      if (currentConfig) {
+        items.push(['Current round', currentConfig.currentRound || '(unset)']);
+        items.push(['Transfer window', currentConfig.transferWindowOpen ? 'OPEN' : 'closed']);
+        items.push(['Budget cap', `$${currentConfig.budget ?? '?'}`]);
+        items.push(['Roster cap', currentConfig.rosterCap ?? '?']);
+      } else {
+        items.push(['Config status', 'NOT SEEDED']);
+      }
+    } catch (e) {
+      items.push(['error', e.message]);
+    }
+    leagueState.innerHTML = items.map(([k, v]) =>
+      `<li><span class="k">${k}</span><span class="v">${v}</span></li>`
+    ).join('');
+  }
+
+  // ---- actions -----------------------------------------------------------
+  async function patchConfig(patch) {
+    try {
+      const ref = window.fwc.doc(window.fwc.db, 'config', 'global');
+      await window.fwc.setDoc(ref, patch, { merge: true });
+      showToast('Updated', false);
+      await loadAll();
+    } catch (e) {
+      showToast(`Failed: ${e.message}`, true);
+    }
+  }
+
+  refreshBtn.addEventListener('click', loadAll);
+  openTxBtn.addEventListener('click', () => patchConfig({ transferWindowOpen: true }));
+  closeTxBtn.addEventListener('click', () => patchConfig({ transferWindowOpen: false }));
+  advanceBtn.addEventListener('click', () => {
+    const r = advanceSel.value;
+    if (!r) return;
+    patchConfig({ currentRound: r });
+  });
+
+  function showToast(msg, isWarn) {
+    toast.textContent = msg;
+    toast.style.background = isWarn ? 'var(--accent)' : 'var(--bg-header)';
+    toast.style.opacity = '1';
+    setTimeout(() => toast.style.opacity = '0', 2200);
+  }
+</script>
+
+</body>
+</html>
