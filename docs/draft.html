@@ -41,14 +41,18 @@
     margin-bottom: 6px;
     letter-spacing: 0.5px;
   }
-  .scoring-panel .group-label {
+  .scoring-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .scoring-col .group-label {
     font-size: 10px;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.6px;
-    margin: 8px 0 3px;
+    margin-bottom: 3px;
   }
-  .scoring-panel .group-label:first-of-type { margin-top: 4px; }
   .scoring-row {
     display: flex;
     justify-content: space-between;
@@ -250,22 +254,27 @@
 
         <div class="scoring-panel">
           <h3>Scoring</h3>
-          <div class="group-label">Teams</div>
-          <div class="scoring-row"><span>Win</span><span class="pts">+3</span></div>
-          <div class="scoring-row"><span>Draw</span><span class="pts">+1</span></div>
-          <div class="scoring-row"><span>Reach R32</span><span class="pts">+1</span></div>
-          <div class="scoring-row"><span>Reach R16</span><span class="pts">+2</span></div>
-          <div class="scoring-row"><span>Reach QF</span><span class="pts">+3</span></div>
-          <div class="scoring-row"><span>Reach SF</span><span class="pts">+5</span></div>
-          <div class="scoring-row"><span>Reach Final</span><span class="pts">+8</span></div>
-          <div class="scoring-row"><span>Champion</span><span class="pts">+12</span></div>
-
-          <div class="group-label">Players</div>
-          <div class="scoring-row"><span>Goal</span><span class="pts">+5</span></div>
-          <div class="scoring-row"><span>Assist</span><span class="pts">+3</span></div>
-          <div class="scoring-row"><span>Played in a win</span><span class="pts">+1</span></div>
-          <div class="scoring-row"><span>Clean sheet (GK)</span><span class="pts">+5</span></div>
-          <div class="scoring-row"><span>Clean sheet (DEF)</span><span class="pts">+2</span></div>
+          <div class="scoring-grid">
+            <div class="scoring-col">
+              <div class="group-label">Teams</div>
+              <div class="scoring-row"><span>Win</span><span class="pts">+3</span></div>
+              <div class="scoring-row"><span>Draw</span><span class="pts">+1</span></div>
+              <div class="scoring-row"><span>R32</span><span class="pts">+1</span></div>
+              <div class="scoring-row"><span>R16</span><span class="pts">+2</span></div>
+              <div class="scoring-row"><span>QF</span><span class="pts">+3</span></div>
+              <div class="scoring-row"><span>SF</span><span class="pts">+5</span></div>
+              <div class="scoring-row"><span>Final</span><span class="pts">+8</span></div>
+              <div class="scoring-row"><span>Champ</span><span class="pts">+12</span></div>
+            </div>
+            <div class="scoring-col">
+              <div class="group-label">Players</div>
+              <div class="scoring-row"><span>Goal</span><span class="pts">+5</span></div>
+              <div class="scoring-row"><span>Assist</span><span class="pts">+3</span></div>
+              <div class="scoring-row"><span>Win share</span><span class="pts">+1</span></div>
+              <div class="scoring-row"><span>CS (GK)</span><span class="pts">+5</span></div>
+              <div class="scoring-row"><span>CS (DEF)</span><span class="pts">+2</span></div>
+            </div>
+          </div>
         </div>
       </aside>
     </div>
