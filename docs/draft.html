@@ -297,6 +297,19 @@
     return `<div class="honors-line" style="padding-left:32px">${pills}</div>`;
   }
 
+  // Top-N players for a team, sorted by price (desc) then name. Memoized.
+  const _topPlayersByTeam = new Map();
+  function teamTopPlayers(teamId, n = 3) {
+    const key = `${teamId}:${n}`;
+    if (_topPlayersByTeam.has(key)) return _topPlayersByTeam.get(key);
+    const top = players
+      .filter(p => p.teamId === teamId)
+      .sort((a, b) => b.basePrice - a.basePrice || a.name.localeCompare(b.name))
+      .slice(0, n);
+    _topPlayersByTeam.set(key, top);
+    return top;
+  }
+
   // ---- DOM refs ----------------------------------------------------------
   const userLine    = document.getElementById('userLine');
   const signinCard  = document.getElementById('signinCard');
@@ -497,9 +510,18 @@
       } else if (kind === 'team' && teamHistory[a.id]?.recentTitles) {
         honorsLine = honorPillsHtml(teamHistory[a.id].recentTitles, 'recent-title');
       }
+      // Team rows: show top-3 players for quick scouting context
+      let topPlayersLine = '';
+      if (kind === 'team') {
+        const top = teamTopPlayers(a.id);
+        if (top.length) {
+          const names = top.map(p => displayName(p)).join(' · ');
+          topPlayersLine = `<div class="muted" style="font-size:11px; margin-top:2px; padding-left:32px">★ ${escape(names)}</div>`;
+        }
+      }
       return `<tr class="${owned ? 'in-roster' : ''}">
         <td class="rank-cell">${i + 1}</td>
-        <td class="team-cell">${flagImg}${escape(kind === 'player' ? displayName(a) : a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}${clubLine}${histLine}${honorsLine}</td>
+        <td class="team-cell">${flagImg}${escape(kind === 'player' ? displayName(a) : a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}${clubLine}${histLine}${topPlayersLine}${honorsLine}</td>
         <td><span class="tier-badge tier-${a.tier}">T${a.tier}</span></td>
         <td class="num">$${a.basePrice}</td>
         <td><button class="add-btn ${owned ? 'in-roster' : ''}" data-kind="${kind}" data-id="${escape(a.id)}" ${owned ? '' : (canAdd ? '' : 'disabled')}>

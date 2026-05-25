@@ -190,6 +190,18 @@
     const pills = honors.map(h => `<span class="honor-pill ${className}">${escape(h)}</span>`).join('');
     return `<div class="honors-line" style="padding-left:32px">${pills}</div>`;
   }
+
+  const _topPlayersByTeam = new Map();
+  function teamTopPlayers(teamId, n = 3) {
+    const key = `${teamId}:${n}`;
+    if (_topPlayersByTeam.has(key)) return _topPlayersByTeam.get(key);
+    const top = players
+      .filter(p => p.teamId === teamId)
+      .sort((a, b) => b.basePrice - a.basePrice || a.name.localeCompare(b.name))
+      .slice(0, n);
+    _topPlayersByTeam.set(key, top);
+    return top;
+  }
   function playerHistoryBlurb(h) {
     if (!h || h.notFound) return '';
     const parts = [];
@@ -327,9 +339,19 @@
         if (th && th.recentTitles) honorsHtml = honorPillsHtml(th.recentTitles, 'recent-title');
       }
 
+      // Team rows: show top-3 players for context
+      let topPlayersHtml = '';
+      if (pick.kind === 'team') {
+        const top = teamTopPlayers(pick.assetId);
+        if (top.length) {
+          const names = top.map(p => displayName(p)).join(' · ');
+          topPlayersHtml = `<div class="muted" style="font-size:11px; margin-top:2px; padding-left:32px">★ ${escape(names)}</div>`;
+        }
+      }
+
       return `<tr class="${eliminated ? 'eliminated' : ''}">
         <td class="rank-cell">${i + 1}</td>
-        <td class="team-cell">${flagImg}${escape(name)}${sublineHtml}${honorsHtml}</td>
+        <td class="team-cell">${flagImg}${escape(name)}${sublineHtml}${topPlayersHtml}${honorsHtml}</td>
         <td><span class="kind-badge kind-${pick.kind}">${pick.kind}</span></td>
         <td><span class="tier-badge tier-${tier}">T${tier}</span></td>
         <td class="num">$${bought}</td>
