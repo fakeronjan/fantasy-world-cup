@@ -89,10 +89,25 @@ function isAdmin(user) {
   return !!(user && ADMIN_UIDS.has(user.uid));
 }
 
+// Single source of truth for "what do we call this user in the UI?"
+// Priority: their custom league nickname → Google account displayName →
+// email local-part (half-masked) → first 6 chars of UID.
+// Accepts a Firestore user doc (with uid added) — works in both leaderboard
+// rows and self-display contexts.
+function nameFor(userDoc) {
+  if (!userDoc) return 'Unknown';
+  const nick = (userDoc.leagueNickname || '').trim();
+  if (nick) return nick;
+  const dn = (userDoc.displayName || '').trim();
+  if (dn) return dn;
+  if (userDoc.email) return userDoc.email.split('@')[0];
+  return `Player ${(userDoc.uid || '').slice(0, 6)}`;
+}
+
 // Expose to non-module scripts on the page if needed.
 window.fwc = {
   auth, db,
-  signInWithGoogle, signOut, onAuth, isAdmin,
+  signInWithGoogle, signOut, onAuth, isAdmin, nameFor,
   configIsPlaceholder,
   // Re-export Firestore helpers commonly used on pages, so individual pages
   // don't have to repeat the import URL.

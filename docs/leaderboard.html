@@ -239,7 +239,7 @@
       const picks = (u.roster || []).length;
       const spent = u.totalSpent ?? 0;
       const pts   = u.totalPoints ?? 0;
-      const name  = u.displayName || u.email || u.uid;
+      const name  = window.fwc.nameFor(u);
       const podiumClass = rank <= 3 ? `podium-${rank}` : '';
       return `<tr class="${isMe ? 'lb-row-me' : ''}">
         <td class="rank-cell ${podiumClass}">${rank}</td>
@@ -343,7 +343,7 @@
           pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
           lastVal = v; lastX = x; lastY = y;
         }
-        const name = u.displayName || u.email || u.uid;
+        const name = window.fwc.nameFor(u);
         const isMe = currentUser && u.uid === currentUser.uid;
         const strokeWidth = isMe ? 3 : 2;
         lines += `<polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="${strokeWidth}" stroke-linejoin="round" opacity="0.92"/>`;
