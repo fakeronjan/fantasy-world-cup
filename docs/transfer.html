@@ -207,8 +207,8 @@
     <div class="summary">
       <div class="stat"><div class="label">Picks</div><div class="val" id="newPicks">0</div></div>
       <div class="stat"><div class="label">Budget left</div><div class="val" id="newBudget">$0</div></div>
+      <div class="stat"><div class="label">Buys used</div><div class="val" id="buysUsed">0 / 3</div></div>
       <div class="stat"><div class="label">Sells (staged)</div><div class="val" id="netSold">0</div></div>
-      <div class="stat"><div class="label">Buys (staged)</div><div class="val" id="netBought">0</div></div>
       <div class="stat"><div class="label">Net cash flow</div><div class="val" id="netChange">$0</div></div>
     </div>
 
@@ -268,8 +268,8 @@
   const kindFilter  = document.getElementById('kindFilter');
   const newPicks    = document.getElementById('newPicks');
   const newBudget   = document.getElementById('newBudget');
+  const buysUsed    = document.getElementById('buysUsed');
   const netSold     = document.getElementById('netSold');
-  const netBought   = document.getElementById('netBought');
   const netChange   = document.getElementById('netChange');
   const saveBtn     = document.getElementById('saveBtn');
   const resetBtn    = document.getElementById('resetBtn');
@@ -285,6 +285,8 @@
   let playerHistory = {};
   let configDoc = null;
   let originalBudgetLeft = BUDGET;  // user's saved currentBudget at window open
+  let transfersBucket = { buyCount: 0 };  // committed buys this window
+  const BUYS_PER_WINDOW = 3;
 
   const flagFor = (kind, asset) => {
     if (!asset) return '';
@@ -370,6 +372,12 @@
     originalBudgetLeft = data.currentBudget != null
       ? data.currentBudget
       : BUDGET - originalRoster.reduce((s, p) => s + (p.purchasePrice ?? 0), 0);
+
+    // Transfer counter — only voluntary BUYS count toward the cap.
+    // Sells self-punish via vig, so they're unlimited.
+    // Bucket keyed by current round so it auto-resets on new round.
+    const round = configDoc.currentRound || 'pre';
+    transfersBucket = (data.transfersByWindow || {})[round] || { buyCount: 0 };
 
     render();
   }
@@ -523,7 +531,11 @@
     const sold = originalRoster.filter(p => !workKeys.has(`${p.kind}:${p.assetId}`));
     const bought = workingRoster.filter(p => !origKeys.has(`${p.kind}:${p.assetId}`));
     netSold.textContent = sold.length;
-    netBought.textContent = bought.length;
+
+    // Buys used = already-committed buys this window + currently-staged buys
+    const projectedBuys = transfersBucket.buyCount + bought.length;
+    buysUsed.textContent = `${projectedBuys} / ${BUYS_PER_WINDOW}`;
+    buysUsed.classList.toggle('warn', projectedBuys > BUYS_PER_WINDOW);
 
     const cashIn  = sold.reduce((s, p) => s + (p.__sellPrice ?? sell(getAsset(p.kind, p.assetId))), 0);
     const cashOut = bought.reduce((s, p) => s + p.purchasePrice, 0);
@@ -533,9 +545,13 @@
 
     const overBudget = left < 0;
     const overCap = workingRoster.length > ROSTER_CAP;
+    const overBuys = projectedBuys > BUYS_PER_WINDOW;
     const noChange = sold.length === 0 && bought.length === 0;
     changesSummary.textContent = `${sold.length} sold · ${bought.length} bought`;
-    saveBtn.disabled = (!configDoc.transferWindowOpen || overBudget || overCap || noChange);
+    saveBtn.disabled = (!configDoc.transferWindowOpen || overBudget || overCap || overBuys || noChange);
+    if (overBuys) {
+      changesSummary.textContent += ` · over buy cap (${BUYS_PER_WINDOW}/window)`;
+    }
   }
 
   function sellPick(kind, assetId) {
@@ -558,6 +574,14 @@
 
   function buyAsset(kind, assetId) {
     if (workingRoster.length >= ROSTER_CAP) { showToast(`Max ${ROSTER_CAP} picks`, true); return; }
+    // Pre-check the buy cap so the user gets an immediate explanation
+    // instead of silently failing the save.
+    const origKeys = new Set(originalRoster.map(p => `${p.kind}:${p.assetId}`));
+    const stagedBuys = workingRoster.filter(p => !origKeys.has(`${p.kind}:${p.assetId}`)).length;
+    if (transfersBucket.buyCount + stagedBuys >= BUYS_PER_WINDOW) {
+      showToast(`Buy cap reached (${BUYS_PER_WINDOW}/window). Sell more or save and wait for next window.`, true);
+      return;
+    }
     const a = getAsset(kind, assetId);
     if (!a) return;
     const price = buy(a);
@@ -603,9 +627,17 @@
       const left = currentBudgetLeft();
       // Strip internal __sellPrice markers before persisting
       const cleanRoster = workingRoster.map(({ __sellPrice, ...rest }) => rest);
+
+      // Increment buy counter for the current window. Sells are unlimited
+      // and don't bump the counter.
+      const round = configDoc.currentRound || 'pre';
+      const newBuyCount = transfersBucket.buyCount + buys.length;
+      const transfersByWindow = { [round]: { buyCount: newBuyCount } };
+
       batch.set(userRef, {
         roster: cleanRoster,
         currentBudget: left,
+        transfersByWindow,    // partial merge — only updates this round's bucket
       }, { merge: true });
 
       const txRef = doc(collection(window.fwc.db, 'transactions'));
@@ -628,6 +660,7 @@
       showToast('Transfers saved!', false);
       originalRoster = cleanRoster.map(p => ({...p}));
       originalBudgetLeft = left;
+      transfersBucket = { buyCount: newBuyCount };
       render();
     } catch (e) {
       console.error(e);
