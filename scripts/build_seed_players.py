@@ -349,29 +349,71 @@ def simplify_position(pos: str | None) -> str:
 # Build
 # ---------------------------------------------------------------------------
 
+PER_TEAM_FLOOR = 3   # every team gets at least this many tiered players (per user, 2026-05-24)
+DRAFTABLE_TIERS = {1, 2, 3, 4}  # output only includes players in these tiers
+
+
+def _promote_to_meet_floor(team_squad: list[dict], tier_assignments: dict[str, int],
+                            current_count: int, target: int) -> None:
+    """Mutates tier_assignments to promote additional squad members to Tier 4
+    until we hit the target. Selection priority:
+      1. Ensure at least one GK is in the pool (promotes a GK first if missing)
+      2. Promote anyone matching the hand-curated T4 list (already done, but
+         confirm)
+      3. Otherwise promote squad members in the order the API returns them
+         (usually rough seniority/squad-number order)
+    """
+    needed = max(0, target - current_count)
+    if needed == 0:
+        return
+
+    in_pool = [p for p in team_squad if tier_assignments.get(p["name"], 5) < 5]
+    out_pool = [p for p in team_squad if tier_assignments.get(p["name"], 5) == 5]
+
+    has_gk = any((p.get("position") or "").lower().startswith("goalkeep") for p in in_pool)
+    if not has_gk:
+        gk = next((p for p in out_pool if (p.get("position") or "").lower().startswith("goalkeep")), None)
+        if gk:
+            tier_assignments[gk["name"]] = 4
+            out_pool.remove(gk)
+            needed -= 1
+
+    # Promote remaining slots from the front of the squad list.
+    for p in out_pool:
+        if needed <= 0:
+            break
+        tier_assignments[p["name"]] = 4
+        needed -= 1
+
+
 def build() -> None:
     if not SQUADS_PATH.exists():
         sys.exit(f"missing {SQUADS_PATH} — run scripts/pull_wc2026_squads.py first")
     squads_data = json.loads(SQUADS_PATH.read_text())
     teams_data = json.loads(TEAMS_PATH.read_text())
 
-    # Index team name → our team id slug
-    name_to_slug: dict[str, str] = {}
-    for t in teams_data:
-        name_to_slug[t["name"]] = t["id"]
-    # Hand-fix Cape Verde naming difference: API says "Cape Verde Islands", seed uses same.
+    name_to_slug: dict[str, str] = {t["name"]: t["id"] for t in teams_data}
 
     out = []
     counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+    per_team_tiered = {}
     assigned_names = set()
 
     for team_name, info in squads_data.items():
         team_slug = name_to_slug.get(team_name) or _norm_name(team_name).replace(" ", "-")
-        squad_names = [p["name"] for p in info.get("squad", [])]
+        squad = info.get("squad", []) or []
+        squad_names = [p["name"] for p in squad]
         tier_assignments = _resolve_tier_for_squad(squad_names)
 
-        for p in info.get("squad", []):
-            tier = tier_assignments[p["name"]]
+        tiered_count = sum(1 for n in squad_names if tier_assignments.get(n, 5) < 5)
+        if tiered_count < PER_TEAM_FLOOR:
+            _promote_to_meet_floor(squad, tier_assignments, tiered_count, PER_TEAM_FLOOR)
+
+        for p in squad:
+            tier = tier_assignments.get(p["name"], 5)
+            if tier not in DRAFTABLE_TIERS:
+                counts[5] += 1
+                continue
             if tier < 5:
                 assigned_names.add(p["name"])
             counts[tier] += 1
@@ -387,11 +429,23 @@ def build() -> None:
                 "basePrice": TIER_PRICE[tier],
             })
 
+        per_team_tiered[team_name] = sum(1 for p in squad if tier_assignments.get(p["name"], 5) < 5)
+
     out.sort(key=lambda r: (r["teamName"], r["tier"], r["name"]))
     OUT_PATH.write_text(json.dumps(out, indent=2, ensure_ascii=False))
 
-    print(f"Wrote {len(out)} players → {OUT_PATH}")
-    print(f"Per-tier counts: T1={counts[1]}  T2={counts[2]}  T3={counts[3]}  T4={counts[4]}  T5={counts[5]}")
+    print(f"Wrote {len(out)} DRAFTABLE players → {OUT_PATH}")
+    print(f"(non-draftable squad members dropped: {counts[5]})")
+    print(f"Per-tier counts (draftable): T1={counts[1]}  T2={counts[2]}  T3={counts[3]}  T4={counts[4]}")
+
+    print(f"\nPer-team draftable counts (floor = {PER_TEAM_FLOOR}):")
+    under = [(t, n) for t, n in per_team_tiered.items() if n < PER_TEAM_FLOOR]
+    if under:
+        print("  ! still under floor:")
+        for t, n in sorted(under, key=lambda x: x[1]):
+            print(f"    {t}: {n}")
+    else:
+        print(f"  all 48 teams meet the floor")
 
     print("\nTier 1 players in output:")
     for p in out:
@@ -399,14 +453,11 @@ def build() -> None:
             print(f"  ${p['basePrice']}  {p['name']:<28} ({p['teamName']})")
 
     missing = _missing_overrides(assigned_names)
-    for tier in (1, 2, 3, 4):
+    for tier in (1, 2):  # only flag the high-tier ones — T3/T4 misses are common
         if missing[tier]:
             print(f"\nTier {tier} names NOT FOUND in any squad ({len(missing[tier])}):")
             for n in missing[tier]:
                 print(f"  • {n}")
-            print(f"  (These won't be in the draft until either (a) re-running")
-            print(f"  pull_wc2026_squads.py picks them up after squad announcements,")
-            print(f"  or (b) they're manually added to seed_players.json.)")
 
 
 if __name__ == "__main__":
