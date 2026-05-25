@@ -17,10 +17,14 @@ This is the *pricing engine* only — Firestore I/O and UI wiring come in
 the next pass. Run --dry-run to see prices for a hypothetical state.
 
 Usage:
+  # Dry-run (hypothetical state from seed prices):
   ./venv/bin/python scripts/reprice.py --from-round R32 --runs 1000
 
+  # Live (read advancers from Firestore + write prices back):
+  GOOGLE_APPLICATION_CREDENTIALS=...sa.json \\
+    ./venv/bin/python scripts/reprice.py --from-round R32 --write
+
 Roadmap:
-  next: read live bracket state from Firestore + persist prices back
   next: wire into transfer.html so users see buy/sell separately
   next: trigger automatically from ingest_results.py when a round ends
 """
@@ -202,6 +206,89 @@ def hypothetical_advancers(teams, start_round):
     return sorted_teams[:n_by_round[start_round]]
 
 
+def live_advancers(db, start_round):
+    """Read real advancers from Firestore. A team is alive at `start_round`
+    iff eliminated=False AND final_round == start_round."""
+    advancers = []
+    for tdoc in db.collection("teams").stream():
+        t = tdoc.to_dict() or {}
+        if t.get("eliminated"):
+            continue
+        if t.get("finalRound") != start_round:
+            continue
+        advancers.append({**t, "id": tdoc.id})
+    return advancers
+
+
+def write_prices_to_firestore(db, prices, advancers, all_teams):
+    """Persist marketValue/buyPrice/sellPrice to each team + player doc.
+    Eliminated assets get marketValue=0 + sellPrice = floor(last MV * 0.40).
+    """
+    import math
+    alive_ids = {t["id"] for t in advancers}
+
+    # Teams
+    teams_batch = db.batch()
+    n_alive = n_elim = 0
+    for tdoc in db.collection("teams").stream():
+        tid = tdoc.id
+        t = tdoc.to_dict() or {}
+        if tid in prices:
+            p = prices[tid]
+            teams_batch.set(tdoc.reference, {
+                "marketValue":      p["marketValue"],
+                "buyPrice":         p["buyPrice"],
+                "sellPrice":        p["sellPrice"],
+                "currentPrice":     p["marketValue"],  # back-compat alias
+                "meanFuturePoints": p["meanFuturePoints"],
+            }, merge=True)
+            n_alive += 1
+        else:
+            # Eliminated team — liquidation refund
+            last_mv = t.get("marketValue") or t.get("currentPrice") or t.get("basePrice", 0)
+            liquidation = max(0, math.floor(last_mv * ELIM_REFUND_RATE))
+            teams_batch.set(tdoc.reference, {
+                "marketValue":  0,
+                "buyPrice":     None,
+                "sellPrice":    liquidation,
+                "currentPrice": 0,
+            }, merge=True)
+            n_elim += 1
+    teams_batch.commit()
+    print(f"  teams: {n_alive} repriced, {n_elim} eliminated → liquidation")
+
+    # Players (inherit team's alive/eliminated state)
+    players_batch = db.batch()
+    n_p_alive = n_p_elim = 0
+    for pdoc in db.collection("players").stream():
+        pid = pdoc.id
+        p = pdoc.to_dict() or {}
+        team_id = p.get("teamId")
+        if pid in prices:
+            pr = prices[pid]
+            players_batch.set(pdoc.reference, {
+                "marketValue":      pr["marketValue"],
+                "buyPrice":         pr["buyPrice"],
+                "sellPrice":        pr["sellPrice"],
+                "currentPrice":     pr["marketValue"],
+                "meanFuturePoints": pr["meanFuturePoints"],
+            }, merge=True)
+            n_p_alive += 1
+        else:
+            last_mv = p.get("marketValue") or p.get("currentPrice") or p.get("basePrice", 0)
+            liquidation = max(0, math.floor(last_mv * ELIM_REFUND_RATE))
+            players_batch.set(pdoc.reference, {
+                "marketValue":  0,
+                "buyPrice":     None,
+                "sellPrice":    liquidation,
+                "currentPrice": 0,
+                "eliminated":   True,
+            }, merge=True)
+            n_p_elim += 1
+    players_batch.commit()
+    print(f"  players: {n_p_alive} repriced, {n_p_elim} eliminated → liquidation")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--from-round", default="R32",
@@ -210,6 +297,8 @@ def main():
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--top", type=int, default=20,
                     help="Show top N priced assets in dry-run output")
+    ap.add_argument("--write", action="store_true",
+                    help="Read live state from Firestore + persist prices back")
     args = ap.parse_args()
 
     teams, players = load_seed()
@@ -217,10 +306,23 @@ def main():
     players_by_team = defaultdict(list)
     for p in players:
         players_by_team[p["teamId"]].append(p)
-    print(f"Loaded {len(teams)} teams, {len(players)} players")
+    print(f"Loaded {len(teams)} teams, {len(players)} players from seed")
     print(f"Warm-start round: {args.from_round}, runs: {args.runs}\n")
 
-    advancers = hypothetical_advancers(teams, args.from_round)
+    # Live mode: read real advancers from Firestore.
+    # Dry-run mode: synthesize advancers from seed.
+    db = None
+    if args.write:
+        from _fwc_lib import firestore_client
+        db = firestore_client()
+        advancers = live_advancers(db, args.from_round)
+        if not advancers:
+            print(f"No teams with finalRound={args.from_round} in Firestore. "
+                  f"Has the previous round been ingested? Aborting.")
+            return
+        print(f"Live mode: {len(advancers)} teams advanced to {args.from_round}")
+    else:
+        advancers = hypothetical_advancers(teams, args.from_round)
     print(f"Hypothetical {args.from_round} field ({len(advancers)} teams):")
     for t in advancers[:8]:
         print(f"  ${t['basePrice']:>2}  {t['name']}")
@@ -247,6 +349,13 @@ def main():
     print(f"  {'Name':<25} {'E[Pts]':>7}  {'Sell':>5} {'MV':>5} {'Buy':>5}")
     for mv, pid, p in players_list[:args.top]:
         print(f"  {p['name']:<25} {p['meanFuturePoints']:>7.1f}  ${p['sellPrice']:>3}  ${p['marketValue']:>2}  ${p['buyPrice']:>3}")
+
+    if args.write and db is not None:
+        print(f"\nWriting prices to Firestore...")
+        write_prices_to_firestore(db, prices, advancers, teams)
+        print("Done.")
+    elif not args.write:
+        print(f"\n[Dry-run only. Pass --write to persist to Firestore.]")
 
 
 if __name__ == "__main__":

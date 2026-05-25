@@ -14,6 +14,39 @@
   .window-banner.open  { background: #d1fae5; color: #065f46; }
   .window-banner.closed { background: #fee2e2; color: #991b1b; }
 
+  /* Pricing explainer — collapsible */
+  .pricing-explainer {
+    background: var(--bg-card); border-radius: 6px;
+    padding: 12px 16px; margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    font-size: 12px;
+  }
+  .pricing-explainer summary {
+    cursor: pointer; font-weight: 700; color: var(--bg-header);
+    font-size: 13px; letter-spacing: 0.3px;
+    list-style: none;
+  }
+  .pricing-explainer summary::-webkit-details-marker { display: none; }
+  .pricing-explainer summary::before { content: '▸ '; }
+  .pricing-explainer[open] summary::before { content: '▾ '; }
+  .pricing-explainer .body {
+    margin-top: 10px; color: var(--text-body); line-height: 1.6;
+  }
+  .pricing-explainer code {
+    background: #f3f3f0; padding: 1px 5px; border-radius: 3px;
+    font-size: 11px;
+  }
+  .pricing-explainer .key {
+    display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .key.sell  { background: rgba(220, 38, 38, 0.12); color: #991b1b; }
+  .key.buy   { background: rgba(22, 163, 74, 0.12);  color: #166534; }
+  .key.mv    { background: rgba(26, 107, 138, 0.12); color: var(--bg-header); }
+  .key.paid  { background: rgba(107, 114, 128, 0.15); color: #4b5563; }
+  .key.earn  { background: rgba(255, 110, 180, 0.12); color: var(--accent); }
+
   .transfer-layout {
     display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
     align-items: start;
@@ -30,11 +63,17 @@
   }
 
   .item-row {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 0; border-bottom: 1px solid var(--border-row);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border-row);
     font-size: 13px;
+    align-items: center;
   }
   .item-row:last-child { border-bottom: none; }
+  .item-row .top {
+    display: flex; align-items: center; gap: 8px;
+  }
   .item-row .kind-tag {
     font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px;
     text-transform: uppercase; letter-spacing: 0.3px;
@@ -42,23 +81,40 @@
   .kind-tag.team   { background: var(--bg-header); color: #fff; }
   .kind-tag.player { background: var(--accent); color: #fff; }
 
-  .item-name { flex: 1; }
-  .item-price {
-    font-variant-numeric: tabular-nums; font-weight: 700;
-    color: var(--bg-header);
-  }
-  .item-row.eliminated {
-    opacity: 0.55;
-  }
+  .item-name { flex: 1; font-weight: 600; }
+  .item-row.eliminated { opacity: 0.55; }
   .item-row.eliminated .item-name { text-decoration: line-through; }
   .item-row button {
     background: var(--bg-header); color: #fff; border: none;
-    padding: 4px 10px; border-radius: 3px; font-size: 12px;
+    padding: 5px 12px; border-radius: 3px; font-size: 12px;
     font-weight: 600; cursor: pointer;
   }
   .item-row button:hover { background: var(--accent); }
+  .item-row button:disabled { background: #d4d4d4; cursor: not-allowed; }
   .item-row.staged { background: #fef0f7; }
-  .item-row .pts { color: var(--text-muted); font-size: 11px; }
+
+  /* Per-pick metric strip: Paid · Earned · MV · Sell */
+  .metrics {
+    grid-column: 1 / -1;
+    display: flex; flex-wrap: wrap; gap: 6px 12px;
+    font-size: 11px;
+    padding-left: 32px;
+  }
+  .metrics .metric {
+    display: inline-flex; align-items: baseline; gap: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .metrics .metric .lbl {
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+  .metrics .metric .v { font-weight: 700; }
+  .metrics .metric.sell .v { color: #991b1b; }
+  .metrics .metric.buy .v  { color: #166534; }
+  .metrics .metric.mv .v   { color: var(--bg-header); }
+  .metrics .metric.paid .v { color: #4b5563; }
+  .metrics .metric.earn .v { color: var(--accent); }
 
   .controls-strip {
     margin-bottom: 12px; display: flex; gap: 8px;
@@ -69,9 +125,10 @@
     background: var(--bg-card); border-radius: 6px;
     padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     margin-bottom: 16px;
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
   }
-  @media (max-width: 700px) { .summary { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 800px) { .summary { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 500px) { .summary { grid-template-columns: repeat(2, 1fr); } }
   .summary .stat .label {
     font-size: 11px; color: var(--text-muted);
     text-transform: uppercase; letter-spacing: 0.5px;
@@ -97,7 +154,7 @@
 
 <header class="site-header">
   <h1>TRANSFERS</h1>
-  <p class="subtitle">Sell eliminated picks · Buy survivors · Rebalance between rounds</p>
+  <p class="subtitle">Sell at the market's bid · Buy at the market's ask · Rebalance between rounds</p>
   <p class="user-line" id="userLine"></p>
 </header>
 
@@ -122,17 +179,40 @@
       Loading window status…
     </div>
 
+    <details class="pricing-explainer">
+      <summary>How transfer pricing works</summary>
+      <div class="body">
+        <p>After each round, every surviving asset gets re-priced based on its
+           <strong>expected future points</strong> (we re-run a 1,000-trial
+           Monte Carlo from the current bracket position). The market shows
+           three numbers per pick:</p>
+        <ul style="margin: 8px 0 8px 18px;">
+          <li><span class="key paid">Paid</span> what you spent when you drafted or bought this pick. Locked in.</li>
+          <li><span class="key earn">Earned</span> points this asset has scored — yours forever.</li>
+          <li><span class="key mv">MV</span> the asset's current "fair" market value (E[remaining points] ÷ 2).</li>
+          <li><span class="key sell">Sell</span> what the market pays you to sell (MV − 10% vig).</li>
+          <li><span class="key buy">Buy</span> what the market charges to acquire (MV + 10% vig).</li>
+        </ul>
+        <p><strong>Why "Paid" can be much higher than "MV":</strong> Initial draft prices
+           cover the <em>whole tournament's</em> expected points. Mid-tournament prices
+           cover only what's <em>left</em>. So Spain's MV after groups will look small —
+           but you've already banked group-stage points AND the asset has de-risked by
+           surviving. Holding is a fair deal. Selling realizes only the residual.</p>
+      </div>
+    </details>
+
     <div class="summary">
-      <div class="stat"><div class="label">Picks (new)</div><div class="val" id="newPicks">0</div></div>
-      <div class="stat"><div class="label">Spent (new)</div><div class="val" id="newSpent">$0</div></div>
-      <div class="stat"><div class="label">Budget left</div><div class="val" id="newBudget">$60</div></div>
-      <div class="stat"><div class="label">Net change</div><div class="val" id="netChange">$0</div></div>
+      <div class="stat"><div class="label">Picks</div><div class="val" id="newPicks">0</div></div>
+      <div class="stat"><div class="label">Budget left</div><div class="val" id="newBudget">$0</div></div>
+      <div class="stat"><div class="label">Sells (staged)</div><div class="val" id="netSold">0</div></div>
+      <div class="stat"><div class="label">Buys (staged)</div><div class="val" id="netBought">0</div></div>
+      <div class="stat"><div class="label">Net cash flow</div><div class="val" id="netChange">$0</div></div>
     </div>
 
     <div class="transfer-layout">
       <!-- LEFT: portfolio / sell -->
       <div class="panel">
-        <h2>Your portfolio (click "Sell" to free budget)</h2>
+        <h2>Your portfolio</h2>
         <div id="portfolioList">
           <p class="muted">Loading…</p>
         </div>
@@ -140,7 +220,7 @@
 
       <!-- RIGHT: market / buy -->
       <div class="panel">
-        <h2>Market (click "Buy" to spend budget)</h2>
+        <h2>Market</h2>
         <div class="controls-strip">
           <input type="search" id="searchBox" placeholder="Search…" style="flex:1;min-width:140px">
           <select id="kindFilter">
@@ -156,7 +236,7 @@
     </div>
 
     <div class="actions-bar">
-      <span class="left">Changes save atomically. New roster + budget are written to your user doc; an audit row goes to <code>transactions/</code>.</span>
+      <span class="left">Each save writes the new roster + budget to your user doc and appends an audit row to <code>transactions/</code>.</span>
       <span class="changes" id="changesSummary"></span>
       <button class="btn" id="resetBtn">Reset</button>
       <button class="btn btn-accent" id="saveBtn" disabled>Save changes</button>
@@ -169,8 +249,8 @@
 <script type="module">
   import "./shared.js";
 
-  const BUDGET = 60;  // 2026-05-25: was 100, halved to 50, then bumped to 60
-  const ROSTER_CAP = 12;  // reduced from 20 to suppress cinderella spam
+  const BUDGET = 60;
+  const ROSTER_CAP = 12;
 
   const userLine    = document.getElementById('userLine');
   const signinCard  = document.getElementById('signinCard');
@@ -184,8 +264,9 @@
   const searchBox   = document.getElementById('searchBox');
   const kindFilter  = document.getElementById('kindFilter');
   const newPicks    = document.getElementById('newPicks');
-  const newSpent    = document.getElementById('newSpent');
   const newBudget   = document.getElementById('newBudget');
+  const netSold     = document.getElementById('netSold');
+  const netBought   = document.getElementById('netBought');
   const netChange   = document.getElementById('netChange');
   const saveBtn     = document.getElementById('saveBtn');
   const resetBtn    = document.getElementById('resetBtn');
@@ -193,20 +274,21 @@
   const toast       = document.getElementById('toast');
 
   let currentUser    = null;
-  let originalRoster = [];           // from Firestore: [{assetId, kind, purchasePrice, ...}]
-  let workingRoster  = [];           // edits applied so far
-  let teams = {};                    // teamSlug → team doc
-  let players = {};                  // playerId → player doc
+  let originalRoster = [];
+  let workingRoster  = [];
+  let teams = {};
+  let players = {};
   let teamHistory = {};
   let playerHistory = {};
   let configDoc = null;
+  let originalBudgetLeft = BUDGET;  // user's saved currentBudget at window open
+
   const flagFor = (kind, asset) => {
     if (!asset) return '';
     const emoji = kind === 'team' ? asset.emoji : (teams[asset.teamId]?.emoji);
     return emoji ? `<span class="flag-sm">${emoji}</span>` : '';
   };
 
-  // East Asian convention: family name first.
   const FAMILY_FIRST_TEAMS = new Set(['south-korea', 'japan']);
   function displayName(kind, asset) {
     if (!asset) return '';
@@ -215,42 +297,15 @@
     if (parts.length !== 2) return asset.name;
     return `${parts[1]} ${parts[0]}`;
   }
-  function teamHistoryBlurb(h) {
-    if (!h) return '';
-    const parts = [];
-    if (h.fifaRank) parts.push(`#${h.fifaRank} FIFA`);
-    parts.push(`${h.tournaments} tournament${h.tournaments === 1 ? '' : 's'}`);
-    let showedAchievement = false;
-    if (h.titles > 0) {
-      parts.push(`${h.titles} title${h.titles === 1 ? '' : 's'}`);
-      showedAchievement = true;
-    }
-    if (h.runnerUps > 0) {
-      parts.push(`${h.runnerUps} runner-up${h.runnerUps === 1 ? '' : 's'}`);
-      showedAchievement = true;
-    }
-    if (!showedAchievement && h.bestFinish && h.bestFinish !== '—') {
-      parts.push(`Best: ${h.bestFinish}`);
-    }
-    return parts.join(' · ');
-  }
-  function playerHistoryBlurb(h) {
-    if (!h || h.notFound) return '';
-    const parts = [];
-    const wcs = h.wcsPlayed ?? 0;
-    if (wcs === 0) parts.push('WC debut');
-    else parts.push(`${wcs} WC${wcs === 1 ? '' : 's'}`);
-    if (h.goals != null && h.goals > 0) parts.push(`${h.goals} goal${h.goals === 1 ? '' : 's'}`);
-    if (h.titles > 0) {
-      const yrs = (h.titleYears || []).slice().sort();
-      parts.push(`Champion${yrs.length ? ' (' + yrs.join(', ') + ')' : ''}`);
-    }
-    if (h.runnerUps > 0) {
-      const yrs = (h.runnerUpYears || []).slice().sort();
-      parts.push(`RU${yrs.length ? ' (' + yrs.join(', ') + ')' : ''}`);
-    }
-    return parts.join(' · ');
-  }
+
+  // -- pricing helpers ----------------------------------------------------
+  // marketValue: forward-looking fair price (E[remaining_pts] / 2)
+  // buyPrice:    ceil(MV * 1.10)
+  // sellPrice:   floor(MV * 0.90)
+  // Pre-tournament: reprice.py hasn't run, so these will all equal basePrice.
+  function mv(asset)   { return asset?.marketValue ?? asset?.basePrice ?? 0; }
+  function buy(asset)  { return asset?.buyPrice    ?? mv(asset); }
+  function sell(asset) { return asset?.sellPrice   ?? mv(asset); }
 
   await new Promise(r => requestAnimationFrame(r));
   signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
@@ -263,7 +318,7 @@
       siteNav.style.display = 'none';
       return;
     }
-    userLine.innerHTML = `Signed in as <strong>${user.displayName || user.email}</strong>
+    userLine.innerHTML = `Signed in as <strong>${escape(user.displayName || user.email)}</strong>
       <button id="signOutBtn">Sign out</button>`;
     document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
     siteNav.style.display = 'flex';
@@ -279,11 +334,9 @@
       "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
     );
 
-    // Config (window state)
     const cfg = await getDoc(doc(window.fwc.db, 'config', 'global'));
     configDoc = cfg.exists() ? cfg.data() : { transferWindowOpen: false };
 
-    // Update banner
     const open = configDoc.transferWindowOpen === true;
     windowBanner.classList.toggle('open', open);
     windowBanner.classList.toggle('closed', !open);
@@ -292,7 +345,6 @@
       : `Transfer window is CLOSED. You can preview changes but the Save button won't commit. Owner opens windows from /admin.html.`;
     saveBtn.disabled = !open;
 
-    // Catalog
     teams = {}; players = {};
     const ts = await getDocs(collection(window.fwc.db, 'teams'));
     ts.forEach(d => teams[d.id] = { id: d.id, ...d.data() });
@@ -307,10 +359,14 @@
       playerHistory = await r.json();
     } catch { playerHistory = {}; }
 
-    // User doc (current roster)
     const u = await getDoc(doc(window.fwc.db, 'users', currentUser.uid));
-    originalRoster = (u.exists() ? (u.data().roster || []) : []).map(p => ({...p}));
+    const data = u.exists() ? u.data() : {};
+    originalRoster = (data.roster || []).map(p => ({...p}));
     workingRoster = originalRoster.map(p => ({...p}));
+    // Use saved currentBudget if present; else compute from initial cap minus sum of purchase prices.
+    originalBudgetLeft = data.currentBudget != null
+      ? data.currentBudget
+      : BUDGET - originalRoster.reduce((s, p) => s + (p.purchasePrice ?? 0), 0);
 
     render();
   }
@@ -319,13 +375,25 @@
     return kind === 'team' ? teams[id] : players[id];
   }
 
-  function rosterCurrentValue(roster) {
-    // Sum of current (live) prices for the picks
-    return roster.reduce((sum, pick) => {
-      const a = getAsset(pick.kind, pick.assetId);
-      const price = a ? (a.currentPrice ?? a.basePrice ?? pick.purchasePrice) : pick.purchasePrice;
-      return sum + price;
-    }, 0);
+  // Budget math: start from originalBudgetLeft, then for each STAGED change
+  // add sellPrice (for sells) and subtract buyPrice (for buys).
+  function currentBudgetLeft() {
+    let budget = originalBudgetLeft;
+    const origKeys = new Set(originalRoster.map(p => `${p.kind}:${p.assetId}`));
+    const workKeys = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
+    // Sells: in original, not in working → refund at sellPrice (frozen at click-time)
+    originalRoster.forEach(p => {
+      if (!workKeys.has(`${p.kind}:${p.assetId}`)) {
+        budget += p.__sellPrice ?? sell(getAsset(p.kind, p.assetId));
+      }
+    });
+    // Buys: in working, not in original → spend at buyPrice (frozen at click-time)
+    workingRoster.forEach(p => {
+      if (!origKeys.has(`${p.kind}:${p.assetId}`)) {
+        budget -= p.purchasePrice;
+      }
+    });
+    return budget;
   }
 
   function render() {
@@ -335,38 +403,70 @@
   }
 
   function renderPortfolio() {
-    if (!workingRoster.length) {
+    // Render BOTH staged-for-sell (greyed) and currently-held
+    const origKeys = new Set(originalRoster.map(p => `${p.kind}:${p.assetId}`));
+    const workKeys = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
+    const all = [
+      ...workingRoster.map(p => ({ p, staged: !origKeys.has(`${p.kind}:${p.assetId}`) ? 'buy' : null })),
+      ...originalRoster.filter(p => !workKeys.has(`${p.kind}:${p.assetId}`)).map(p => ({ p, staged: 'sell' })),
+    ];
+    if (!all.length) {
       portfolioList.innerHTML = `<p class="muted">No picks in roster.</p>`;
       return;
     }
-    portfolioList.innerHTML = workingRoster.map(pick => {
+    portfolioList.innerHTML = all.map(({ p: pick, staged }) => {
       const a = getAsset(pick.kind, pick.assetId);
-      const name  = a ? displayName(pick.kind, a) : pick.assetId;
-      const cur   = a ? (a.currentPrice ?? a.basePrice ?? pick.purchasePrice) : pick.purchasePrice;
-      const elim  = a ? !!a.eliminated : false;
-      const pts   = a ? (a.totalPoints || 0) : (pick.points || 0);
-      const histLine = pick.kind === 'team'
-        ? teamHistoryBlurb(teamHistory[pick.assetId])
-        : playerHistoryBlurb(playerHistory[pick.assetId]);
-      const histHtml = histLine ? `<div class="muted" style="font-size:10px; margin-top:2px; padding-left:46px">${escape(histLine)}</div>` : '';
-      return `<div class="item-row ${elim ? 'eliminated' : ''}" style="flex-wrap:wrap">
-        <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:200px">
+      const name = a ? displayName(pick.kind, a) : pick.assetId;
+      const elim = a ? !!a.eliminated : false;
+      const earned = a ? (a.totalPoints || 0) : (pick.points || 0);
+      const paid   = pick.purchasePrice ?? 0;
+      const marketV = mv(a);
+      const sellPrice = pick.__sellPrice ?? sell(a);
+
+      let stagedTag = '';
+      let actionBtn;
+      if (staged === 'sell') {
+        stagedTag = `<span class="kind-tag" style="background:#fee2e2;color:#991b1b">SELLING</span>`;
+        actionBtn = `<button data-undo-sell="${escape(pick.assetId)}" data-undo-kind="${pick.kind}">Undo</button>`;
+      } else if (staged === 'buy') {
+        stagedTag = `<span class="kind-tag" style="background:#d1fae5;color:#065f46">BUYING</span>`;
+        actionBtn = `<button data-undo-buy="${escape(pick.assetId)}" data-undo-kind="${pick.kind}">Undo</button>`;
+      } else {
+        actionBtn = `<button data-sell-id="${escape(pick.assetId)}" data-sell-kind="${pick.kind}">Sell · $${sellPrice}</button>`;
+      }
+
+      // For 'buy'-staged rows, paid = buyPrice (already locked at click).
+      // For 'sell'-staged rows, we still show paid + sellPrice (what user will get).
+      return `<div class="item-row ${elim ? 'eliminated' : ''} ${staged ? 'staged' : ''}">
+        <div class="top">
           <span class="kind-tag ${pick.kind}">${pick.kind === 'team' ? 'T' : 'P'}</span>
           ${flagFor(pick.kind, a)}
-          <span class="item-name">${escape(name)} <span class="pts">${pts} pts</span></span>
+          <span class="item-name">${escape(name)}</span>
+          ${stagedTag}
         </div>
-        <span class="item-price">$${cur}</span>
-        <button data-sell-id="${escape(pick.assetId)}" data-sell-kind="${pick.kind}">Sell</button>
-        ${histHtml}
+        ${actionBtn}
+        <div class="metrics">
+          <span class="metric paid"><span class="lbl">Paid</span><span class="v">$${paid}</span></span>
+          <span class="metric earn"><span class="lbl">Earned</span><span class="v">${earned} pts</span></span>
+          <span class="metric mv"><span class="lbl">MV</span><span class="v">$${marketV}</span></span>
+          <span class="metric sell"><span class="lbl">Sell</span><span class="v">$${sellPrice}</span></span>
+        </div>
       </div>`;
     }).join('');
+
     portfolioList.querySelectorAll('[data-sell-id]').forEach(b => {
       b.addEventListener('click', () => sellPick(b.dataset.sellKind, b.dataset.sellId));
+    });
+    portfolioList.querySelectorAll('[data-undo-sell]').forEach(b => {
+      b.addEventListener('click', () => undoSell(b.dataset.undoKind, b.dataset.undoSell));
+    });
+    portfolioList.querySelectorAll('[data-undo-buy]').forEach(b => {
+      b.addEventListener('click', () => undoBuy(b.dataset.undoKind, b.dataset.undoBuy));
     });
   }
 
   function renderMarket() {
-    const ownedKey = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
+    const workKeys = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
     const q = searchBox.value.trim().toLowerCase();
     const kindF = kindFilter.value;
 
@@ -378,29 +478,30 @@
       Object.values(players).forEach(p => list.push({ kind: 'player', ...p }));
     }
     list = list
-      .filter(a => !ownedKey.has(`${a.kind}:${a.id}`))
-      .filter(a => !q || (a.name || '').toLowerCase().includes(q))
-      .sort((a, b) => (b.currentPrice ?? b.basePrice) - (a.currentPrice ?? a.basePrice)
-                       || a.name.localeCompare(b.name))
+      .filter(a => !workKeys.has(`${a.kind}:${a.id}`))
+      .filter(a => !q || (a.name || '').toLowerCase().includes(q)
+                || (a.kind === 'player' && a.club && a.club.toLowerCase().includes(q)))
+      .sort((a, b) => mv(b) - mv(a) || a.name.localeCompare(b.name))
       .slice(0, 200);
 
     marketList.innerHTML = list.map(a => {
-      const price = a.currentPrice ?? a.basePrice;
-      const elim  = !!a.eliminated;
-      const pts   = a.totalPoints || 0;
-      const histLine = a.kind === 'team'
-        ? teamHistoryBlurb(teamHistory[a.id])
-        : playerHistoryBlurb(playerHistory[a.id]);
-      const histHtml = histLine ? `<div class="muted" style="font-size:10px; margin-top:2px; padding-left:46px">${escape(histLine)}</div>` : '';
-      return `<div class="item-row ${elim ? 'eliminated' : ''}" style="flex-wrap:wrap">
-        <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:200px">
+      const elim = !!a.eliminated;
+      const pts = a.totalPoints || 0;
+      const marketV = mv(a);
+      const buyPrice = buy(a);
+      const buyDisabled = elim || marketV === 0;
+      return `<div class="item-row ${elim ? 'eliminated' : ''}">
+        <div class="top">
           <span class="kind-tag ${a.kind}">${a.kind === 'team' ? 'T' : 'P'}</span>
           ${flagFor(a.kind, a)}
-          <span class="item-name">${escape(displayName(a.kind, a))} <span class="pts">${pts} pts</span></span>
+          <span class="item-name">${escape(displayName(a.kind, a))}</span>
         </div>
-        <span class="item-price">$${price}</span>
-        <button data-buy-id="${escape(a.id)}" data-buy-kind="${a.kind}" ${elim ? 'disabled' : ''}>Buy</button>
-        ${histHtml}
+        <button data-buy-id="${escape(a.id)}" data-buy-kind="${a.kind}" ${buyDisabled ? 'disabled' : ''}>${buyDisabled ? '—' : `Buy · $${buyPrice}`}</button>
+        <div class="metrics">
+          <span class="metric earn"><span class="lbl">YTD</span><span class="v">${pts} pts</span></span>
+          <span class="metric mv"><span class="lbl">MV</span><span class="v">$${marketV}</span></span>
+          <span class="metric buy"><span class="lbl">Buy</span><span class="v">$${buyPrice}</span></span>
+        </div>
       </div>`;
     }).join('');
     marketList.querySelectorAll('[data-buy-id]').forEach(b => {
@@ -409,37 +510,46 @@
   }
 
   function renderSummary() {
-    const newVal = rosterCurrentValue(workingRoster);
-    const origVal = rosterCurrentValue(originalRoster);
-
+    const left = currentBudgetLeft();
     newPicks.textContent = workingRoster.length;
-    newSpent.textContent = `$${newVal}`;
-    const left = BUDGET - newVal;
     newBudget.textContent = `$${left}`;
     newBudget.classList.toggle('warn', left < 0);
 
-    const net = newVal - origVal;
+    const origKeys = new Set(originalRoster.map(p => `${p.kind}:${p.assetId}`));
+    const workKeys = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
+    const sold = originalRoster.filter(p => !workKeys.has(`${p.kind}:${p.assetId}`));
+    const bought = workingRoster.filter(p => !origKeys.has(`${p.kind}:${p.assetId}`));
+    netSold.textContent = sold.length;
+    netBought.textContent = bought.length;
+
+    const cashIn  = sold.reduce((s, p) => s + (p.__sellPrice ?? sell(getAsset(p.kind, p.assetId))), 0);
+    const cashOut = bought.reduce((s, p) => s + p.purchasePrice, 0);
+    const net = cashIn - cashOut;
     netChange.textContent = (net >= 0 ? '+' : '−') + '$' + Math.abs(net);
-    netChange.classList.toggle('warn', net > 0);
+    netChange.classList.toggle('warn', net < 0);
 
-    // Diff summary
-    const orig = new Set(originalRoster.map(p => `${p.kind}:${p.assetId}`));
-    const now  = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
-    const sold = [...orig].filter(x => !now.has(x)).length;
-    const bought = [...now].filter(x => !orig.has(x)).length;
-    changesSummary.textContent = `${sold} sold · ${bought} bought`;
-
-    // Save button gating
     const overBudget = left < 0;
     const overCap = workingRoster.length > ROSTER_CAP;
-    const noChange = sold === 0 && bought === 0;
-    saveBtn.disabled = (
-      !configDoc.transferWindowOpen || overBudget || overCap || noChange
-    );
+    const noChange = sold.length === 0 && bought.length === 0;
+    changesSummary.textContent = `${sold.length} sold · ${bought.length} bought`;
+    saveBtn.disabled = (!configDoc.transferWindowOpen || overBudget || overCap || noChange);
   }
 
   function sellPick(kind, assetId) {
+    // Freeze the sell price at click-time onto the original pick record
+    // so the price the user saw is the price they get even if MV refreshes.
+    const idx = originalRoster.findIndex(p => p.kind === kind && p.assetId === assetId);
+    if (idx >= 0 && originalRoster[idx].__sellPrice == null) {
+      originalRoster[idx].__sellPrice = sell(getAsset(kind, assetId));
+    }
     workingRoster = workingRoster.filter(p => !(p.kind === kind && p.assetId === assetId));
+    render();
+  }
+
+  function undoSell(kind, assetId) {
+    const orig = originalRoster.find(p => p.kind === kind && p.assetId === assetId);
+    if (!orig) return;
+    workingRoster.push({...orig});
     render();
   }
 
@@ -447,9 +557,9 @@
     if (workingRoster.length >= ROSTER_CAP) { showToast(`Max ${ROSTER_CAP} picks`, true); return; }
     const a = getAsset(kind, assetId);
     if (!a) return;
-    const price = a.currentPrice ?? a.basePrice;
-    const spent = rosterCurrentValue(workingRoster);
-    if (spent + price > BUDGET) { showToast(`Over budget by $${spent + price - BUDGET}`, true); return; }
+    const price = buy(a);
+    const left = currentBudgetLeft();
+    if (left < price) { showToast(`Over budget by $${price - left}`, true); return; }
     workingRoster.push({
       assetId, kind,
       purchasePrice: price,
@@ -458,8 +568,14 @@
     render();
   }
 
+  function undoBuy(kind, assetId) {
+    workingRoster = workingRoster.filter(p => !(p.kind === kind && p.assetId === assetId));
+    render();
+  }
+
   resetBtn.addEventListener('click', () => {
     workingRoster = originalRoster.map(p => ({...p}));
+    originalRoster.forEach(p => delete p.__sellPrice);
     render();
   });
 
@@ -474,33 +590,40 @@
       );
       const batch = writeBatch(window.fwc.db);
 
-      const orig = new Set(originalRoster.map(p => `${p.kind}:${p.assetId}`));
-      const now  = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
-      const sells = originalRoster.filter(p => !now.has(`${p.kind}:${p.assetId}`));
-      const buys  = workingRoster.filter(p => !orig.has(`${p.kind}:${p.assetId}`));
+      const origKeys = new Set(originalRoster.map(p => `${p.kind}:${p.assetId}`));
+      const workKeys = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
+      const sells = originalRoster.filter(p => !workKeys.has(`${p.kind}:${p.assetId}`));
+      const buys  = workingRoster.filter(p => !origKeys.has(`${p.kind}:${p.assetId}`));
 
-      // Update user doc
       const userRef = doc(window.fwc.db, 'users', currentUser.uid);
-      const spent = rosterCurrentValue(workingRoster);
+      const left = currentBudgetLeft();
+      // Strip internal __sellPrice markers before persisting
+      const cleanRoster = workingRoster.map(({ __sellPrice, ...rest }) => rest);
       batch.set(userRef, {
-        roster: workingRoster,
-        totalSpent: spent,
-        currentBudget: BUDGET - spent,
+        roster: cleanRoster,
+        currentBudget: left,
       }, { merge: true });
 
-      // Add a transaction record
       const txRef = doc(collection(window.fwc.db, 'transactions'));
       batch.set(txRef, {
         uid: currentUser.uid,
         round: configDoc.currentRound || null,
         timestamp: new Date().toISOString(),
-        sells: sells.map(p => ({ kind: p.kind, assetId: p.assetId, soldAt: getAsset(p.kind, p.assetId)?.currentPrice ?? p.purchasePrice })),
-        buys:  buys.map(p => ({ kind: p.kind, assetId: p.assetId, boughtAt: p.purchasePrice })),
+        sells: sells.map(p => ({
+          kind: p.kind, assetId: p.assetId,
+          paidPrice: p.purchasePrice,
+          soldAt: p.__sellPrice ?? sell(getAsset(p.kind, p.assetId)),
+        })),
+        buys: buys.map(p => ({
+          kind: p.kind, assetId: p.assetId,
+          boughtAt: p.purchasePrice,
+        })),
       });
 
       await batch.commit();
       showToast('Transfers saved!', false);
-      originalRoster = workingRoster.map(p => ({...p}));
+      originalRoster = cleanRoster.map(p => ({...p}));
+      originalBudgetLeft = left;
       render();
     } catch (e) {
       console.error(e);
