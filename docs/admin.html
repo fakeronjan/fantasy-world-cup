@@ -460,23 +460,16 @@
 
   function scorerColumn(matchId, side, teamName, score, teamSlug, players, savedScorers) {
     const existing = (savedScorers || []).filter(s => s.side === side);
-    const optsHtml = players.map(p =>
-      `<option value="${escape(p.id)}">${escape(p.name)} (${escape(p.position || '?')})</option>`
+    const optsFor = (selectedId) => players.map(p =>
+      `<option value="${escape(p.id)}"${p.id === selectedId ? ' selected' : ''}>${escape(p.name)} (${escape(p.position || '?')})</option>`
     ).join('');
-    const rows = existing.length
-      ? existing.map(s => `
-          <div class="scorer-row" data-side="${side}">
-            <select data-player>${optsHtml}</select>
-            <input type="number" min="1" value="${s.count || 1}" data-count>
-            <button data-remove="x">×</button>
-          </div>
-        `).join('') + `<script>
-          (function(){ const rows = document.querySelectorAll('#mform-${matchId} .scorer-row[data-side="${side}"]');
-            const saved = ${JSON.stringify(existing)};
-            rows.forEach((r,i)=>{ if(saved[i]) r.querySelector('select').value = saved[i].playerId; });
-          })();
-        </script>`
-      : '';
+    const rows = existing.map(s => `
+      <div class="scorer-row" data-side="${side}">
+        <select data-player>${optsFor(s.playerId)}</select>
+        <input type="number" min="1" value="${s.count || 1}" data-count>
+        <button data-remove="x">×</button>
+      </div>
+    `).join('');
     return `<div class="scorer-col" data-side="${side}">
       <h3>${escape(teamName)} <span class="muted">(score: ${score ?? '?'})</span></h3>
       <div class="scorer-rows" id="rows-${matchId}-${side}">${rows}</div>
