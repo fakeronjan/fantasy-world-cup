@@ -15,6 +15,11 @@ serviceAccount*.json
 .env
 .env.local
 
+# Firebase CLI artifacts
+firebase-debug.log
+firestore-debug.log
+.firebase/
+
 # OS
 .DS_Store
 Thumbs.db
