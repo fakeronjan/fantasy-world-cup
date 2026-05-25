@@ -51,6 +51,19 @@ _STAGE_MAP = {
     "FINAL":         "F",
 }
 
+# When round X completes, transition to round X+1.
+NEXT_ROUND = {
+    "group": "R32",
+    "R32":   "R16",
+    "R16":   "QF",
+    "QF":    "SF",
+    "SF":    "F",
+    "F":     "done",
+}
+
+# Transfer window auto-closes this many seconds before next round's first match
+WINDOW_CLOSE_LEAD_SECONDS = 3600  # 1 hour
+
 
 # ---------------------------------------------------------------------------
 # Step 1: sync match catalog + fetch detail for newly-finished matches
@@ -454,6 +467,141 @@ def recompute_users(db) -> list[dict]:
     return leaderboard
 
 
+def maybe_transition_round(db, cfg: dict) -> str | None:
+    """Detect round completion + transition to next round.
+
+    A round is complete when all matches with that round label are
+    status=FINISHED. On transition:
+      1. Set config.currentRound to next round
+      2. Open transfer window
+      3. Run reprice (forward-looking pricing + auto-sell + value snapshots)
+
+    Idempotent — once currentRound has advanced, the new round's matches
+    are checked instead of the old, so we don't re-fire.
+    Returns the new round label if a transition happened, else None."""
+    current = (cfg.get("currentRound") or "pre")
+    if current == "done":
+        return None
+
+    # Special case: pre → group. Triggered the first time ANY match has
+    # status != SCHEDULED (kickoff has begun). Doesn't open a transfer
+    # window — that opens after group stage completes.
+    if current == "pre":
+        for mdoc in db.collection("matches").stream():
+            m = mdoc.to_dict() or {}
+            if m.get("status") and m.get("status") != "SCHEDULED":
+                db.collection("config").document("global").set({
+                    "currentRound": "group",
+                }, merge=True)
+                print(f"  Kickoff detected — pre → group (no transfer window)")
+                return "group"
+        return None
+
+    # Collect all matches for the current round
+    round_matches = []
+    for mdoc in db.collection("matches").stream():
+        m = mdoc.to_dict() or {}
+        if m.get("round") == current:
+            round_matches.append(m)
+
+    if not round_matches:
+        return None
+    if not all(m.get("status") == "FINISHED" for m in round_matches):
+        return None  # round not done yet
+
+    nxt = NEXT_ROUND.get(current)
+    if not nxt:
+        return None
+
+    if nxt == "done":
+        db.collection("config").document("global").set({
+            "currentRound":        "done",
+            "transferWindowOpen":  False,
+        }, merge=True)
+        print(f"  Tournament complete — currentRound=done, window closed")
+        return nxt
+
+    print(f"  Round transition detected: {current} → {nxt}")
+    db.collection("config").document("global").set({
+        "currentRound":       nxt,
+        "transferWindowOpen": True,
+    }, merge=True)
+    print(f"  Set currentRound={nxt}, transferWindowOpen=True")
+
+    # Trigger reprice for the new round
+    try:
+        from collections import defaultdict
+        from reprice import (
+            live_advancers, reprice as compute_reprice,
+            write_prices_to_firestore, auto_sell_eliminated_picks,
+            snapshot_user_values,
+        )
+        from simulate_2026 import load_seed
+        teams, players = load_seed()
+        players_by_team = defaultdict(list)
+        for p in players:
+            players_by_team[p["teamId"]].append(p)
+
+        advancers = live_advancers(db, nxt)
+        if not advancers:
+            print(f"  WARN: no advancers found for {nxt}. Did ingest mark finalRound correctly?")
+            return nxt
+
+        print(f"  Repricing for {nxt} ({len(advancers)} advancers, 1000 sims)...")
+        prices = compute_reprice(advancers, nxt, players_by_team, runs=1000, seed=42)
+        write_prices_to_firestore(db, prices, advancers, teams, nxt)
+        auto_sell_eliminated_picks(db)
+        snapshot_user_values(db, nxt)
+        print(f"  Reprice + auto-sell + snapshot complete for {nxt}")
+    except Exception as e:
+        print(f"  ERROR during reprice trigger: {e}")
+        # Don't crash the whole ingest — window is open, admin can re-run
+        # reprice manually if needed.
+    return nxt
+
+
+def maybe_close_window(db, cfg: dict) -> bool:
+    """Close the transfer window when next round's first match is imminent.
+
+    Idempotent: no-op if window is already closed or no match is within
+    WINDOW_CLOSE_LEAD_SECONDS. Returns True if we closed it this call."""
+    if not cfg.get("transferWindowOpen"):
+        return False
+    current = (cfg.get("currentRound") or "pre")
+    if current in ("pre", "done"):
+        return False
+
+    # Earliest unplayed match for the CURRENT round (the round about to start)
+    earliest_iso = None
+    for mdoc in db.collection("matches").stream():
+        m = mdoc.to_dict() or {}
+        if m.get("round") != current:
+            continue
+        if m.get("status") == "FINISHED":
+            continue
+        utc = m.get("utcDate")
+        if utc and (earliest_iso is None or utc < earliest_iso):
+            earliest_iso = utc
+
+    if not earliest_iso:
+        return False
+
+    now = datetime.now(timezone.utc)
+    try:
+        earliest_dt = datetime.fromisoformat(earliest_iso.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    delta = (earliest_dt - now).total_seconds()
+    if delta > WINDOW_CLOSE_LEAD_SECONDS:
+        return False
+
+    db.collection("config").document("global").set({
+        "transferWindowOpen": False,
+    }, merge=True)
+    print(f"  Transfer window closed — {current} first match starts in {int(delta/60)}min")
+    return True
+
+
 def write_leaderboard_snapshot(db, entries: list[dict]) -> None:
     entries.sort(key=lambda e: e["totalPoints"], reverse=True)
     for i, e in enumerate(entries, 1):
@@ -492,6 +640,18 @@ def main() -> None:
     print("Step 4: recompute user totals + leaderboard snapshot…")
     leaderboard = recompute_users(db)
     write_leaderboard_snapshot(db, leaderboard)
+
+    # Reload config — Steps 1-4 may have changed it (e.g., kickoff detection).
+    cfg = db.collection("config").document("global").get().to_dict() or {}
+
+    print("Step 5: check for round transition…")
+    transitioned = maybe_transition_round(db, cfg)
+    if transitioned:
+        # Re-fetch config since the transition just changed it
+        cfg = db.collection("config").document("global").get().to_dict() or {}
+
+    print("Step 6: check if transfer window should auto-close…")
+    maybe_close_window(db, cfg)
 
     print("\nDone. Live state refreshed.")
 
