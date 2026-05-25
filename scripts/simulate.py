@@ -764,9 +764,9 @@ PRESETS: list[tuple[str, ScoringWeights, PlayerPricing]] = [
     # Target: champion ≈ 1.4x top scorer (not 2.2x). Same ~$15 price band.
     ("F. RECOMMENDED: integer weights, less high-end team variance",
      ScoringWeights(
-        team_win=4, team_draw=1,
-        bonus_r32=2, bonus_r16=3, bonus_qf=5, bonus_sf=8,
-        bonus_final=12, bonus_champion=20,
+        team_win=3, team_draw=1,
+        bonus_r32=1, bonus_r16=2, bonus_qf=3, bonus_sf=5,
+        bonus_final=8, bonus_champion=12,
         # Player scoring: user's design, all integer
         player_goal=5, player_assist=0,
         player_clean_sheet_gk=5, player_clean_sheet_def=2, player_clean_sheet_other=0,

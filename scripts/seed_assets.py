@@ -30,14 +30,14 @@ INITIAL_CONFIG = {
     "transferWindowOpen": False,
     "scoringWeights": {
         # Locked 2026-05-25 (Deep Data upgrade) — all integers.
-        "team_win": 4,
+        "team_win": 3,
         "team_draw": 1,
-        "bonus_r32": 2,
-        "bonus_r16": 3,
-        "bonus_qf": 5,
-        "bonus_sf": 8,
-        "bonus_final": 12,
-        "bonus_champion": 20,
+        "bonus_r32": 1,
+        "bonus_r16": 2,
+        "bonus_qf": 3,
+        "bonus_sf": 5,
+        "bonus_final": 8,
+        "bonus_champion": 12,
         # Player side
         "player_goal": 5,
         "player_assist": 3,                # restored after Deep Data tier unlocked assist data
