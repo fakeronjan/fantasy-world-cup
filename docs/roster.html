@@ -253,15 +253,34 @@
   }
 
   async function loadCatalog() {
+    // Try Firestore first (has live currentPrice / priceHistory). Fall
+    // back to the static JSON if Firestore reads fail (e.g., signed out).
+    let fromFirestore = false;
     try {
-      const res = await fetch('./data/seed_teams.json');
-      teams = await res.json();
-      teamIdToEmoji = Object.fromEntries(teams.map(t => [t.id, t.emoji]));
-    } catch { teams = []; }
-    try {
-      const res = await fetch('./data/seed_players.json');
-      players = await res.json();
-    } catch { players = []; }
+      const { collection, getDocs } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      const ts = await getDocs(collection(window.fwc.db, 'teams'));
+      const ps = await getDocs(collection(window.fwc.db, 'players'));
+      if (ts.size && ps.size) {
+        teams = []; players = [];
+        ts.forEach(d => teams.push({ id: d.id, ...d.data() }));
+        ps.forEach(d => players.push({ id: d.id, ...d.data() }));
+        teamIdToEmoji = Object.fromEntries(teams.map(t => [t.id, t.emoji]));
+        fromFirestore = true;
+      }
+    } catch { /* fall through to JSON */ }
+    if (!fromFirestore) {
+      try {
+        const res = await fetch('./data/seed_teams.json');
+        teams = await res.json();
+        teamIdToEmoji = Object.fromEntries(teams.map(t => [t.id, t.emoji]));
+      } catch { teams = []; }
+      try {
+        const res = await fetch('./data/seed_players.json');
+        players = await res.json();
+      } catch { players = []; }
+    }
     try {
       const res = await fetch('./data/team_history.json');
       teamHistory = await res.json();
@@ -470,6 +489,18 @@
         if (th && th.recentTitles) honorsHtml = honorPillsHtml(th.recentTitles, 'recent-title');
       }
 
+      // Per-asset price journey (Stage 2): if Firestore has priceHistory
+      // for this pick, render a tiny "Draft $14 → R32 $12 → R16 $6" arc.
+      // Pre-tournament this will be empty.
+      let priceArcHtml = '';
+      const ph = catalog?.priceHistory || [];
+      if (ph.length) {
+        const arc = [`Draft $${bought}`, ...ph.map(h =>
+          `${h.round} $${h.marketValue}`
+        )].join(' → ');
+        priceArcHtml = `<div class="muted" style="font-size:10px; margin-top:2px; padding-left:32px; font-style:italic">${escape(arc)}</div>`;
+      }
+
       // Team rows: show top-3 players for context
       let topPlayersHtml = '';
       if (pick.kind === 'team') {
@@ -482,7 +513,7 @@
 
       return `<tr class="${eliminated ? 'eliminated' : ''}">
         <td class="rank-cell">${i + 1}</td>
-        <td class="team-cell">${flagImg}${escape(name)}${sublineHtml}${topPlayersHtml}${honorsHtml}</td>
+        <td class="team-cell">${flagImg}${escape(name)}${sublineHtml}${topPlayersHtml}${honorsHtml}${priceArcHtml}</td>
         <td><span class="kind-badge kind-${pick.kind}">${pick.kind}</span></td>
         <td><span class="tier-badge tier-${tier}">T${tier}</span></td>
         <td style="font-size:11px; color:var(--text-muted)">${purchasedAt}</td>

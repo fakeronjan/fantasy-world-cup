@@ -250,7 +250,7 @@ def live_advancers(db, start_round):
     return advancers
 
 
-def write_prices_to_firestore(db, prices, advancers, all_teams):
+def write_prices_to_firestore(db, prices, advancers, all_teams, round_label):
     """Persist marketValue/buyPrice/sellPrice to each team + player doc.
     Eliminated assets get marketValue=0 + sellPrice = liquidationValue.
 
@@ -258,6 +258,9 @@ def write_prices_to_firestore(db, prices, advancers, all_teams):
     elimination — subsequent reruns leave it alone. This guarantees that
     auto-sell refunds users the same amount no matter how many times we
     reprice after an elimination event.
+
+    Also appends to priceHistory[] on each asset (one entry per round) so
+    the roster page can show each held pick's price arc over time.
     """
     alive_ids = {t["id"] for t in advancers}
 
@@ -269,27 +272,47 @@ def write_prices_to_firestore(db, prices, advancers, all_teams):
         t = tdoc.to_dict() or {}
         if tid in prices:
             p = prices[tid]
+            new_hist = list(t.get("priceHistory") or [])
+            # Append a snapshot for this round, unless we already have one
+            # (idempotent across reruns within the same round).
+            if not any(h.get("round") == round_label for h in new_hist):
+                new_hist.append({
+                    "round":       round_label,
+                    "marketValue": p["marketValue"],
+                    "buyPrice":    p["buyPrice"],
+                    "sellPrice":   p["sellPrice"],
+                })
             teams_batch.set(tdoc.reference, {
                 "marketValue":      p["marketValue"],
                 "buyPrice":         p["buyPrice"],
                 "sellPrice":        p["sellPrice"],
                 "currentPrice":     p["marketValue"],  # back-compat alias
                 "meanFuturePoints": p["meanFuturePoints"],
+                "priceHistory":     new_hist,
             }, merge=True)
             n_alive += 1
         elif t.get("liquidationValue") is not None:
-            # Already processed in a prior run — leave it alone
             n_elim_existing += 1
         else:
             # Newly eliminated — capture liquidation value FROM LAST KNOWN MV
+            # and append a final priceHistory entry marking the exit.
             last_mv = t.get("marketValue") or t.get("currentPrice") or t.get("basePrice", 0)
             liquidation = liquidation_price(last_mv)
+            new_hist = list(t.get("priceHistory") or [])
+            if not any(h.get("round") == f"{round_label}-out" for h in new_hist):
+                new_hist.append({
+                    "round":       f"{round_label}-out",
+                    "marketValue": 0,
+                    "buyPrice":    None,
+                    "sellPrice":   liquidation,
+                })
             teams_batch.set(tdoc.reference, {
                 "marketValue":      0,
                 "liquidationValue": liquidation,   # frozen; never updated again
                 "buyPrice":         None,
                 "sellPrice":        liquidation,
                 "currentPrice":     0,
+                "priceHistory":     new_hist,
             }, merge=True)
             n_elim_new += 1
     teams_batch.commit()
@@ -303,12 +326,21 @@ def write_prices_to_firestore(db, prices, advancers, all_teams):
         p = pdoc.to_dict() or {}
         if pid in prices:
             pr = prices[pid]
+            new_hist = list(p.get("priceHistory") or [])
+            if not any(h.get("round") == round_label for h in new_hist):
+                new_hist.append({
+                    "round":       round_label,
+                    "marketValue": pr["marketValue"],
+                    "buyPrice":    pr["buyPrice"],
+                    "sellPrice":   pr["sellPrice"],
+                })
             players_batch.set(pdoc.reference, {
                 "marketValue":      pr["marketValue"],
                 "buyPrice":         pr["buyPrice"],
                 "sellPrice":        pr["sellPrice"],
                 "currentPrice":     pr["marketValue"],
                 "meanFuturePoints": pr["meanFuturePoints"],
+                "priceHistory":     new_hist,
             }, merge=True)
             n_p_alive += 1
         elif p.get("liquidationValue") is not None:
@@ -316,6 +348,14 @@ def write_prices_to_firestore(db, prices, advancers, all_teams):
         else:
             last_mv = p.get("marketValue") or p.get("currentPrice") or p.get("basePrice", 0)
             liquidation = liquidation_price(last_mv)
+            new_hist = list(p.get("priceHistory") or [])
+            if not any(h.get("round") == f"{round_label}-out" for h in new_hist):
+                new_hist.append({
+                    "round":       f"{round_label}-out",
+                    "marketValue": 0,
+                    "buyPrice":    None,
+                    "sellPrice":   liquidation,
+                })
             players_batch.set(pdoc.reference, {
                 "marketValue":      0,
                 "liquidationValue": liquidation,
@@ -323,10 +363,39 @@ def write_prices_to_firestore(db, prices, advancers, all_teams):
                 "sellPrice":        liquidation,
                 "currentPrice":     0,
                 "eliminated":       True,
+                "priceHistory":     new_hist,
             }, merge=True)
             n_p_elim_new += 1
     players_batch.commit()
     print(f"  players: {n_p_alive} repriced, {n_p_elim_new} newly eliminated, {n_p_elim_existing} already-eliminated")
+
+
+def snapshot_user_values(db, round_label):
+    """After repricing, snapshot every user's total roster $-value into
+    user.valueByRound[round_label] = currentBudget + sum(currentPrice of held picks).
+
+    Used by the roster page to render a "total value over time" chart.
+    Idempotent: overwrites the value for this round_label if rerun."""
+    teams_cache = {d.id: d.to_dict() for d in db.collection("teams").stream()}
+    players_cache = {d.id: d.to_dict() for d in db.collection("players").stream()}
+
+    n_users = 0
+    for udoc in db.collection("users").stream():
+        u = udoc.to_dict() or {}
+        roster = u.get("roster") or []
+        budget = u.get("currentBudget") or 0
+        held_value = 0
+        for pick in roster:
+            cache = teams_cache if pick["kind"] == "team" else players_cache
+            asset = cache.get(pick["assetId"]) or {}
+            held_value += int(asset.get("currentPrice") or 0)
+        total = int(budget) + held_value
+
+        vbr = dict(u.get("valueByRound") or {})
+        vbr[round_label] = total
+        udoc.reference.set({"valueByRound": vbr}, merge=True)
+        n_users += 1
+    print(f"  snapshot: wrote valueByRound[{round_label}] for {n_users} users")
 
 
 def auto_sell_eliminated_picks(db):
@@ -479,10 +548,14 @@ def main():
 
     if args.write and db is not None:
         print(f"\nWriting prices to Firestore...")
-        write_prices_to_firestore(db, prices, advancers, teams)
+        write_prices_to_firestore(db, prices, advancers, teams, args.from_round)
         if not args.skip_auto_sell:
             print(f"Auto-selling eliminated picks from user rosters...")
             auto_sell_eliminated_picks(db)
+        # Snapshot user totals AFTER auto-sell so the chart reflects the
+        # post-elimination state (refund credited, dead picks removed).
+        print(f"Snapshotting user roster values for round {args.from_round}...")
+        snapshot_user_values(db, args.from_round)
         print("Done.")
     elif not args.write:
         print(f"\n[Dry-run only. Pass --write to persist to Firestore.]")
