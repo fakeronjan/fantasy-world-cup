@@ -540,6 +540,71 @@ def _top_up_to_100(picks, teams, players, used_ids):
     return picks
 
 
+def build_controlled_contestants(teams, players):
+    """6 archetypes that vary ONE dimension at a time:
+       (teams | players)  ×  (top-heavy | middle | cinderella)
+    Lets us cleanly answer:
+       a) teams vs players
+       b) team distribution effects
+       c) player distribution effects"""
+    teams_desc   = sorted(teams,   key=lambda x: -x["basePrice"])
+    teams_asc    = sorted(teams,   key=lambda x:  x["basePrice"])
+    players_desc = sorted(players, key=lambda x: -x["basePrice"])
+    players_asc  = sorted(players, key=lambda x:  x["basePrice"])
+    teams_mid    = [t for t in teams   if 8 <= t["basePrice"] <= 15]
+    players_mid  = [p for p in players if 8 <= p["basePrice"] <= 14]
+
+    def fill_greedy(pool, kind, budget=100, cap=20):
+        """Greedy: walk pool in given order, take each that fits."""
+        picks, spent = [], 0
+        for a in pool:
+            if len(picks) >= cap: break
+            if spent + a["basePrice"] <= budget:
+                picks.append(("team" if kind == "team" else "player", a["id"]))
+                spent += a["basePrice"]
+            if spent == budget: break
+        return picks
+
+    out = []
+
+    # A1. All TEAMS, TOP-heavy (most expensive first)
+    out.append({"name": "A. Teams — TOP-heavy",
+                "picks": fill_greedy(teams_desc, "team")})
+
+    # A2. All TEAMS, MIDDLE (only $8-15 teams)
+    out.append({"name": "B. Teams — MIDDLE ($8-15)",
+                "picks": fill_greedy(sorted(teams_mid, key=lambda x: -x["basePrice"]), "team")})
+
+    # A3. All TEAMS, CINDERELLA — capped at $10 to allow $100 spend within 20 picks
+    cinderella_teams_desc = sorted([t for t in teams if t["basePrice"] <= 10],
+                                     key=lambda x: -x["basePrice"])
+    out.append({"name": "C. Teams — CINDERELLA (≤$10)",
+                "picks": fill_greedy(cinderella_teams_desc, "team")})
+
+    # B1. All PLAYERS, TOP-heavy
+    out.append({"name": "D. Players — TOP-heavy",
+                "picks": fill_greedy(players_desc, "player")})
+
+    # B2. All PLAYERS, MIDDLE ($8-14)
+    out.append({"name": "E. Players — MIDDLE ($8-14)",
+                "picks": fill_greedy(sorted(players_mid, key=lambda x: -x["basePrice"]), "player")})
+
+    # B3. All PLAYERS, CINDERELLA — capped at $7, descending to spend budget faster
+    cinderella_players_desc = sorted([p for p in players if p["basePrice"] <= 7],
+                                       key=lambda x: -x["basePrice"])
+    out.append({"name": "F. Players — CINDERELLA (≤$7)",
+                "picks": fill_greedy(cinderella_players_desc, "player")})
+
+    # Top up any contestant that didn't hit $100 (cinderella often runs out of
+    # picks before $100 is fully spent). Top-up uses _top_up_to_100 which
+    # picks the LARGEST-priced unused asset that fits.
+    for c in out:
+        used = set(c["picks"])
+        c["picks"] = _top_up_to_100(c["picks"], teams, players, used)
+
+    return out
+
+
 def build_contestants(teams, players):
     """Build 15 mock contestants with $100 rosters spanning the strategy space.
     Returns list of {name, picks: [(kind, id), ...], total_cost, total_picks}.
@@ -809,6 +874,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--runs", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--controlled", action="store_true",
+                        help="Use the 6 controlled archetypes instead of 15")
     args = parser.parse_args()
 
     if args.seed is not None:
@@ -824,7 +891,8 @@ def main() -> None:
 
     print(f"Loaded {len(teams)} teams, {len(players)} players, {len(matches)} matches.")
 
-    contestants = build_contestants(teams, players)
+    contestants = (build_controlled_contestants(teams, players)
+                    if args.controlled else build_contestants(teams, players))
     print(f"\nBuilt {len(contestants)} contestants:")
     for c in contestants:
         cost = 0
@@ -845,6 +913,9 @@ def main() -> None:
 
     contestant_scores = [[] for _ in contestants]
     champion_counts = defaultdict(int)
+    # For per-tier ROI: accumulate per-asset point totals across sims
+    team_points_acc   = defaultdict(list)   # team_id   → [pts per sim]
+    player_points_acc = defaultdict(list)   # player_id → [pts per sim]
 
     for run in range(args.runs):
         if run % 100 == 0 and run > 0:
@@ -860,6 +931,12 @@ def main() -> None:
         )
         if result["champion_id"]:
             champion_counts[result["champion_id"]] += 1
+
+        # Per-asset accumulation
+        for tid, pts in team_pts.items():
+            team_points_acc[tid].append(pts)
+        for pid, pts in player_pts.items():
+            player_points_acc[pid].append(pts)
 
         for i, c in enumerate(contestants):
             total = 0
@@ -906,6 +983,52 @@ def main() -> None:
     for cid, cnt in top_champs:
         team = by_slug.get(cid, {})
         print(f"    {team.get('name', cid):<22}  ${team.get('basePrice'):>2}  {cnt:>4} wins  ({100*cnt/args.runs:.1f}%)")
+
+    # ---- Per-tier ROI (the user's question d + e) -----------------------
+    print(f"\n\n{'='*80}")
+    print("  PER-PRICE-TIER ROI (mean points across all sims, by exact price)")
+    print(f"{'='*80}")
+
+    def _tier_report(label, points_acc, asset_lookup):
+        print(f"\n  {label}:")
+        print(f"    {'price':>6} {'n_assets':>10} {'mean':>7} {'p25':>6} {'p75':>6} {'pts/$':>7} {'break%':>7}")
+        # Group assets by price
+        by_price = defaultdict(list)
+        for aid, pts_list in points_acc.items():
+            asset = asset_lookup.get(aid)
+            if not asset: continue
+            for pts in pts_list:
+                by_price[asset["basePrice"]].append(pts)
+        for price in sorted(by_price.keys(), reverse=True):
+            pts_list = by_price[price]
+            n_unique = sum(1 for aid in points_acc
+                            if asset_lookup.get(aid, {}).get("basePrice") == price)
+            mean = sum(pts_list) / len(pts_list)
+            s = sorted(pts_list)
+            p25 = s[len(s) // 4]
+            p75 = s[(3 * len(s)) // 4]
+            roi = mean / price
+            breakeven = 100 * sum(1 for p in pts_list if p >= price) / len(pts_list)
+            print(f"    ${price:>5} {n_unique:>10} {mean:>7.1f} {p25:>6.0f} {p75:>6.0f} {roi:>7.2f} {breakeven:>6.0f}%")
+
+    _tier_report("TEAMS",   team_points_acc,   teams_by_slug_dict)
+    _tier_report("PLAYERS", player_points_acc, players_by_id_dict)
+
+    # ---- Aggregate by broader strategy archetype (question a/b/c) -----
+    if args.controlled:
+        print(f"\n\n{'='*80}")
+        print("  STRATEGY HEAD-TO-HEAD (controlled archetypes)")
+        print(f"{'='*80}")
+        team_means   = [statistics.mean(contestant_scores[i]) for i in range(3)]
+        player_means = [statistics.mean(contestant_scores[i]) for i in range(3, 6)]
+        print(f"\n  (a) Teams vs Players (avg across distributions):")
+        print(f"        All TEAMS  : {statistics.mean(team_means):>6.1f}")
+        print(f"        All PLAYERS: {statistics.mean(player_means):>6.1f}")
+        diff = statistics.mean(team_means) - statistics.mean(player_means)
+        winner = "TEAMS" if diff > 0 else "PLAYERS"
+        print(f"        Winner: {winner} by {abs(diff):.1f} pts ({100*abs(diff)/min(statistics.mean(team_means), statistics.mean(player_means)):.0f}%)")
+        print(f"\n  (b) TEAM distribution:    TOP={team_means[0]:.1f}  MID={team_means[1]:.1f}  CINDERELLA={team_means[2]:.1f}")
+        print(f"  (c) PLAYER distribution:  TOP={player_means[0]:.1f}  MID={player_means[1]:.1f}  CINDERELLA={player_means[2]:.1f}")
 
 
 if __name__ == "__main__":
