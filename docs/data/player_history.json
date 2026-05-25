@@ -1,0 +1,2824 @@
+{
+  "8633-algeria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8466-algeria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8069-algeria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3218-argentina": {
+    "wcsPlayed": 5,
+    "wcYears": [
+      2006,
+      2010,
+      2014,
+      2018,
+      2022
+    ],
+    "goals": 13,
+    "titles": 1,
+    "titleYears": [
+      2022
+    ],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2014
+    ],
+    "tag": "GOAT",
+    "_source": "manual"
+  },
+  "45681-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 1,
+    "titleYears": [
+      2022
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "3141-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 0,
+    "titles": 1,
+    "titleYears": [
+      2022
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "Golden Glove 2022",
+    "_source": "manual"
+  },
+  "102603-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 1,
+    "titleYears": [
+      2022
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "Young Player 2022",
+    "_source": "manual"
+  },
+  "98571-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 4,
+    "titles": 1,
+    "titleYears": [
+      2022
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "3214-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3212-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "46452-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 1,
+    "titleYears": [
+      2022
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3205-argentina": {
+    "wcsPlayed": 3,
+    "wcYears": [
+      2014,
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 1,
+    "titleYears": [
+      2022
+    ],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2014
+    ],
+    "_source": "manual"
+  },
+  "2127-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 0,
+    "titles": 1,
+    "titleYears": [
+      2022
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "6-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "46554-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2010
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "46046-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "45680-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3208-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "79953-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3407-australia": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2018
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3403-australia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "4697-australia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "56829-austria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "349-austria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "9549-austria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "9551-austria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8223-austria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "99775-belgium": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3654-belgium": {
+    "wcsPlayed": 3,
+    "wcYears": [
+      2014,
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "3rd place 2018",
+    "_source": "manual"
+  },
+  "3662-belgium": {
+    "wcsPlayed": 3,
+    "wcYears": [
+      2014,
+      2018,
+      2022
+    ],
+    "goals": 8,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "3rd place 2018",
+    "_source": "manual"
+  },
+  "3641-belgium": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "3rd place 2018",
+    "_source": "manual"
+  },
+  "3656-belgium": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8984-belgium": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3658-belgium": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "114024-belgium": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "129947-belgium": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "17645-bosnia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "65105-bosnia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "10836-bosnia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "1556-brazil": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "1795-brazil": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "3231-brazil": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "37428-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "1684-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3222-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "188487-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "23128-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "1543-brazil": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3225-brazil": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "138230-brazil": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2014,
+      2018
+    ],
+    "goals": 2,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "15958-canada": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8924-canada": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "21226-canada": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "30554-cape-verde": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "814-cape-verde": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "53172-cape-verde": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "365-colombia": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2014
+    ],
+    "goals": 6,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "22396-colombia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "WC debut",
+    "_source": "manual"
+  },
+  "202797-colombia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "106838-congo-dr": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "170838-congo-dr": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "98898-congo-dr": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "43-croatia": {
+    "wcsPlayed": 4,
+    "wcYears": [
+      2006,
+      2014,
+      2018,
+      2022
+    ],
+    "goals": 3,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2018
+    ],
+    "tag": "Golden Ball 2018",
+    "_source": "manual"
+  },
+  "318-croatia": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 3,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2018
+    ],
+    "_source": "historical-goals"
+  },
+  "3548-croatia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "122266-croatia": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "65-croatia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "2004-croatia": {
+    "wcsPlayed": 3,
+    "wcYears": [
+      2014,
+      2018,
+      2022
+    ],
+    "goals": 6,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2018
+    ],
+    "_source": "historical-goals"
+  },
+  "7437-curacao": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "7412-curacao": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "171283-curacao": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "1826-czechia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "15742-czechia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "62631-czechia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "215510-ecuador": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "40009-ecuador": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2014,
+      2022
+    ],
+    "goals": 6,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "121103-ecuador": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "32642-ecuador": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "125674-ecuador": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "24740-ecuador": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "24545-ecuador": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "114672-egypt": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3759-egypt": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "83057-egypt": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "125010-england": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "7888-england": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "99813-england": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 3,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "144892-england": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8215-england": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8004-england": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 8,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "Golden Boot 2018",
+    "_source": "manual"
+  },
+  "7848-england": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3313-england": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2018
+    ],
+    "goals": 2,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3309-england": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "118489-england": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "5457-england": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3374-france": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 12,
+    "titles": 1,
+    "titleYears": [
+      2018
+    ],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2022
+    ],
+    "tag": "Golden Boot 2022",
+    "_source": "manual"
+  },
+  "8514-france": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2022
+    ],
+    "_source": "historical-goals"
+  },
+  "102343-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3373-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3368-france": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2022
+    ],
+    "_source": "historical-goals"
+  },
+  "8685-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8390-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3367-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8708-france": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2022
+    ],
+    "_source": "historical-goals"
+  },
+  "71-france": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2022
+    ],
+    "_source": "historical-goals"
+  },
+  "177522-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3365-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "19334-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "144393-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "359-germany": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "171-germany": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 2,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3177-germany": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "3184-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "341-germany": {
+    "wcsPlayed": 4,
+    "wcYears": [
+      2010,
+      2014,
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 1,
+    "titleYears": [
+      2014
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "Champion 2014",
+    "_source": "manual"
+  },
+  "202665-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "9905-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8273-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "7984-ghana": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "495-ghana": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "110-ghana": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "154781-haiti": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "170624-haiti": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "158228-haiti": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "171319-iran": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3797-iran": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "103099-iran": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "236206-iraq": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "132162-iraq": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "253185-iraq": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8412-ivory-coast": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 2,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "1747-ivory-coast": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "166249-ivory-coast": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "113375-ivory-coast": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "6716-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "44017-japan": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "48555-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3269-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "119460-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "49080-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "48902-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "249669-jordan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "17850-jordan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "125598-jordan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "39540-mexico": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3298-mexico": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "39927-mexico": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "53-morocco": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "4th place 2022",
+    "_source": "manual"
+  },
+  "3694-morocco": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "4th place 2022",
+    "_source": "manual"
+  },
+  "189873-morocco": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "7553-morocco": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "7459-netherlands": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 3,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "7869-netherlands": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "126870-netherlands": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "7417-netherlands": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "7696-netherlands": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "7457-netherlands": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8057-new-zealand": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "48418-new-zealand": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "80167-new-zealand": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "38101-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "WC debut · Generational talent",
+    "_source": "manual"
+  },
+  "8167-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "169295-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "157796-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "177303-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "37924-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8973-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "6843-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8919-panama": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "76711-panama": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "28382-panama": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "14-paraguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "28294-paraguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "76861-paraguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "44-portugal": {
+    "wcsPlayed": 5,
+    "wcYears": [
+      2006,
+      2010,
+      2014,
+      2018,
+      2022
+    ],
+    "goals": 8,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "3254-portugal": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "3257-portugal": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 2,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "15892-portugal": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 2,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "10183-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "37362-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "101431-portugal": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 3,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "2000-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "178722-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "190877-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "15899-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "39265-portugal": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "144570-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "57652-qatar": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "156781-qatar": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "129104-qatar": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "249787-saudi-arabia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "189720-saudi-arabia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "189998-saudi-arabia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "7868-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3981-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "34646-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "15615-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "35126-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "7905-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "805-senegal": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "3638-senegal": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "2086-senegal": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8887-senegal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "152515-senegal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "33994-south-africa": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "34456-south-africa": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "33986-south-africa": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "170281-south-korea": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "189673-south-korea": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "166683-south-korea": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "202283-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": "WC debut",
+    "_source": "manual"
+  },
+  "133860-spain": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "3199-spain": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "7884-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "23132-spain": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "33154-spain": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 2,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "180137-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "32570-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "15863-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "217540-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "6486-sweden": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8279-sweden": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "166376-sweden": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "1745-switzerland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3483-switzerland": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 2,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3477-switzerland": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2014,
+      2018
+    ],
+    "goals": 2,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "143-switzerland": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "99393-tunisia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3595-tunisia": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2018
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "169325-tunisia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "169162-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "9869-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "1754-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "191712-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "16641-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "201-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "145-united-states": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 1,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "131040-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "8492-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "6507-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "3927-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "113262-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "136733-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "76936-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "119731-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "28618-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "28612-uruguay": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "130957-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "96-uruguay": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "189823-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "11206-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "115-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "28770-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "28292-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "30386-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "28549-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "32754-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "243911-uzbekistan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "119215-uzbekistan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  },
+  "244531-uzbekistan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "historical-goals"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "_meta": "Hand-curated WC history for top marquee players. Overrides the historical-goalscorer-derived defaults. Keyed by seed_players.json player.id. Add entries here when (a) a player's WC stats are wrong, (b) they played past WCs without scoring (auto-detection missed them — esp. GKs and defenders), or (c) they have notable achievements worth a custom tag.",
+
+  "3218-argentina":  { "wcsPlayed": 5, "wcYears": [2006, 2010, 2014, 2018, 2022], "goals": 13, "titles": 1, "titleYears": [2022], "runnerUps": 1, "runnerUpYears": [2014], "tag": "GOAT" },
+  "98571-argentina": { "wcsPlayed": 1, "wcYears": [2022], "goals": 4, "titles": 1, "titleYears": [2022], "runnerUps": 0, "runnerUpYears": [] },
+  "102603-argentina":{ "wcsPlayed": 1, "wcYears": [2022], "goals": 1, "titles": 1, "titleYears": [2022], "runnerUps": 0, "runnerUpYears": [], "tag": "Young Player 2022" },
+  "45681-argentina": { "wcsPlayed": 1, "wcYears": [2022], "goals": 1, "titles": 1, "titleYears": [2022], "runnerUps": 0, "runnerUpYears": [] },
+  "3141-argentina":  { "wcsPlayed": 1, "wcYears": [2022], "goals": 0, "titles": 1, "titleYears": [2022], "runnerUps": 0, "runnerUpYears": [], "tag": "Golden Glove 2022" },
+  "3205-argentina":  { "wcsPlayed": 3, "wcYears": [2014, 2018, 2022], "goals": 0, "titles": 1, "titleYears": [2022], "runnerUps": 1, "runnerUpYears": [2014] },
+  "2127-argentina":  { "wcsPlayed": 1, "wcYears": [2022], "goals": 0, "titles": 1, "titleYears": [2022], "runnerUps": 0, "runnerUpYears": [] },
+
+  "1556-brazil":     { "wcsPlayed": 1, "wcYears": [2022], "goals": 1, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "1795-brazil":     { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "3225-brazil":     { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "3231-brazil":     { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 1, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+
+  "3374-france":     { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 12, "titles": 1, "titleYears": [2018], "runnerUps": 1, "runnerUpYears": [2022], "tag": "Golden Boot 2022" },
+
+  "125010-england":  { "wcsPlayed": 1, "wcYears": [2022], "goals": 1, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "7888-england":    { "wcsPlayed": 1, "wcYears": [2022], "goals": 1, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "8004-england":    { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 8, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [], "tag": "Golden Boot 2018" },
+  "3309-england":    { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "99813-england":   { "wcsPlayed": 1, "wcYears": [2022], "goals": 3, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+
+  "202283-spain":    { "wcsPlayed": 0, "wcYears": [], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [], "tag": "WC debut" },
+  "133860-spain":    { "wcsPlayed": 1, "wcYears": [2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "3199-spain":      { "wcsPlayed": 1, "wcYears": [2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "23132-spain":     { "wcsPlayed": 1, "wcYears": [2022], "goals": 1, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+
+  "341-germany":     { "wcsPlayed": 4, "wcYears": [2010, 2014, 2018, 2022], "goals": 0, "titles": 1, "titleYears": [2014], "runnerUps": 0, "runnerUpYears": [], "tag": "Champion 2014" },
+  "3177-germany":    { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "359-germany":     { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+
+  "44-portugal":     { "wcsPlayed": 5, "wcYears": [2006, 2010, 2014, 2018, 2022], "goals": 8, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "3257-portugal":   { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 2, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "3254-portugal":   { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+
+  "7869-netherlands":{ "wcsPlayed": 1, "wcYears": [2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+
+  "3654-belgium":    { "wcsPlayed": 3, "wcYears": [2014, 2018, 2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [], "tag": "3rd place 2018" },
+  "3662-belgium":    { "wcsPlayed": 3, "wcYears": [2014, 2018, 2022], "goals": 8, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [], "tag": "3rd place 2018" },
+  "3641-belgium":    { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [], "tag": "3rd place 2018" },
+
+  "43-croatia":      { "wcsPlayed": 4, "wcYears": [2006, 2014, 2018, 2022], "goals": 3, "titles": 0, "titleYears": [], "runnerUps": 1, "runnerUpYears": [2018], "tag": "Golden Ball 2018" },
+
+  "53-morocco":      { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 1, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [], "tag": "4th place 2022" },
+  "3694-morocco":    { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [], "tag": "4th place 2022" },
+
+  "96-uruguay":      { "wcsPlayed": 1, "wcYears": [2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+  "28612-uruguay":   { "wcsPlayed": 1, "wcYears": [2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] },
+
+  "22396-colombia":  { "wcsPlayed": 0, "wcYears": [], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [], "tag": "WC debut" },
+
+  "38101-norway":    { "wcsPlayed": 0, "wcYears": [], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [], "tag": "WC debut · Generational talent" },
+
+  "805-senegal":     { "wcsPlayed": 2, "wcYears": [2018, 2022], "goals": 0, "titles": 0, "titleYears": [], "runnerUps": 0, "runnerUpYears": [] }
+}

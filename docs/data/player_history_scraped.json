@@ -1,0 +1,3002 @@
+{
+  "8633-algeria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Anthony_Mandrea"
+  },
+  "8466-algeria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Houssem_Aouar"
+  },
+  "8069-algeria": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2014
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Riyad_Mahrez"
+  },
+  "3218-argentina": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2014,
+      2018
+    ],
+    "goals": null,
+    "titles": 2,
+    "titleYears": [
+      2014,
+      2022
+    ],
+    "runnerUps": 2,
+    "runnerUpYears": [
+      2014,
+      2022
+    ],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Lionel_Messi"
+  },
+  "45681-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Alexis_Mac_Allister"
+  },
+  "3141-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Emiliano_Mart%C3%ADnez_(footballer,_born_1999)"
+  },
+  "102603-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 1,
+    "titleYears": [
+      2022
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Enzo_Fern%C3%A1ndez_(footballer,_born_2001)"
+  },
+  "98571-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Juli%C3%A1n_%C3%81lvarez_(footballer)"
+  },
+  "3214-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Leandro_Paredes"
+  },
+  "3212-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Marcos_Acu%C3%B1a"
+  },
+  "46452-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Nahuel_Molina"
+  },
+  "3205-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Nicol%C3%A1s_Otamendi"
+  },
+  "2127-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Rodrigo_De_Paul"
+  },
+  "6-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ger%C3%B3nimo_Rulli"
+  },
+  "46554-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Juan_Mu%C3%B1oz_(footballer,_born_1995)"
+  },
+  "46046-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Marcos_Senesi"
+  },
+  "45680-argentina": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Nicol%C3%A1s_Gonz%C3%A1lez_(footballer,_born_1998)"
+  },
+  "3208-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Nicol%C3%A1s_Tagliafico"
+  },
+  "79953-argentina": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Thiago_Almada"
+  },
+  "3407-australia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aziz_Behich"
+  },
+  "3403-australia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Matt_Ryan_(American_football)"
+  },
+  "4697-australia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Paulinho_(footballer,_born_July_1988)"
+  },
+  "56829-austria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Christoph_Baumgartner"
+  },
+  "349-austria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/David_Ayala_(footballer,_born_2002)"
+  },
+  "9549-austria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Konrad_Laimer"
+  },
+  "9551-austria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Marcel_Sabitzer"
+  },
+  "8223-austria": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Marko_Arnautovi%C4%87"
+  },
+  "99775-belgium": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jeremy_Doku"
+  },
+  "3654-belgium": {
+    "wcsPlayed": 3,
+    "wcYears": [
+      2014,
+      2018,
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Kevin_De_Bruyne"
+  },
+  "3662-belgium": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2022
+    ],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Romelu_Lukaku"
+  },
+  "3641-belgium": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2018
+    ],
+    "goals": null,
+    "titles": 1,
+    "titleYears": [
+      2018
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Thibaut_Courtois"
+  },
+  "3656-belgium": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Axel_Witsel"
+  },
+  "8984-belgium": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2022,
+      2026
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Leandro_Trossard"
+  },
+  "3658-belgium": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Youri_Tielemans"
+  },
+  "114024-belgium": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Amadou_Onana"
+  },
+  "129947-belgium": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Charles_De_Ketelaere"
+  },
+  "17645-bosnia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Martin_Zlomisli%C4%87"
+  },
+  "65105-bosnia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Nikola_Vasi%C4%87_(footballer)"
+  },
+  "10836-bosnia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Osman_Had%C5%BEiki%C4%87"
+  },
+  "1556-brazil": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Vin%C3%ADcius_J%C3%BAnior"
+  },
+  "1795-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Alisson_Becker"
+  },
+  "3231-brazil": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Casemiro"
+  },
+  "37428-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Raphinha_(footballer,_born_1996)"
+  },
+  "1684-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Bruno_Guimar%C3%A3es"
+  },
+  "3222-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ederson_(footballer,_born_1993)"
+  },
+  "188487-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Endrick_(footballer,_born_2006)"
+  },
+  "23128-brazil": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2026
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Gabriel_Magalh%C3%A3es"
+  },
+  "1543-brazil": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Lucas_Paquet%C3%A1"
+  },
+  "3225-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Marquinhos_(footballer,_born_2003)"
+  },
+  "138230-brazil": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Thiago_(footballer,_born_1996)"
+  },
+  "15958-canada": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Cyle_Larin"
+  },
+  "8924-canada": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jonathan_David_(footballer)"
+  },
+  "21226-canada": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Maxime_Cr%C3%A9peau"
+  },
+  "30554-cape-verde": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Garry_Rodrigues"
+  },
+  "814-cape-verde": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Logan_Costa"
+  },
+  "53172-cape-verde": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Marcelo_Rosa_(footballer,_born_1976)"
+  },
+  "365-colombia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/James_Rodr%C3%ADguez_(footballer)"
+  },
+  "22396-colombia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Luis_D%C3%ADaz_(Colombian_footballer)"
+  },
+  "202797-colombia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Carlos_Andr%C3%A9s_G%C3%B3mez"
+  },
+  "106838-congo-dr": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Lionel_Mpasi"
+  },
+  "170838-congo-dr": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Matthieu_Epolo"
+  },
+  "98898-congo-dr": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Timothy_Fayulu"
+  },
+  "43-croatia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Luka_Mari%C4%87_(footballer,_born_2002)"
+  },
+  "318-croatia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Andrej_Kramari%C4%87"
+  },
+  "3548-croatia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2022
+    ],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Dominik_Livakovi%C4%87"
+  },
+  "122266-croatia": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jo%C5%A1ko_Gvardiol"
+  },
+  "65-croatia": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": null,
+    "titles": 2,
+    "titleYears": [
+      2018,
+      2022
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mateo_Kova%C4%8Di%C4%87"
+  },
+  "2004-croatia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ivan_Pe%C5%A1i%C4%87_(footballer,_born_1992)"
+  },
+  "7437-curacao": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Eloy_Room"
+  },
+  "7412-curacao": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Trevor_Doornbusch"
+  },
+  "171283-curacao": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tyrick_Bodak"
+  },
+  "1826-czechia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Patrik_Schick"
+  },
+  "15742-czechia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tom%C3%A1%C5%A1_Sou%C4%8Dek"
+  },
+  "62631-czechia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Vladim%C3%ADr_Coufal"
+  },
+  "215510-ecuador": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jeremy"
+  },
+  "40009-ecuador": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Enner_Valencia"
+  },
+  "121103-ecuador": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mois%C3%A9s_Caicedo"
+  },
+  "32642-ecuador": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Pervis_Estupi%C3%B1%C3%A1n"
+  },
+  "125674-ecuador": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Piero_Hincapi%C3%A9"
+  },
+  "24740-ecuador": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/F%C3%A9lix_Torres_(footballer,_born_1997)"
+  },
+  "24545-ecuador": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Hern%C3%A1n_Gal%C3%ADndez"
+  },
+  "114672-egypt": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mostafa_Mohamed_(footballer)"
+  },
+  "3759-egypt": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tr%C3%A9z%C3%A9guet_(footballer)"
+  },
+  "83057-egypt": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mohamed_Hamdy_(footballer,_born_1995)"
+  },
+  "125010-england": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2022,
+      2026
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jude_Bellingham"
+  },
+  "7888-england": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Phil_Foden"
+  },
+  "99813-england": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2022,
+      2026
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Bukayo_Saka"
+  },
+  "144892-england": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Cole_Palmer"
+  },
+  "8215-england": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2022,
+      2026
+    ],
+    "goals": null,
+    "titles": 2,
+    "titleYears": [
+      2022,
+      2026
+    ],
+    "runnerUps": 2,
+    "runnerUpYears": [
+      2022,
+      2026
+    ],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Declan_Rice"
+  },
+  "8004-england": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2018
+    ],
+    "goals": null,
+    "titles": 1,
+    "titleYears": [
+      2018
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Harry_Kane_(footballer)"
+  },
+  "7848-england": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Anthony_Gordon_(footballer)"
+  },
+  "3313-england": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/John_Stone_(footballer)"
+  },
+  "3309-england": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2018
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jordan_Pickford"
+  },
+  "118489-england": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Marc_Gu%C3%A9hi"
+  },
+  "5457-england": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Don_Henderson_(footballer,_born_1918)"
+  },
+  "3374-france": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": null,
+    "titles": 2,
+    "titleYears": [
+      2018,
+      2022
+    ],
+    "runnerUps": 2,
+    "runnerUpYears": [
+      2018,
+      2022
+    ],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Kylian_Mbapp%C3%A9"
+  },
+  "8514-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aur%C3%A9lien_Tchouam%C3%A9ni"
+  },
+  "102343-france": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Eduardo_Camavinga"
+  },
+  "3373-france": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 2,
+    "runnerUpYears": [
+      2018,
+      2022
+    ],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ousmane_Demb%C3%A9l%C3%A9"
+  },
+  "3368-france": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Adrien_Rabiot"
+  },
+  "8685-france": {
+    "sourceUrl": null,
+    "notFound": true
+  },
+  "8390-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mike_Maignan"
+  },
+  "3367-france": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2018
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/N%27Golo_Kant%C3%A9"
+  },
+  "8708-france": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Randal_Kolo_Muani"
+  },
+  "71-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Theo_Hern%C3%A1ndez"
+  },
+  "177522-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Desire_Doue"
+  },
+  "3365-france": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Lucas_Hern%C3%A1ndez_(footballer,_born_1992)"
+  },
+  "19334-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Florian_Wirtz"
+  },
+  "144393-germany": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jamal_Musiala"
+  },
+  "359-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Joshua_Kimmich"
+  },
+  "171-germany": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Kai_Havertz"
+  },
+  "3177-germany": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Antonio_R%C3%BCdiger"
+  },
+  "3184-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Leroy_San%C3%A9"
+  },
+  "341-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Manuel_Negrete_(footballer)"
+  },
+  "202665-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aleksandar_Pavlovi%C4%87_(footballer)"
+  },
+  "9905-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/David_Raum"
+  },
+  "8273-germany": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Pascal_Gro%C3%9F"
+  },
+  "7984-ghana": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jordan_Stewart_(footballer,_born_1982)"
+  },
+  "495-ghana": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Lawrence_Ati-Zigi"
+  },
+  "110-ghana": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Thomas_Bartley_(footballer)"
+  },
+  "154781-haiti": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Alexandre_Pierre"
+  },
+  "170624-haiti": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Johny_Placide"
+  },
+  "158228-haiti": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Martin_Exp%C3%A9rience"
+  },
+  "171319-iran": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Alireza_Beiranvand"
+  },
+  "3797-iran": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Hossein_Hosseini_(footballer,_born_1992)"
+  },
+  "103099-iran": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Payam_Niazmand"
+  },
+  "236206-iraq": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ahmed_Yasin_(footballer)"
+  },
+  "132162-iraq": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Fahad_Talib"
+  },
+  "253185-iraq": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Kumel_Al-Rekabe"
+  },
+  "8412-ivory-coast": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Nicolas_P%C3%A9p%C3%A9"
+  },
+  "1747-ivory-coast": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Franck_Kessi%C3%A9"
+  },
+  "166249-ivory-coast": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Simon_Adingra"
+  },
+  "113375-ivory-coast": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Wilfried_Singo"
+  },
+  "6716-japan": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Daichi_Kamada"
+  },
+  "44017-japan": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Daizen_Maeda"
+  },
+  "48555-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Takefusa_Kubo"
+  },
+  "3269-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Wataru_Endo"
+  },
+  "119460-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ayase_Ueda"
+  },
+  "49080-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Junya_It%C5%8D_(footballer,_born_1993)"
+  },
+  "48902-japan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ko_Itakura"
+  },
+  "249669-jordan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Abdallah_Al-Fakhouri"
+  },
+  "17850-jordan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ahmad_Assaf"
+  },
+  "125598-jordan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Yazeed_Abulaila"
+  },
+  "39540-mexico": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Carlos_Acevedo"
+  },
+  "3298-mexico": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jes%C3%BAs_Gallardo"
+  },
+  "39927-mexico": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Luis_Ramos_(footballer,_born_1999)"
+  },
+  "53-morocco": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2022
+    ],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Achraf_Hakimi"
+  },
+  "3694-morocco": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Yassine_Bounou"
+  },
+  "189873-morocco": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Bilal_El_Khannouss"
+  },
+  "7553-morocco": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Noussair_Mazraoui"
+  },
+  "7459-netherlands": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Cody_Gakpo"
+  },
+  "7869-netherlands": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Virgil_van_Dijk"
+  },
+  "126870-netherlands": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Bart_Verbruggen"
+  },
+  "7417-netherlands": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Denzel_Dumfries"
+  },
+  "7696-netherlands": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tijjani_Reijnders"
+  },
+  "7457-netherlands": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Donyell_Malen"
+  },
+  "8057-new-zealand": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2010
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Chris_Wood_(footballer,_born_1991)"
+  },
+  "48418-new-zealand": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Max_Crocombe"
+  },
+  "80167-new-zealand": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Michael_Woods_(footballer,_born_1990)"
+  },
+  "38101-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Erling_Haaland"
+  },
+  "8167-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Alexander_S%C3%B8rloth"
+  },
+  "169295-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Antonio_Luna_(footballer)"
+  },
+  "157796-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Andreas_Schjelderup"
+  },
+  "177303-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Fredrik_Andr%C3%A9_Bj%C3%B8rkan"
+  },
+  "37924-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Patrick_Kerr_(footballer)"
+  },
+  "8973-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Sander_Berge"
+  },
+  "6843-norway": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/%C3%98rjan_Nyland"
+  },
+  "8919-panama": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jos%C3%A9_Luis_Rodr%C3%ADguez_(footballer,_born_1998)"
+  },
+  "76711-panama": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Andr%C3%A9s_Andrade_(footballer,_born_1998)"
+  },
+  "28382-panama": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Luis_Mena_(footballer)"
+  },
+  "14-paraguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Antonio_Sanabria"
+  },
+  "28294-paraguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Gast%C3%B3n_Olveira"
+  },
+  "76861-paraguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Miguel_Almir%C3%B3n"
+  },
+  "44-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Cristiano_Ronaldo"
+  },
+  "3254-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Bernardo_Silva_(footballer,_born_2001)"
+  },
+  "3257-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Bruno_Fernandes_(footballer,_born_1974)"
+  },
+  "15892-portugal": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Rafael_Le%C3%A3o"
+  },
+  "10183-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/R%C3%BAben_Dias"
+  },
+  "37362-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Diogo_Costa_(footballer,_born_2003)"
+  },
+  "101431-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Gonzalo_Ramos_(footballer)"
+  },
+  "2000-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jo%C3%A3o_Marcelo_(footballer,_born_2005)"
+  },
+  "178722-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Vitinha_(footballer,_born_February_2000)"
+  },
+  "190877-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Joao_Neves_(footballer)"
+  },
+  "15899-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Joselu_(footballer,_born_1991)"
+  },
+  "39265-portugal": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 1,
+    "runnerUpYears": [
+      2022
+    ],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jo%C3%A3o_F%C3%A9lix_(Footballer)"
+  },
+  "144570-portugal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Nuno_Mendes_(footballer,_born_2002)"
+  },
+  "57652-qatar": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Akram_Afif"
+  },
+  "156781-qatar": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mahmud_Abunada"
+  },
+  "129104-qatar": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Meshaal_Barsham"
+  },
+  "249787-saudi-arabia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ahmed_Al-Kassar"
+  },
+  "189720-saudi-arabia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mohammed_Al-Rubaie"
+  },
+  "189998-saudi-arabia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Nawaf_Al-Aqidi"
+  },
+  "7868-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Andrew_Robertson_(footballer)"
+  },
+  "3981-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Angus_Gunn"
+  },
+  "34646-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/John_McCann_(footballer,_born_1934)"
+  },
+  "15615-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Kieran_Tierney"
+  },
+  "35126-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Lyndon_Dykes"
+  },
+  "7905-scotland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Scott_McTominay"
+  },
+  "805-senegal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Edouard_Mendy"
+  },
+  "3638-senegal": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Isma%C3%AFla_Sarr"
+  },
+  "2086-senegal": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2018
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Kalidou_Koulibaly"
+  },
+  "8887-senegal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Kr%C3%A9pin_Diatta"
+  },
+  "152515-senegal": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Nicolas_Jackson"
+  },
+  "33994-south-africa": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aubrey_Modiba"
+  },
+  "34456-south-africa": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ricardo_Costa_(footballer,_born_1981)"
+  },
+  "33986-south-africa": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ronwen_Williams"
+  },
+  "170281-south-korea": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Heung-min_Son"
+  },
+  "189673-south-korea": {
+    "sourceUrl": null,
+    "notFound": true
+  },
+  "166683-south-korea": {
+    "sourceUrl": null,
+    "notFound": true
+  },
+  "202283-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Lamine_Ba_(Mauritanian_footballer)"
+  },
+  "133860-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Pedrito_(footballer,_born_1996)"
+  },
+  "3199-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Rodri_(footballer,_born_1996)"
+  },
+  "7884-spain": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aymeric_Laporte"
+  },
+  "23132-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Danilo_(footballer,_born_July_1991)"
+  },
+  "33154-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ferran_Torres"
+  },
+  "180137-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mikel_Oyarzabal"
+  },
+  "32570-spain": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Unai_Sim%C3%B3n"
+  },
+  "15863-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Cucurella"
+  },
+  "217540-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Pau_Cubars%C3%AD"
+  },
+  "6486-sweden": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Alexander_Isak"
+  },
+  "8279-sweden": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Viktor_Gy%C3%B6keres"
+  },
+  "166376-sweden": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Anthony_Elanga"
+  },
+  "1745-switzerland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ricardo_Rodriguez_(footballer)"
+  },
+  "3483-switzerland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Breel_Embolo"
+  },
+  "3477-switzerland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Granit_Xhaka"
+  },
+  "143-switzerland": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Manuel_Akanji"
+  },
+  "99393-tunisia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aymen_Dahmen"
+  },
+  "3595-tunisia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Dylan_Connolly_(footballer,_born_2000)"
+  },
+  "169325-tunisia": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Hannibal_Mejbri"
+  },
+  "169162-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Arda_G%C3%BCler"
+  },
+  "9869-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ferdi_Kad%C4%B1o%C4%9Flu"
+  },
+  "1754-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Hakan_%C3%87alhano%C4%9Flu"
+  },
+  "191712-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Kenan_Y%C4%B1ld%C4%B1z"
+  },
+  "16641-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mert_G%C3%BCnok"
+  },
+  "201-turkey": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Salih_%C3%96zcan"
+  },
+  "145-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Christian_Pulisic"
+  },
+  "131040-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Folarin_Balogun"
+  },
+  "8492-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tim_Weah"
+  },
+  "6507-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Weston_McKennie"
+  },
+  "3927-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Antonee_Robinson"
+  },
+  "113262-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Brenden_Aaronson"
+  },
+  "136733-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Gio_Reyna"
+  },
+  "76936-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mark_Turner_(footballer,_born_1972)"
+  },
+  "119731-united-states": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ricardo_Pe%C3%B1a_(footballer,_born_2004)"
+  },
+  "28618-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Brian_Rodr%C3%ADguez_(footballer,_born_2000)"
+  },
+  "28612-uruguay": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Darwin_N%C3%BA%C3%B1ez"
+  },
+  "130957-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Emiliano_Mart%C3%ADnez_(footballer,_born_1999)"
+  },
+  "96-uruguay": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Federico_Valverde"
+  },
+  "189823-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jos%C3%A9_Luis_Rodr%C3%ADguez_(footballer,_born_1998)"
+  },
+  "11206-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Rodrigo_Aguirre"
+  },
+  "115-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Jos%C3%A9_Mar%C3%ADa_Gim%C3%A9nez"
+  },
+  "28770-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Maximiliano_Ara%C3%BAjo"
+  },
+  "28292-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ronald_Ara%C3%BAjo"
+  },
+  "30386-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Sergio_Rochet"
+  },
+  "28549-uruguay": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Manuel_Ugarte_(footballer)"
+  },
+  "32754-uruguay": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Math%C3%ADas_Olivera"
+  },
+  "243911-uzbekistan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Abduvohid_Nematov"
+  },
+  "119215-uzbekistan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Botirali_Ergashev"
+  },
+  "244531-uzbekistan": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": null,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "tag": null,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Utkir_Yusupov"
+  }
+}
