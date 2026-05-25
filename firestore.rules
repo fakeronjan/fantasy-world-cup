@@ -31,7 +31,10 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/config/global).data;
     }
     function beforeKickoff() {
-      return request.time < configDoc().kickoffTimestamp;
+      let cfg = configDoc();
+      // Treat null kickoff as "kickoff hasn't been set yet" → still pre-kickoff.
+      // Once an admin sets config.kickoffTimestamp, this auto-locks at that moment.
+      return cfg.kickoffTimestamp == null || request.time < cfg.kickoffTimestamp;
     }
     function transferWindowOpen() {
       return configDoc().transferWindowOpen == true;

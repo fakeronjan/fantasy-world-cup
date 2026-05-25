@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transfer · Fantasy World Cup 2026</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .window-banner {
+    padding: 12px 16px; border-radius: 6px;
+    margin-bottom: 16px; font-size: 13px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .window-banner.open  { background: #d1fae5; color: #065f46; }
+  .window-banner.closed { background: #fee2e2; color: #991b1b; }
+
+  .transfer-layout {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    align-items: start;
+  }
+  @media (max-width: 900px) { .transfer-layout { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--bg-card); border-radius: 6px;
+    padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .panel h2 {
+    font-size: 15px; font-weight: 700; color: var(--bg-header);
+    margin-bottom: 10px; letter-spacing: 0.5px;
+  }
+
+  .item-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 0; border-bottom: 1px solid var(--border-row);
+    font-size: 13px;
+  }
+  .item-row:last-child { border-bottom: none; }
+  .item-row .kind-tag {
+    font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .kind-tag.team   { background: var(--bg-header); color: #fff; }
+  .kind-tag.player { background: var(--accent); color: #fff; }
+
+  .item-name { flex: 1; }
+  .item-price {
+    font-variant-numeric: tabular-nums; font-weight: 700;
+    color: var(--bg-header);
+  }
+  .item-row.eliminated {
+    opacity: 0.55;
+  }
+  .item-row.eliminated .item-name { text-decoration: line-through; }
+  .item-row button {
+    background: var(--bg-header); color: #fff; border: none;
+    padding: 4px 10px; border-radius: 3px; font-size: 12px;
+    font-weight: 600; cursor: pointer;
+  }
+  .item-row button:hover { background: var(--accent); }
+  .item-row.staged { background: #fef0f7; }
+  .item-row .pts { color: var(--text-muted); font-size: 11px; }
+
+  .controls-strip {
+    margin-bottom: 12px; display: flex; gap: 8px;
+    align-items: center; flex-wrap: wrap;
+  }
+
+  .summary {
+    background: var(--bg-card); border-radius: 6px;
+    padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  @media (max-width: 700px) { .summary { grid-template-columns: repeat(2, 1fr); } }
+  .summary .stat .label {
+    font-size: 11px; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .summary .stat .val {
+    font-size: 22px; font-weight: 800; color: var(--bg-header);
+    margin-top: 2px; font-variant-numeric: tabular-nums;
+  }
+  .summary .stat .val.warn { color: var(--accent); }
+
+  .actions-bar {
+    position: sticky; bottom: 0; background: var(--bg-card);
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+    padding: 12px 16px; display: flex; gap: 12px; align-items: center;
+    border-radius: 6px 6px 0 0; margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .actions-bar .left { flex: 1; font-size: 12px; color: var(--text-muted); }
+  .actions-bar .changes { font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>TRANSFERS</h1>
+  <p class="subtitle">Sell eliminated picks · Buy survivors · Rebalance between rounds</p>
+  <p class="user-line" id="userLine"></p>
+</header>
+
+<nav class="site-nav" id="siteNav" style="display:none">
+  <a href="./index.html">Home</a>
+  <a href="./draft.html">Draft</a>
+  <a href="./roster.html">My Roster</a>
+  <a href="./leaderboard.html">Leaderboard</a>
+  <a href="./transfer.html" class="active">Transfer</a>
+  <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+</nav>
+
+<main>
+  <section class="card signin-card" id="signinCard" style="display:none">
+    <h2>Sign in to make transfers</h2>
+    <button class="btn" id="signInBtn">Sign in with Google</button>
+  </section>
+
+  <div id="transferUI" style="display:none">
+
+    <div class="window-banner closed" id="windowBanner">
+      Loading window status…
+    </div>
+
+    <div class="summary">
+      <div class="stat"><div class="label">Picks (new)</div><div class="val" id="newPicks">0</div></div>
+      <div class="stat"><div class="label">Spent (new)</div><div class="val" id="newSpent">$0</div></div>
+      <div class="stat"><div class="label">Budget left</div><div class="val" id="newBudget">$100</div></div>
+      <div class="stat"><div class="label">Net change</div><div class="val" id="netChange">$0</div></div>
+    </div>
+
+    <div class="transfer-layout">
+      <!-- LEFT: portfolio / sell -->
+      <div class="panel">
+        <h2>Your portfolio (click "Sell" to free budget)</h2>
+        <div id="portfolioList">
+          <p class="muted">Loading…</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: market / buy -->
+      <div class="panel">
+        <h2>Market (click "Buy" to spend budget)</h2>
+        <div class="controls-strip">
+          <input type="search" id="searchBox" placeholder="Search…" style="flex:1;min-width:140px">
+          <select id="kindFilter">
+            <option value="">All</option>
+            <option value="team">Teams</option>
+            <option value="player">Players</option>
+          </select>
+        </div>
+        <div id="marketList" style="max-height: 60vh; overflow-y: auto;">
+          <p class="muted">Loading…</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions-bar">
+      <span class="left">Changes save atomically. New roster + budget are written to your user doc; an audit row goes to <code>transactions/</code>.</span>
+      <span class="changes" id="changesSummary"></span>
+      <button class="btn" id="resetBtn">Reset</button>
+      <button class="btn btn-accent" id="saveBtn" disabled>Save changes</button>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg-header);color:#fff;padding:10px 18px;border-radius:4px;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,0.2);opacity:0;transition:opacity .2s;pointer-events:none"></div>
+
+<script type="module">
+  import "./shared.js";
+
+  const BUDGET = 100;
+  const ROSTER_CAP = 12;
+
+  const userLine    = document.getElementById('userLine');
+  const signinCard  = document.getElementById('signinCard');
+  const transferUI  = document.getElementById('transferUI');
+  const siteNav     = document.getElementById('siteNav');
+  const adminLink   = document.getElementById('adminLink');
+  const signInBtn   = document.getElementById('signInBtn');
+  const windowBanner = document.getElementById('windowBanner');
+  const portfolioList = document.getElementById('portfolioList');
+  const marketList  = document.getElementById('marketList');
+  const searchBox   = document.getElementById('searchBox');
+  const kindFilter  = document.getElementById('kindFilter');
+  const newPicks    = document.getElementById('newPicks');
+  const newSpent    = document.getElementById('newSpent');
+  const newBudget   = document.getElementById('newBudget');
+  const netChange   = document.getElementById('netChange');
+  const saveBtn     = document.getElementById('saveBtn');
+  const resetBtn    = document.getElementById('resetBtn');
+  const changesSummary = document.getElementById('changesSummary');
+  const toast       = document.getElementById('toast');
+
+  let currentUser    = null;
+  let originalRoster = [];           // from Firestore: [{assetId, kind, purchasePrice, ...}]
+  let workingRoster  = [];           // edits applied so far
+  let teams = {};                    // teamSlug → team doc
+  let players = {};                  // playerId → player doc
+  let configDoc = null;
+
+  await new Promise(r => requestAnimationFrame(r));
+  signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
+
+  window.fwc.onAuth(async (user) => {
+    currentUser = user;
+    if (!user) {
+      signinCard.style.display = 'block';
+      transferUI.style.display = 'none';
+      siteNav.style.display = 'none';
+      return;
+    }
+    userLine.innerHTML = `Signed in as <strong>${user.displayName || user.email}</strong>
+      <button id="signOutBtn">Sign out</button>`;
+    document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
+    siteNav.style.display = 'flex';
+    signinCard.style.display = 'none';
+    transferUI.style.display = 'block';
+    if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+
+    await loadEverything();
+  });
+
+  async function loadEverything() {
+    const { collection, getDocs, doc, getDoc } = await import(
+      "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+    );
+
+    // Config (window state)
+    const cfg = await getDoc(doc(window.fwc.db, 'config', 'global'));
+    configDoc = cfg.exists() ? cfg.data() : { transferWindowOpen: false };
+
+    // Update banner
+    const open = configDoc.transferWindowOpen === true;
+    windowBanner.classList.toggle('open', open);
+    windowBanner.classList.toggle('closed', !open);
+    windowBanner.textContent = open
+      ? `Transfer window is OPEN. Make changes and click "Save" to commit. (Current round: ${configDoc.currentRound || '?'})`
+      : `Transfer window is CLOSED. You can preview changes but the Save button won't commit. Owner opens windows from /admin.html.`;
+    saveBtn.disabled = !open;
+
+    // Catalog
+    teams = {}; players = {};
+    const ts = await getDocs(collection(window.fwc.db, 'teams'));
+    ts.forEach(d => teams[d.id] = { id: d.id, ...d.data() });
+    const ps = await getDocs(collection(window.fwc.db, 'players'));
+    ps.forEach(d => players[d.id] = { id: d.id, ...d.data() });
+
+    // User doc (current roster)
+    const u = await getDoc(doc(window.fwc.db, 'users', currentUser.uid));
+    originalRoster = (u.exists() ? (u.data().roster || []) : []).map(p => ({...p}));
+    workingRoster = originalRoster.map(p => ({...p}));
+
+    render();
+  }
+
+  function getAsset(kind, id) {
+    return kind === 'team' ? teams[id] : players[id];
+  }
+
+  function rosterCurrentValue(roster) {
+    // Sum of current (live) prices for the picks
+    return roster.reduce((sum, pick) => {
+      const a = getAsset(pick.kind, pick.assetId);
+      const price = a ? (a.currentPrice ?? a.basePrice ?? pick.purchasePrice) : pick.purchasePrice;
+      return sum + price;
+    }, 0);
+  }
+
+  function render() {
+    renderPortfolio();
+    renderMarket();
+    renderSummary();
+  }
+
+  function renderPortfolio() {
+    if (!workingRoster.length) {
+      portfolioList.innerHTML = `<p class="muted">No picks in roster.</p>`;
+      return;
+    }
+    portfolioList.innerHTML = workingRoster.map(pick => {
+      const a = getAsset(pick.kind, pick.assetId);
+      const name  = a ? a.name : pick.assetId;
+      const cur   = a ? (a.currentPrice ?? a.basePrice ?? pick.purchasePrice) : pick.purchasePrice;
+      const elim  = a ? !!a.eliminated : false;
+      const pts   = a ? (a.totalPoints || 0) : (pick.points || 0);
+      return `<div class="item-row ${elim ? 'eliminated' : ''}">
+        <span class="kind-tag ${pick.kind}">${pick.kind === 'team' ? 'T' : 'P'}</span>
+        <span class="item-name">${escape(name)} <span class="pts">${pts} pts</span></span>
+        <span class="item-price">$${cur}</span>
+        <button data-sell-id="${escape(pick.assetId)}" data-sell-kind="${pick.kind}">Sell</button>
+      </div>`;
+    }).join('');
+    portfolioList.querySelectorAll('[data-sell-id]').forEach(b => {
+      b.addEventListener('click', () => sellPick(b.dataset.sellKind, b.dataset.sellId));
+    });
+  }
+
+  function renderMarket() {
+    const ownedKey = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
+    const q = searchBox.value.trim().toLowerCase();
+    const kindF = kindFilter.value;
+
+    let list = [];
+    if (!kindF || kindF === 'team') {
+      Object.values(teams).forEach(t => list.push({ kind: 'team', ...t }));
+    }
+    if (!kindF || kindF === 'player') {
+      Object.values(players).forEach(p => list.push({ kind: 'player', ...p }));
+    }
+    list = list
+      .filter(a => !ownedKey.has(`${a.kind}:${a.id}`))
+      .filter(a => !q || (a.name || '').toLowerCase().includes(q))
+      .sort((a, b) => (b.currentPrice ?? b.basePrice) - (a.currentPrice ?? a.basePrice)
+                       || a.name.localeCompare(b.name))
+      .slice(0, 200);
+
+    marketList.innerHTML = list.map(a => {
+      const price = a.currentPrice ?? a.basePrice;
+      const elim  = !!a.eliminated;
+      const pts   = a.totalPoints || 0;
+      return `<div class="item-row ${elim ? 'eliminated' : ''}">
+        <span class="kind-tag ${a.kind}">${a.kind === 'team' ? 'T' : 'P'}</span>
+        <span class="item-name">${escape(a.name)} <span class="pts">${pts} pts</span></span>
+        <span class="item-price">$${price}</span>
+        <button data-buy-id="${escape(a.id)}" data-buy-kind="${a.kind}" ${elim ? 'disabled' : ''}>Buy</button>
+      </div>`;
+    }).join('');
+    marketList.querySelectorAll('[data-buy-id]').forEach(b => {
+      b.addEventListener('click', () => buyAsset(b.dataset.buyKind, b.dataset.buyId));
+    });
+  }
+
+  function renderSummary() {
+    const newVal = rosterCurrentValue(workingRoster);
+    const origVal = rosterCurrentValue(originalRoster);
+
+    newPicks.textContent = workingRoster.length;
+    newSpent.textContent = `$${newVal}`;
+    const left = BUDGET - newVal;
+    newBudget.textContent = `$${left}`;
+    newBudget.classList.toggle('warn', left < 0);
+
+    const net = newVal - origVal;
+    netChange.textContent = (net >= 0 ? '+' : '−') + '$' + Math.abs(net);
+    netChange.classList.toggle('warn', net > 0);
+
+    // Diff summary
+    const orig = new Set(originalRoster.map(p => `${p.kind}:${p.assetId}`));
+    const now  = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
+    const sold = [...orig].filter(x => !now.has(x)).length;
+    const bought = [...now].filter(x => !orig.has(x)).length;
+    changesSummary.textContent = `${sold} sold · ${bought} bought`;
+
+    // Save button gating
+    const overBudget = left < 0;
+    const overCap = workingRoster.length > ROSTER_CAP;
+    const noChange = sold === 0 && bought === 0;
+    saveBtn.disabled = (
+      !configDoc.transferWindowOpen || overBudget || overCap || noChange
+    );
+  }
+
+  function sellPick(kind, assetId) {
+    workingRoster = workingRoster.filter(p => !(p.kind === kind && p.assetId === assetId));
+    render();
+  }
+
+  function buyAsset(kind, assetId) {
+    if (workingRoster.length >= ROSTER_CAP) { showToast(`Max ${ROSTER_CAP} picks`, true); return; }
+    const a = getAsset(kind, assetId);
+    if (!a) return;
+    const price = a.currentPrice ?? a.basePrice;
+    const spent = rosterCurrentValue(workingRoster);
+    if (spent + price > BUDGET) { showToast(`Over budget by $${spent + price - BUDGET}`, true); return; }
+    workingRoster.push({
+      assetId, kind,
+      purchasePrice: price,
+      currentlyHeld: true,
+    });
+    render();
+  }
+
+  resetBtn.addEventListener('click', () => {
+    workingRoster = originalRoster.map(p => ({...p}));
+    render();
+  });
+
+  searchBox.addEventListener('input', renderMarket);
+  kindFilter.addEventListener('change', renderMarket);
+
+  saveBtn.addEventListener('click', async () => {
+    saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+    try {
+      const { writeBatch, doc, collection } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      const batch = writeBatch(window.fwc.db);
+
+      const orig = new Set(originalRoster.map(p => `${p.kind}:${p.assetId}`));
+      const now  = new Set(workingRoster.map(p => `${p.kind}:${p.assetId}`));
+      const sells = originalRoster.filter(p => !now.has(`${p.kind}:${p.assetId}`));
+      const buys  = workingRoster.filter(p => !orig.has(`${p.kind}:${p.assetId}`));
+
+      // Update user doc
+      const userRef = doc(window.fwc.db, 'users', currentUser.uid);
+      const spent = rosterCurrentValue(workingRoster);
+      batch.set(userRef, {
+        roster: workingRoster,
+        totalSpent: spent,
+        currentBudget: BUDGET - spent,
+      }, { merge: true });
+
+      // Add a transaction record
+      const txRef = doc(collection(window.fwc.db, 'transactions'));
+      batch.set(txRef, {
+        uid: currentUser.uid,
+        round: configDoc.currentRound || null,
+        timestamp: new Date().toISOString(),
+        sells: sells.map(p => ({ kind: p.kind, assetId: p.assetId, soldAt: getAsset(p.kind, p.assetId)?.currentPrice ?? p.purchasePrice })),
+        buys:  buys.map(p => ({ kind: p.kind, assetId: p.assetId, boughtAt: p.purchasePrice })),
+      });
+
+      await batch.commit();
+      showToast('Transfers saved!', false);
+      originalRoster = workingRoster.map(p => ({...p}));
+      render();
+    } catch (e) {
+      console.error(e);
+      showToast(`Save failed: ${e.message}`, true);
+    } finally {
+      saveBtn.disabled = false; saveBtn.textContent = 'Save changes';
+    }
+  });
+
+  function escape(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+  let toastTimer;
+  function showToast(msg, isWarn) {
+    toast.textContent = msg;
+    toast.style.background = isWarn ? 'var(--accent)' : 'var(--bg-header)';
+    toast.style.opacity = '1';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.style.opacity = '0', 2400);
+  }
+</script>
+
+</body>
+</html>

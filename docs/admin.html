@@ -26,6 +26,76 @@
     font-size: 11px; overflow-x: auto; font-family: ui-monospace, monospace;
   }
 
+  .match-list { list-style: none; }
+  .match-row {
+    border-bottom: 1px solid var(--border-row);
+    padding: 10px 0;
+  }
+  .match-row:last-child { border-bottom: none; }
+  .match-summary {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 14px;
+  }
+  .match-summary .teams { flex: 1; }
+  .match-summary .score {
+    font-weight: 700; font-variant-numeric: tabular-nums;
+    color: var(--bg-header);
+  }
+  .match-summary .round-tag {
+    font-size: 10px; padding: 2px 6px; border-radius: 3px;
+    background: var(--bg-nav); color: #fff;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .match-summary .processed-tag {
+    font-size: 10px; padding: 2px 6px; border-radius: 3px;
+    background: #10b981; color: #fff;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .match-summary button {
+    background: var(--bg-header); color: #fff; border: none;
+    padding: 4px 10px; border-radius: 3px; font-size: 12px; cursor: pointer;
+    font-weight: 600;
+  }
+  .match-summary button:hover { background: var(--accent); }
+
+  .match-entry-form {
+    margin-top: 10px; padding: 12px; background: #f8f8f6;
+    border-radius: 4px; display: none;
+  }
+  .match-entry-form.open { display: block; }
+  .scorer-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-bottom: 10px;
+  }
+  @media (max-width: 700px) { .scorer-grid { grid-template-columns: 1fr; } }
+  .scorer-col h3 {
+    font-size: 12px; color: var(--bg-header);
+    margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .scorer-row {
+    display: flex; gap: 6px; margin-bottom: 4px; align-items: center;
+  }
+  .scorer-row select { flex: 1; font-size: 12px; }
+  .scorer-row input[type=number] { width: 50px; font-size: 12px; }
+  .scorer-row button {
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 14px; padding: 0 4px;
+  }
+  .scorer-row button:hover { color: var(--accent); }
+  .form-actions {
+    display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;
+  }
+  .form-actions .add-scorer {
+    background: none; border: 1px dashed var(--border);
+    color: var(--bg-header); padding: 4px 10px; border-radius: 3px;
+    font-size: 12px; cursor: pointer;
+  }
+  .form-actions .add-scorer:hover { border-color: var(--bg-header); }
+  .goal-count {
+    font-size: 11px; color: var(--text-muted); margin-top: 4px;
+  }
+  .goal-count.mismatch { color: var(--accent); font-weight: 700; }
+
   .pill-status {
     display: inline-block; padding: 2px 8px; border-radius: 999px;
     font-size: 11px; font-weight: 700; text-transform: uppercase;
@@ -115,21 +185,25 @@
       <pre class="json" id="configDump">loading…</pre>
     </section>
 
-    <!-- Coming soon stubs -->
+    <!-- Goalscorer entry per finished match -->
     <section class="card" style="margin-top:16px">
-      <h2>Match results entry <span class="pill-status warn">Coming next</span></h2>
-      <p class="muted" style="font-size:13px">
-        Once we seed the matches collection (from football-data.org +
-        Wikipedia scrape), this section will list every match with controls
-        to enter / override scores and scorers.
+      <h2>Goalscorer entry <span class="pill-status ok" id="goalsStatus">live</span></h2>
+      <p class="muted" style="font-size:13px; margin-bottom:12px">
+        Match scores come from the football-data.org API automatically. Per-goal scorers
+        don't — enter them here after each match. Submitting updates each player's goal
+        count + flags the match as processed. The next ingest run will recompute
+        leaderboard points.
       </p>
+      <ul class="match-list" id="matchList">
+        <li class="muted" style="list-style:none">Loading…</li>
+      </ul>
     </section>
 
     <section class="card" style="margin-top:16px">
       <h2>Scoring weights <span class="pill-status warn">Read-only for now</span></h2>
       <p class="muted" style="font-size:13px">
         Current weights are shown in the config dump above. In-place edits
-        will be wired up after match-entry lands, so we can re-score
+        will be wired up after the first matches are scored, so we can re-score
         existing data when weights change.
       </p>
     </section>
@@ -197,6 +271,7 @@
   async function loadAll() {
     await loadConfig();
     await loadStateCounts();
+    try { await loadGoalEntryData(); } catch (e) { console.error('goal entry load failed', e); }
   }
 
   async function loadConfig() {
@@ -272,6 +347,211 @@
     if (!r) return;
     patchConfig({ currentRound: r });
   });
+
+  // ---- goalscorer entry --------------------------------------------------
+
+  // Cache players in memory once, then filter by teamId per match form.
+  let playersByTeam = null;   // { teamId: [{id, name, position}, ...] }
+  let teamsCache    = null;   // { fdId: { id, name } }
+
+  async function loadGoalEntryData() {
+    const { collection, getDocs, query, orderBy, where } = await import(
+      "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+    );
+
+    // Load players grouped by team
+    if (!playersByTeam) {
+      playersByTeam = {};
+      const psnap = await getDocs(collection(window.fwc.db, 'players'));
+      psnap.forEach(d => {
+        const p = d.data();
+        if (!playersByTeam[p.teamId]) playersByTeam[p.teamId] = [];
+        playersByTeam[p.teamId].push({
+          id: d.id, name: p.name, position: p.position, goals: p.goals || 0,
+        });
+      });
+      for (const tid in playersByTeam) {
+        playersByTeam[tid].sort((a, b) => a.name.localeCompare(b.name));
+      }
+    }
+
+    if (!teamsCache) {
+      teamsCache = {};
+      const tsnap = await getDocs(collection(window.fwc.db, 'teams'));
+      tsnap.forEach(d => {
+        const t = d.data();
+        if (t.fdId != null) teamsCache[t.fdId] = { id: d.id, name: t.name };
+      });
+    }
+
+    // Load finished matches
+    const msnap = await getDocs(
+      query(collection(window.fwc.db, 'matches'), where('status', '==', 'FINISHED'))
+    );
+    const matches = [];
+    msnap.forEach(d => matches.push({ docId: d.id, ...d.data() }));
+    matches.sort((a, b) => (a.kickoff || '').localeCompare(b.kickoff || ''));
+    renderMatchList(matches);
+  }
+
+  function renderMatchList(matches) {
+    const matchList = document.getElementById('matchList');
+    if (!matches.length) {
+      matchList.innerHTML = `<li class="muted" style="list-style:none">
+        No FINISHED matches yet. Once matches end, they'll show here for scorer entry.
+      </li>`;
+      document.getElementById('goalsStatus').textContent = 'idle';
+      document.getElementById('goalsStatus').className = 'pill-status idle';
+      return;
+    }
+    matchList.innerHTML = matches.map(m => renderMatchRow(m)).join('');
+    matchList.querySelectorAll('[data-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.toggle;
+        const form = document.getElementById('mform-' + id);
+        form.classList.toggle('open');
+        btn.textContent = form.classList.contains('open') ? 'Cancel' : (
+          btn.dataset.entered === 'true' ? 'Re-enter scorers' : 'Enter scorers'
+        );
+      });
+    });
+    matchList.querySelectorAll('[data-add-scorer]').forEach(btn => {
+      btn.addEventListener('click', () => addScorerRow(btn));
+    });
+    matchList.querySelectorAll('[data-save-match]').forEach(btn => {
+      btn.addEventListener('click', () => saveMatchScorers(btn.dataset.saveMatch));
+    });
+  }
+
+  function renderMatchRow(m) {
+    const home = (m.team1Name || '?');
+    const away = (m.team2Name || '?');
+    const score = `${m.score1 ?? '?'}–${m.score2 ?? '?'}`;
+    const entered = m.scorersEntered === true;
+    const t1Slug = teamsCache[m.team1Id]?.id;
+    const t2Slug = teamsCache[m.team2Id]?.id;
+    const t1Players = playersByTeam[t1Slug] || [];
+    const t2Players = playersByTeam[t2Slug] || [];
+
+    return `<li class="match-row">
+      <div class="match-summary">
+        <span class="round-tag">${escape(m.round || '?')}</span>
+        <span class="teams"><strong>${escape(home)}</strong> vs <strong>${escape(away)}</strong></span>
+        <span class="score">${score}</span>
+        ${entered ? '<span class="processed-tag">scorers in</span>' : ''}
+        <button data-toggle="${m.docId}" data-entered="${entered}">
+          ${entered ? 'Re-enter scorers' : 'Enter scorers'}
+        </button>
+      </div>
+      <div class="match-entry-form" id="mform-${m.docId}">
+        <div class="scorer-grid">
+          ${scorerColumn(m.docId, 'home', home, m.score1, t1Slug, t1Players, m.scorers || [])}
+          ${scorerColumn(m.docId, 'away', away, m.score2, t2Slug, t2Players, m.scorers || [])}
+        </div>
+        <div class="form-actions">
+          <button class="add-scorer" data-add-scorer="home" data-match="${m.docId}" data-team="${t1Slug}">+ ${escape(home)} scorer</button>
+          <button class="add-scorer" data-add-scorer="away" data-match="${m.docId}" data-team="${t2Slug}">+ ${escape(away)} scorer</button>
+          <span style="flex:1"></span>
+          <button class="btn btn-accent" data-save-match="${m.docId}">Save</button>
+        </div>
+      </div>
+    </li>`;
+  }
+
+  function scorerColumn(matchId, side, teamName, score, teamSlug, players, savedScorers) {
+    const existing = (savedScorers || []).filter(s => s.side === side);
+    const optsHtml = players.map(p =>
+      `<option value="${escape(p.id)}">${escape(p.name)} (${escape(p.position || '?')})</option>`
+    ).join('');
+    const rows = existing.length
+      ? existing.map(s => `
+          <div class="scorer-row" data-side="${side}">
+            <select data-player>${optsHtml}</select>
+            <input type="number" min="1" value="${s.count || 1}" data-count>
+            <button data-remove="x">×</button>
+          </div>
+        `).join('') + `<script>
+          (function(){ const rows = document.querySelectorAll('#mform-${matchId} .scorer-row[data-side="${side}"]');
+            const saved = ${JSON.stringify(existing)};
+            rows.forEach((r,i)=>{ if(saved[i]) r.querySelector('select').value = saved[i].playerId; });
+          })();
+        </script>`
+      : '';
+    return `<div class="scorer-col" data-side="${side}">
+      <h3>${escape(teamName)} <span class="muted">(score: ${score ?? '?'})</span></h3>
+      <div class="scorer-rows" id="rows-${matchId}-${side}">${rows}</div>
+      <div class="goal-count" id="count-${matchId}-${side}"></div>
+    </div>`;
+  }
+
+  function addScorerRow(btn) {
+    const side = btn.dataset.addScorer;
+    const matchId = btn.dataset.match;
+    const teamSlug = btn.dataset.team;
+    const players = (playersByTeam[teamSlug] || []);
+    const optsHtml = players.map(p =>
+      `<option value="${escape(p.id)}">${escape(p.name)} (${escape(p.position || '?')})</option>`
+    ).join('');
+    const container = document.getElementById(`rows-${matchId}-${side}`);
+    const row = document.createElement('div');
+    row.className = 'scorer-row';
+    row.dataset.side = side;
+    row.innerHTML = `
+      <select data-player>${optsHtml}</select>
+      <input type="number" min="1" value="1" data-count>
+      <button data-remove="x">×</button>
+    `;
+    container.appendChild(row);
+    row.querySelector('[data-remove]').addEventListener('click', () => row.remove());
+  }
+
+  async function saveMatchScorers(matchId) {
+    const homeRows = document.querySelectorAll(`#rows-${matchId}-home .scorer-row`);
+    const awayRows = document.querySelectorAll(`#rows-${matchId}-away .scorer-row`);
+    const scorers = [];
+    homeRows.forEach(r => scorers.push({
+      side: 'home',
+      playerId: r.querySelector('[data-player]').value,
+      count: parseInt(r.querySelector('[data-count]').value, 10) || 1,
+    }));
+    awayRows.forEach(r => scorers.push({
+      side: 'away',
+      playerId: r.querySelector('[data-player]').value,
+      count: parseInt(r.querySelector('[data-count]').value, 10) || 1,
+    }));
+
+    if (!confirm(`Save ${scorers.length} scorer entries for this match?\n\n` +
+                 `This will increment each player's .goals count in Firestore. ` +
+                 `If you re-enter for a match that was already saved, goals will double-count — ` +
+                 `consider whether you need to first decrement the previous entries.`)) {
+      return;
+    }
+
+    try {
+      const { writeBatch, doc, increment } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      const batch = writeBatch(window.fwc.db);
+      // Increment each scorer's goals
+      for (const s of scorers) {
+        batch.update(doc(window.fwc.db, 'players', s.playerId), {
+          goals: increment(s.count),
+        });
+      }
+      // Mark match as processed and save the scorers list
+      batch.update(doc(window.fwc.db, 'matches', matchId), {
+        scorersEntered: true,
+        scorers,
+        scorersEnteredAt: new Date().toISOString(),
+      });
+      await batch.commit();
+      showToast('Scorers saved. Run ingest_results.py (or wait for cron) to refresh leaderboard.', false);
+      await loadGoalEntryData();
+    } catch (e) {
+      console.error(e);
+      showToast(`Save failed: ${e.message}`, true);
+    }
+  }
 
   function showToast(msg, isWarn) {
     toast.textContent = msg;

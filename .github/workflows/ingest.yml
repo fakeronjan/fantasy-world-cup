@@ -1,0 +1,52 @@
+name: ingest-live-results
+
+# Runs scripts/ingest_results.py on a cron to keep team records, player
+# points, and the leaderboard in sync with the live tournament.
+#
+# Triggers:
+#   - Schedule: every 15 minutes (96/day; well under any free-tier limit)
+#   - Manual: workflow_dispatch from the Actions tab for ad-hoc reruns
+#
+# Required GitHub Secrets (Settings → Secrets and variables → Actions):
+#   - FOOTBALL_DATA_KEY   : the football-data.org API key
+#   - FIREBASE_SA_BASE64  : the service account JSON, base64-encoded.
+#     Generate with:
+#       base64 -i fantasy-world-cup-2026-firebase-adminsdk-fbsvc-*.json | pbcopy
+#     Then paste into the secret.
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Decode Firebase service account
+        run: |
+          mkdir -p /tmp/fwc
+          echo "${{ secrets.FIREBASE_SA_BASE64 }}" | base64 -d > /tmp/fwc/sa.json
+          chmod 600 /tmp/fwc/sa.json
+
+      - name: Run ingest
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/fwc/sa.json
+          FOOTBALL_DATA_KEY: ${{ secrets.FOOTBALL_DATA_KEY }}
+        run: python scripts/ingest_results.py
+
+      - name: Clean up credentials
+        if: always()
+        run: rm -f /tmp/fwc/sa.json

@@ -75,3 +75,56 @@ WC 2018 + 2022 data adapted to the 48-team 2026 format. Short version:
 ./venv/bin/python scripts/fetch_wc_data.py   # one-off Wikipedia data pull
 ./venv/bin/python scripts/simulate.py        # weight-balance simulation
 ```
+
+## Operational procedures
+
+### Live scoring (automatic)
+Once the tournament is underway, `.github/workflows/ingest.yml` runs every
+15 min, calling `scripts/ingest_results.py` which:
+- Pulls match status + scores from football-data.org
+- Recomputes team records and points
+- Recomputes player points from existing goal counts
+- Refreshes the leaderboard snapshot
+
+The workflow needs two GitHub Secrets configured in the repo
+(Settings → Secrets and variables → Actions → New repository secret):
+- `FOOTBALL_DATA_KEY` — paste the football-data.org API key
+- `FIREBASE_SA_BASE64` — base64-encoded contents of the service account JSON:
+  ```bash
+  base64 -i fantasy-world-cup-2026-firebase-adminsdk-fbsvc-*.json | pbcopy
+  ```
+
+### Entering goalscorers (admin manual, for now)
+Per-match goalscorers don't come from the free-tier API. After each
+finished match, the admin opens `/admin.html` → "Goalscorer entry"
+section, expands the match, and assigns scorers from the team's squad
+dropdown. Submitting increments each player's `goals` count in
+Firestore. The next ingest cron run picks it up.
+
+### Repricing between rounds
+After a knockout round wraps, run:
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=$PWD/fantasy-world-cup-2026-firebase-adminsdk-fbsvc-*.json \
+  ./venv/bin/python scripts/reprice.py
+```
+This zeros out `currentPrice` for eliminated teams + their players so
+they can't be sold for full value. Then open the transfer window from
+admin.html so users can rebalance.
+
+### Refreshing squads (closer to kickoff)
+National team rosters get finalized ~1 week before the tournament.
+Re-run the squad pull + tier build to pick up missing stars:
+```bash
+./venv/bin/python scripts/pull_wc2026_squads.py     # ~6 min, refetches all 48 squads
+./venv/bin/python scripts/build_seed_players.py     # rebuilds seed_players.json
+GOOGLE_APPLICATION_CREDENTIALS=$PWD/...adminsdk*.json \
+  ./venv/bin/python scripts/seed_assets.py          # writes the updates to Firestore
+```
+(seed_assets is idempotent — it merges updates onto existing player
+docs, preserving stats already accumulated.)
+
+### Setting kickoff timestamp
+Before the tournament starts, set `config.kickoffTimestamp` to the actual
+first-match kickoff so the draft auto-locks. Easiest: edit it directly in
+the Firebase Console → Firestore → `config/global` doc, field
+`kickoffTimestamp` set to a Timestamp (e.g., `2026-06-11T20:00:00Z`).
