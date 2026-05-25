@@ -19,6 +19,8 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut as fbSignOut,
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
@@ -60,6 +62,17 @@ if (!configIsPlaceholder) {
 
 const googleProvider = new GoogleAuthProvider();
 
+// Mobile + in-app browsers (iOS Safari, Instagram/Spotify webviews) break
+// signInWithPopup because they sandbox popups in ways that prevent the
+// post-auth handshake. Detect those and use the redirect flow instead —
+// full-page navigation, no cross-origin cookies needed.
+function shouldUseRedirect() {
+  const ua = navigator.userAgent || '';
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+  const isInAppBrowser = /Instagram|FBAN|FBAV|Line|MicroMessenger|Twitter|Snapchat|Spotify/i.test(ua);
+  return isMobile || isInAppBrowser;
+}
+
 async function signInWithGoogle() {
   if (configIsPlaceholder) {
     alert(
@@ -68,8 +81,36 @@ async function signInWithGoogle() {
     );
     return null;
   }
-  const result = await signInWithPopup(auth, googleProvider);
-  return result.user;
+  if (shouldUseRedirect()) {
+    // Full-page redirect to Google; on return, getRedirectResult() picks up
+    // the result during module init below and onAuthStateChanged fires.
+    await signInWithRedirect(auth, googleProvider);
+    return null;
+  }
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    return result.user;
+  } catch (e) {
+    // Popup blocked, closed by user, or browser cookie restrictions —
+    // fall back to redirect flow rather than failing outright.
+    if (e?.code === 'auth/popup-blocked' ||
+        e?.code === 'auth/popup-closed-by-user' ||
+        e?.code === 'auth/cancelled-popup-request') {
+      await signInWithRedirect(auth, googleProvider);
+      return null;
+    }
+    throw e;
+  }
+}
+
+// Pick up any pending redirect result when the page loads (no-op on
+// pages that didn't initiate auth). onAuthStateChanged still fires for
+// successful sign-ins, so callers don't need to handle this manually.
+if (!configIsPlaceholder) {
+  getRedirectResult(auth).catch((e) => {
+    // Suppress noise — auth state listener will reflect real errors.
+    console.debug('getRedirectResult:', e?.code || e);
+  });
 }
 
 async function signOut() {
