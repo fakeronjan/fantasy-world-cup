@@ -1,0 +1,413 @@
+"""Build docs/data/seed_players.json from the pulled WC 2026 squads.
+
+For each of the 1,200+ players, assign a price tier:
+  Tier 1 ($10): global megastars (~10)
+  Tier 2 ($7):  top international starters (~30)
+  Tier 3 ($5):  solid starters / GKs of top teams (~60)
+  Tier 4 ($3):  named squad players / starters of weaker teams (~100)
+  Tier 5 ($2):  everyone else (default ~1000)
+
+Hand-curated dictionaries below drive Tiers 1-4. Everyone unlisted falls
+to Tier 5. Designed to be re-runnable after editing — output rewrites
+seed_players.json cleanly.
+
+Usage:
+  ./venv/bin/python scripts/build_seed_players.py
+"""
+from __future__ import annotations
+
+import json
+import re
+import sys
+import unicodedata
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+SQUADS_PATH  = ROOT / "docs" / "data" / "wc2026_squads.json"
+TEAMS_PATH   = ROOT / "docs" / "data" / "seed_teams.json"
+OUT_PATH     = ROOT / "docs" / "data" / "seed_players.json"
+
+
+# ---------------------------------------------------------------------------
+# Tier dictionaries — hand-curated
+# ---------------------------------------------------------------------------
+
+# Tier 1 ($10) — players who would be on a "best XI in the world" shortlist
+# going into WC 2026. Pre-tournament star power, not retrospective.
+TIER_1 = {
+    "Kylian Mbappé",
+    "Lionel Messi",
+    "Erling Haaland",
+    "Jude Bellingham",
+    "Vinícius Júnior",
+    "Lamine Yamal",
+    "Cristiano Ronaldo",
+    "Mohamed Salah",
+    "Heung-Min Son",
+    "Phil Foden",
+}
+
+# Tier 2 ($7) — top international starters (key XI player on a Tier 1-2 team,
+# or the marquee name on a Tier 3 team).
+TIER_2 = {
+    # England
+    "Harry Kane", "Bukayo Saka", "Declan Rice", "Cole Palmer",
+    # Spain
+    "Pedri", "Rodri", "Nico Williams", "Rodrigo Hernández",
+    # Argentina
+    "Lautaro Martínez", "Julián Álvarez", "Enzo Fernández",
+    "Emiliano Martínez", "Alexis Mac Allister",
+    # Brazil
+    "Rodrygo", "Raphinha", "Alisson", "Casemiro",
+    # France
+    "Antoine Griezmann", "Aurélien Tchouaméni", "Ousmane Dembélé",
+    "Eduardo Camavinga", "William Saliba",
+    # Portugal
+    "Bernardo Silva", "Bruno Fernandes", "Rafael Leão", "Rúben Dias",
+    # Netherlands
+    "Cody Gakpo", "Frenkie de Jong", "Virgil van Dijk", "Memphis Depay",
+    # Belgium
+    "Kevin De Bruyne", "Romelu Lukaku", "Jérémy Doku", "Thibaut Courtois",
+    # Germany
+    "Jamal Musiala", "Florian Wirtz", "Joshua Kimmich", "Kai Havertz",
+    # Croatia
+    "Luka Modrić",
+    # Norway
+    "Martin Ødegaard",
+    # Uruguay
+    "Federico Valverde", "Darwin Núñez",
+    # Morocco
+    "Achraf Hakimi",
+    # Senegal
+    "Sadio Mané",
+    # USA
+    "Christian Pulisic",
+    # Colombia
+    "Luis Díaz", "James Rodríguez",
+}
+
+# Tier 3 ($5) — solid starters / GKs of top teams / star on a Tier 3+ team
+TIER_3 = {
+    # England (depth + GK)
+    "Jordan Pickford", "John Stones", "Marc Guéhi", "Reece James",
+    "Trent Alexander-Arnold", "Conor Gallagher", "Anthony Gordon",
+    # Spain
+    "Aymeric Laporte", "Unai Simón", "Dani Olmo", "Ferran Torres",
+    "Mikel Oyarzabal", "Daniel Carvajal", "Dani Vivian",
+    # Argentina
+    "Cristian Romero", "Nahuel Molina", "Rodrigo De Paul",
+    "Nicolás Otamendi", "Marcos Acuña", "Leandro Paredes",
+    # Brazil
+    "Marquinhos", "Lucas Paquetá", "Bruno Guimarães", "Vinícius Tobias",
+    "Éderson", "Gabriel Magalhães", "Endrick",
+    # France
+    "Theo Hernández", "Mike Maignan", "Marcus Thuram", "Adrien Rabiot",
+    "Randal Kolo Muani", "Jules Koundé", "N'Golo Kanté",
+    # Portugal
+    "João Cancelo", "Diogo Jota", "Vitinha", "Bernardo Silva",
+    "Pepe", "Diogo Costa", "Gonçalo Ramos",
+    # Netherlands
+    "Denzel Dumfries", "Matthijs de Ligt", "Tijjani Reijnders",
+    "Bart Verbruggen", "Joey Veerman",
+    # Belgium
+    "Youri Tielemans", "Axel Witsel", "Leandro Trossard",
+    # Germany
+    "Manuel Neuer", "Antonio Rüdiger", "Niclas Füllkrug", "İlkay Gündoğan",
+    "Leroy Sané", "Serge Gnabry",
+    # Croatia
+    "Mateo Kovačić", "Joško Gvardiol", "Dominik Livaković", "Andrej Kramarić",
+    # Norway
+    "Alexander Sørloth", "Antonio Nusa", "Aron Dønnum",
+    # Uruguay
+    "Ronald Araújo", "José María Giménez", "Sergio Rochet", "Maximiliano Araújo",
+    # Switzerland
+    "Granit Xhaka", "Yann Sommer", "Manuel Akanji", "Breel Embolo",
+    # Mexico
+    "Edson Álvarez", "Raúl Jiménez", "Guillermo Ochoa", "Hirving Lozano",
+    # USA
+    "Tim Weah", "Tyler Adams", "Yunus Musah", "Folarin Balogun", "Weston McKennie",
+    # Morocco
+    "Yassine Bounou", "Youssef En-Nesyri", "Hakim Ziyech", "Sofyan Amrabat",
+    # Senegal
+    "Édouard Mendy", "Ismaïla Sarr", "Idrissa Gueye", "Kalidou Koulibaly",
+    # Japan
+    "Takefusa Kubo", "Wataru Endo", "Daichi Kamada", "Daizen Maeda", "Kaoru Mitoma",
+    # South Korea
+    "Hwang Hee-Chan", "Kim Min-Jae", "Lee Kang-In",
+    # Ecuador
+    "Moisés Caicedo", "Piero Hincapié", "Pervis Estupiñán", "Enner Valencia",
+    # Sweden
+    "Alexander Isak", "Viktor Gyökeres",
+    # Turkey
+    "Hakan Çalhanoğlu", "Arda Güler", "Ferdi Kadıoğlu", "Kenan Yıldız",
+    # Egypt
+    "Trezeguet", "Mostafa Mohamed",
+}
+
+# Tier 4 ($3) — named squad players, key starters of weaker teams, GKs of mid teams
+TIER_4 = {
+    # Top teams' depth (Tier 1 teams)
+    # England
+    "Phil Foden",  # duplicate intentionally — falls back to highest tier
+    "Eberechi Eze", "Ollie Watkins", "Levi Colwill", "Cole Palmer",
+    "Dean Henderson", "Curtis Jones",
+    # Spain
+    "Mikel Merino", "Pau Cubarsí", "Marc Cucurella", "Joselu", "Fabián Ruiz",
+    # Argentina
+    "Géronimo Rulli", "Juan Musso", "Nicolás Tagliafico", "Marcos Senesi",
+    "Thiago Almada", "Nicolás González",
+    # Brazil
+    "Vinícius Tobias", "Beraldo", "André", "João Pedro",
+    # France
+    "Bradley Barcola", "Désiré Doué", "Manu Koné", "Lucas Hernández",
+    # Portugal
+    "João Félix", "Nuno Mendes", "João Neves", "José Sá",
+    # Netherlands
+    "Justin Kluivert", "Donyell Malen", "Ian Maatsen",
+    # Germany
+    "Pascal Groß", "Robert Andrich", "David Raum", "Aleksandar Pavlović",
+    # Croatia
+    "Borna Sosa", "Marcelo Brozović", "Ivan Perišić",
+    # Belgium
+    "Amadou Onana", "Charles De Ketelaere", "Loïs Openda",
+    # Tier 3 teams - more starters
+    # Mexico
+    "Luis Romo", "César Montes", "Orbelín Pineda", "Jesús Gallardo",
+    # USA
+    "Matt Turner", "Sergiño Dest", "Antonee Robinson", "Brenden Aaronson",
+    "Gio Reyna", "Ricardo Pepi",
+    # Morocco
+    "Romain Saïss", "Noussair Mazraoui", "Bilal El Khannouss",
+    # Senegal
+    "Nicolas Jackson", "Pape Matar Sarr", "Krepin Diatta",
+    # Japan
+    "Hidemasa Morita", "Junya Ito", "Ko Itakura", "Ayase Ueda", "Reo Hatate",
+    # South Korea
+    "Cho Gue-Sung", "Hwang In-Beom", "Kim Seung-Gyu",
+    # Ecuador
+    "Hernán Galíndez", "Félix Torres", "Jeremy Sarmiento",
+    # Sweden
+    "Robin Olsen", "Albin Ekdal", "Dejan Kulusevski", "Anthony Elanga",
+    # Turkey
+    "Mert Günok", "Salih Özcan", "Çağlar Söyüncü",
+    # Egypt
+    "Mohamed Elneny", "Mohamed Hany", "Mostafa Shalaby", "Ahmed Hegazy",
+    # Norway
+    "Sander Berge", "Patrick Berg", "Ørjan Nyland",
+    # Uruguay
+    "Mathías Olivera", "Manuel Ugarte", "Maximiliano Araújo",
+    # Tier 4 teams — star players
+    # Canada
+    "Alphonso Davies", "Jonathan David", "Cyle Larin", "Stephen Eustáquio",
+    "Maxime Crépeau",
+    # Australia
+    "Mat Ryan", "Harry Souttar", "Aaron Mooy", "Mitchell Duke", "Jackson Irvine",
+    # Iran
+    "Mehdi Taremi", "Sardar Azmoun", "Alireza Beiranvand",
+    # Ghana
+    "Mohammed Kudus", "Thomas Partey", "Inaki Williams", "Jordan Ayew",
+    # Ivory Coast
+    "Sébastien Haller", "Franck Kessié", "Wilfried Singo", "Simon Adingra",
+    # Algeria
+    "Riyad Mahrez", "Ismaël Bennacer", "Houssem Aouar",
+    # Czechia
+    "Patrik Schick", "Tomáš Souček", "Vladimir Coufal", "Jiří Pavlenka",
+    # Austria
+    "Marcel Sabitzer", "David Alaba", "Konrad Laimer", "Marko Arnautović",
+    "Christoph Baumgartner",
+    # Paraguay
+    "Miguel Almirón", "Antonio Sanabria",
+    # Scotland
+    "Andy Robertson", "Scott McTominay", "Kieran Tierney", "Angus Gunn",
+    "John McGinn", "Lyndon Dykes",
+    # Saudi Arabia
+    "Salem Al-Dawsari",
+    # Tunisia
+    "Wahbi Khazri", "Hannibal Mejbri",
+    # New Zealand
+    "Chris Wood",
+    # Cape Verde
+    "Logan Costa",
+    # Qatar
+    "Akram Afif",
+}
+
+
+# ---------------------------------------------------------------------------
+# Normalization for name matching
+# ---------------------------------------------------------------------------
+
+def _norm_name(s: str) -> str:
+    """Strip accents, lowercase, collapse whitespace — for lookup.
+
+    NFKD only handles accents over base letters. Characters that ARE
+    distinct letters (Ø, İ, ı, ł, ß, etc.) need manual mapping or
+    they drop entirely under ascii encode."""
+    REPLACEMENTS = {
+        "Ø": "O", "ø": "o",
+        "Å": "A", "å": "a",
+        "Æ": "Ae", "æ": "ae",
+        "Œ": "Oe", "œ": "oe",
+        "Ł": "L", "ł": "l",
+        "Đ": "D", "đ": "d",
+        "İ": "I", "ı": "i",
+        "ß": "ss",
+        "Þ": "Th", "þ": "th",
+        "Ð": "D", "ð": "d",
+    }
+    for k, v in REPLACEMENTS.items():
+        s = s.replace(k, v)
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
+    s = re.sub(r"[^a-z0-9 -]", " ", s.lower())  # drop punctuation
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+def _build_lookup(name_set: set[str]) -> set[str]:
+    return {_norm_name(n) for n in name_set}
+
+
+def _resolve_tier_for_squad(squad_names: list[str]) -> dict[str, int]:
+    """Match each squad-list name to a tier (1-4) if possible, else 5.
+
+    Two-pass matching against the override sets:
+      1. Exact normalized match
+      2. Substring match (override name appears inside the squad name —
+         catches 'Alisson' → 'Alisson Becker' but won't cross-match
+         unrelated players like 'Salah' → 'Salah-Eddine' because the
+         full override 'mohamed salah' isn't a substring of the other.)
+    """
+    name_to_norm = {n: _norm_name(n) for n in squad_names}
+
+    by_tier = [(1, TIER_1), (2, TIER_2), (3, TIER_3), (4, TIER_4)]
+    assigned: dict[str, int] = {}
+
+    # Pass 1: exact match
+    for tier, name_set in by_tier:
+        norm_set = {_norm_name(n) for n in name_set}
+        for sn, snorm in name_to_norm.items():
+            if sn in assigned:
+                continue
+            if snorm in norm_set:
+                assigned[sn] = tier
+
+    # Pass 2: substring match for any not-yet-assigned
+    for tier, name_set in by_tier:
+        norm_overrides = [_norm_name(n) for n in name_set]
+        for sn, snorm in name_to_norm.items():
+            if sn in assigned:
+                continue
+            for ov in norm_overrides:
+                if ov in snorm or snorm in ov:
+                    assigned[sn] = tier
+                    break
+
+    # Default everyone else to Tier 5
+    for sn in squad_names:
+        assigned.setdefault(sn, 5)
+
+    return assigned
+
+
+TIER_PRICE = {1: 10, 2: 7, 3: 5, 4: 3, 5: 2}
+
+
+def _missing_overrides(assigned_names: set[str]) -> dict[int, list[str]]:
+    """Return overrides that didn't match any squad player."""
+    out: dict[int, list[str]] = {1: [], 2: [], 3: [], 4: []}
+    assigned_norms = {_norm_name(n) for n in assigned_names}
+    for tier, name_set in [(1, TIER_1), (2, TIER_2), (3, TIER_3), (4, TIER_4)]:
+        for n in name_set:
+            nnorm = _norm_name(n)
+            # An override is "matched" if any assigned squad name matches
+            # exactly OR contains the override OR is contained in it.
+            matched = any(
+                an == nnorm or nnorm in an or an in nnorm
+                for an in assigned_norms
+            )
+            if not matched:
+                out[tier].append(n)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Position → simplified position
+# ---------------------------------------------------------------------------
+
+def simplify_position(pos: str | None) -> str:
+    if not pos:
+        return "?"
+    p = pos.lower()
+    if "goalkeep" in p: return "GK"
+    if "back" in p or "defence" in p: return "DEF"
+    if "midfield" in p: return "MID"
+    if "winger" in p or "forward" in p or "offence" in p: return "FWD"
+    return "?"
+
+
+# ---------------------------------------------------------------------------
+# Build
+# ---------------------------------------------------------------------------
+
+def build() -> None:
+    if not SQUADS_PATH.exists():
+        sys.exit(f"missing {SQUADS_PATH} — run scripts/pull_wc2026_squads.py first")
+    squads_data = json.loads(SQUADS_PATH.read_text())
+    teams_data = json.loads(TEAMS_PATH.read_text())
+
+    # Index team name → our team id slug
+    name_to_slug: dict[str, str] = {}
+    for t in teams_data:
+        name_to_slug[t["name"]] = t["id"]
+    # Hand-fix Cape Verde naming difference: API says "Cape Verde Islands", seed uses same.
+
+    out = []
+    counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+    assigned_names = set()
+
+    for team_name, info in squads_data.items():
+        team_slug = name_to_slug.get(team_name) or _norm_name(team_name).replace(" ", "-")
+        squad_names = [p["name"] for p in info.get("squad", [])]
+        tier_assignments = _resolve_tier_for_squad(squad_names)
+
+        for p in info.get("squad", []):
+            tier = tier_assignments[p["name"]]
+            if tier < 5:
+                assigned_names.add(p["name"])
+            counts[tier] += 1
+            doc_id = f"{p['id']}-{team_slug}"
+            out.append({
+                "id": doc_id,
+                "fdId": p["id"],
+                "name": p["name"],
+                "teamId": team_slug,
+                "teamName": team_name,
+                "position": simplify_position(p.get("position")),
+                "tier": tier,
+                "basePrice": TIER_PRICE[tier],
+            })
+
+    out.sort(key=lambda r: (r["teamName"], r["tier"], r["name"]))
+    OUT_PATH.write_text(json.dumps(out, indent=2, ensure_ascii=False))
+
+    print(f"Wrote {len(out)} players → {OUT_PATH}")
+    print(f"Per-tier counts: T1={counts[1]}  T2={counts[2]}  T3={counts[3]}  T4={counts[4]}  T5={counts[5]}")
+
+    print("\nTier 1 players in output:")
+    for p in out:
+        if p["tier"] == 1:
+            print(f"  ${p['basePrice']}  {p['name']:<28} ({p['teamName']})")
+
+    missing = _missing_overrides(assigned_names)
+    for tier in (1, 2, 3, 4):
+        if missing[tier]:
+            print(f"\nTier {tier} names NOT FOUND in any squad ({len(missing[tier])}):")
+            for n in missing[tier]:
+                print(f"  • {n}")
+            print(f"  (These won't be in the draft until either (a) re-running")
+            print(f"  pull_wc2026_squads.py picks them up after squad announcements,")
+            print(f"  or (b) they're manually added to seed_players.json.)")
+
+
+if __name__ == "__main__":
+    build()

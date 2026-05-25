@@ -1,0 +1,338 @@
+[
+  {
+    "id": 758,
+    "name": "Uruguay",
+    "shortName": "Uruguay",
+    "tla": "URY",
+    "crest": "https://crests.football-data.org/758.svg"
+  },
+  {
+    "id": 759,
+    "name": "Germany",
+    "shortName": "Germany",
+    "tla": "GER",
+    "crest": "https://crests.football-data.org/759.svg"
+  },
+  {
+    "id": 760,
+    "name": "Spain",
+    "shortName": "Spain",
+    "tla": "ESP",
+    "crest": "https://crests.football-data.org/760.svg"
+  },
+  {
+    "id": 761,
+    "name": "Paraguay",
+    "shortName": "Paraguay",
+    "tla": "PAR",
+    "crest": "https://crests.football-data.org/761.svg"
+  },
+  {
+    "id": 762,
+    "name": "Argentina",
+    "shortName": "Argentina",
+    "tla": "ARG",
+    "crest": "https://crests.football-data.org/762.png"
+  },
+  {
+    "id": 763,
+    "name": "Ghana",
+    "shortName": "Ghana",
+    "tla": "GHA",
+    "crest": "https://crests.football-data.org/ghana.svg"
+  },
+  {
+    "id": 764,
+    "name": "Brazil",
+    "shortName": "Brazil",
+    "tla": "BRA",
+    "crest": "https://crests.football-data.org/764.svg"
+  },
+  {
+    "id": 765,
+    "name": "Portugal",
+    "shortName": "Portugal",
+    "tla": "POR",
+    "crest": "https://crests.football-data.org/765.svg"
+  },
+  {
+    "id": 766,
+    "name": "Japan",
+    "shortName": "Japan",
+    "tla": "JPN",
+    "crest": "https://crests.football-data.org/766.svg"
+  },
+  {
+    "id": 769,
+    "name": "Mexico",
+    "shortName": "Mexico",
+    "tla": "MEX",
+    "crest": "https://crests.football-data.org/769.svg"
+  },
+  {
+    "id": 770,
+    "name": "England",
+    "shortName": "England",
+    "tla": "ENG",
+    "crest": "https://crests.football-data.org/770.svg"
+  },
+  {
+    "id": 771,
+    "name": "United States",
+    "shortName": "USA",
+    "tla": "USA",
+    "crest": "https://crests.football-data.org/usa.svg"
+  },
+  {
+    "id": 772,
+    "name": "South Korea",
+    "shortName": "Korea Republic",
+    "tla": "KOR",
+    "crest": "https://crests.football-data.org/772.png"
+  },
+  {
+    "id": 773,
+    "name": "France",
+    "shortName": "France",
+    "tla": "FRA",
+    "crest": "https://crests.football-data.org/773.svg"
+  },
+  {
+    "id": 774,
+    "name": "South Africa",
+    "shortName": "South Africa",
+    "tla": "RSA",
+    "crest": "https://crests.football-data.org/9396.svg"
+  },
+  {
+    "id": 778,
+    "name": "Algeria",
+    "shortName": "Algeria",
+    "tla": "ALG",
+    "crest": "https://crests.football-data.org/algeria.svg"
+  },
+  {
+    "id": 779,
+    "name": "Australia",
+    "shortName": "Australia",
+    "tla": "AUS",
+    "crest": "https://crests.football-data.org/779.svg"
+  },
+  {
+    "id": 783,
+    "name": "New Zealand",
+    "shortName": "New Zealand",
+    "tla": "NZL",
+    "crest": "https://crests.football-data.org/783.svg"
+  },
+  {
+    "id": 788,
+    "name": "Switzerland",
+    "shortName": "Switzerland",
+    "tla": "SUI",
+    "crest": "https://crests.football-data.org/788.svg"
+  },
+  {
+    "id": 791,
+    "name": "Ecuador",
+    "shortName": "Ecuador",
+    "tla": "ECU",
+    "crest": "https://crests.football-data.org/791.svg"
+  },
+  {
+    "id": 792,
+    "name": "Sweden",
+    "shortName": "Sweden",
+    "tla": "SWE",
+    "crest": "https://crests.football-data.org/792.svg"
+  },
+  {
+    "id": 798,
+    "name": "Czechia",
+    "shortName": "Czechia",
+    "tla": "CZE",
+    "crest": "https://crests.football-data.org/798.svg"
+  },
+  {
+    "id": 799,
+    "name": "Croatia",
+    "shortName": "Croatia",
+    "tla": "CRO",
+    "crest": "https://crests.football-data.org/799.svg"
+  },
+  {
+    "id": 801,
+    "name": "Saudi Arabia",
+    "shortName": "Saudi Arabia",
+    "tla": "KSA",
+    "crest": "https://crests.football-data.org/saudi_arabia.svg"
+  },
+  {
+    "id": 802,
+    "name": "Tunisia",
+    "shortName": "Tunisia",
+    "tla": "TUN",
+    "crest": "https://crests.football-data.org/tunisia.svg"
+  },
+  {
+    "id": 803,
+    "name": "Turkey",
+    "shortName": "Turkey",
+    "tla": "TUR",
+    "crest": "https://crests.football-data.org/803.svg"
+  },
+  {
+    "id": 804,
+    "name": "Senegal",
+    "shortName": "Senegal",
+    "tla": "SEN",
+    "crest": "https://crests.football-data.org/senegal.svg"
+  },
+  {
+    "id": 805,
+    "name": "Belgium",
+    "shortName": "Belgium",
+    "tla": "BEL",
+    "crest": "https://crests.football-data.org/805.svg"
+  },
+  {
+    "id": 815,
+    "name": "Morocco",
+    "shortName": "Morocco",
+    "tla": "MAR",
+    "crest": "https://crests.football-data.org/morocco.svg"
+  },
+  {
+    "id": 816,
+    "name": "Austria",
+    "shortName": "Austria",
+    "tla": "AUT",
+    "crest": "https://crests.football-data.org/816.svg"
+  },
+  {
+    "id": 818,
+    "name": "Colombia",
+    "shortName": "Colombia",
+    "tla": "COL",
+    "crest": "https://crests.football-data.org/818.svg"
+  },
+  {
+    "id": 825,
+    "name": "Egypt",
+    "shortName": "Egypt",
+    "tla": "EGY",
+    "crest": "https://crests.football-data.org/825.svg"
+  },
+  {
+    "id": 828,
+    "name": "Canada",
+    "shortName": "Canada",
+    "tla": "CAN",
+    "crest": "https://crests.football-data.org/canada.svg"
+  },
+  {
+    "id": 836,
+    "name": "Haiti",
+    "shortName": "Haiti",
+    "tla": "HAI",
+    "crest": "https://crests.football-data.org/haiti.svg"
+  },
+  {
+    "id": 840,
+    "name": "Iran",
+    "shortName": "Iran",
+    "tla": "IRN",
+    "crest": "https://crests.football-data.org/iran.svg"
+  },
+  {
+    "id": 1060,
+    "name": "Bosnia-Herzegovina",
+    "shortName": "Bosnia-H.",
+    "tla": "BIH",
+    "crest": "https://crests.football-data.org/bosnia.svg"
+  },
+  {
+    "id": 1836,
+    "name": "Panama",
+    "shortName": "Panama",
+    "tla": "PAN",
+    "crest": "https://crests.football-data.org/panama.svg"
+  },
+  {
+    "id": 1930,
+    "name": "Cape Verde Islands",
+    "shortName": "Cape Verde",
+    "tla": "CPV",
+    "crest": "https://crests.football-data.org/cape_verde.svg"
+  },
+  {
+    "id": 1934,
+    "name": "Congo DR",
+    "shortName": "Congo DR",
+    "tla": "COD",
+    "crest": "https://crests.football-data.org/congo_dr.svg"
+  },
+  {
+    "id": 1935,
+    "name": "Ivory Coast",
+    "shortName": "Ivory Coast",
+    "tla": "CIV",
+    "crest": "https://crests.football-data.org/787.svg"
+  },
+  {
+    "id": 8030,
+    "name": "Qatar",
+    "shortName": "Qatar",
+    "tla": "QAT",
+    "crest": "https://crests.football-data.org/8030.svg"
+  },
+  {
+    "id": 8049,
+    "name": "Jordan",
+    "shortName": "Jordan",
+    "tla": "JOR",
+    "crest": "https://crests.football-data.org/8049.png"
+  },
+  {
+    "id": 8062,
+    "name": "Iraq",
+    "shortName": "Iraq",
+    "tla": "IRQ",
+    "crest": "https://crests.football-data.org/iraq.svg"
+  },
+  {
+    "id": 8070,
+    "name": "Uzbekistan",
+    "shortName": "Uzbekistan",
+    "tla": "UZB",
+    "crest": "https://crests.football-data.org/8070.png"
+  },
+  {
+    "id": 8601,
+    "name": "Netherlands",
+    "shortName": "Netherlands",
+    "tla": "NED",
+    "crest": "https://crests.football-data.org/8601.svg"
+  },
+  {
+    "id": 8872,
+    "name": "Norway",
+    "shortName": "Norway",
+    "tla": "NOR",
+    "crest": "https://crests.football-data.org/813.svg"
+  },
+  {
+    "id": 8873,
+    "name": "Scotland",
+    "shortName": "Scotland",
+    "tla": "SCO",
+    "crest": "https://crests.football-data.org/814.svg"
+  },
+  {
+    "id": 9460,
+    "name": "Curaçao",
+    "shortName": "Curaçao",
+    "tla": "CUW",
+    "crest": "https://crests.football-data.org/curacao.svg"
+  }
+]
