@@ -82,6 +82,14 @@ function onAuth(callback) {
     callback(null);
     return () => {};
   }
+  // Render the global state banner on every page (best-effort; silently
+  // no-ops if the page doesn't have a #stateBanner element).
+  setTimeout(async () => {
+    const el = document.getElementById('stateBanner');
+    if (!el) return;
+    const state = await getGameState();
+    renderStateBanner(el, state);
+  }, 0);
   return onAuthStateChanged(auth, callback);
 }
 
@@ -94,6 +102,83 @@ function isAdmin(user) {
 // email local-part (half-masked) → first 6 chars of UID.
 // Accepts a Firestore user doc (with uid added) — works in both leaderboard
 // rows and self-display contexts.
+// Read live game state from Firestore. Returns one of:
+//   { state: 'config-missing' }                     — Firebase not configured
+//   { state: 'pre-kickoff', kickoff: <iso|null> }   — drafts open, no tourney
+//   { state: 'round-in-progress', round: 'R32' }    — match in progress, rosters locked
+//   { state: 'window-open', round: 'R32' }          — transfer window open for round R32
+//   { state: 'done' }                               — tournament complete
+async function getGameState() {
+  if (configIsPlaceholder) return { state: 'config-missing' };
+  try {
+    const snap = await getDoc(doc(db, 'config', 'global'));
+    const c = snap.exists() ? snap.data() : {};
+    const round = c.currentRound || 'pre';
+    if (round === 'done') return { state: 'done' };
+    if (round === 'pre')  return { state: 'pre-kickoff', kickoff: c.kickoffTimestamp || null };
+    if (c.transferWindowOpen === true) return { state: 'window-open', round };
+    return { state: 'round-in-progress', round };
+  } catch (e) {
+    console.error('getGameState failed:', e);
+    return { state: 'unknown' };
+  }
+}
+
+// Render the game-state banner into a target element. Visual treatment:
+//   pre-kickoff       → teal (drafting allowed)
+//   round-in-progress → gray (rosters locked)
+//   window-open       → pink/accent (action!)
+//   done              → pink/accent (final)
+function renderStateBanner(targetEl, state) {
+  if (!targetEl || !state) return;
+  const ROUND_NAMES = {
+    'group': 'Group stage', 'R32': 'Round of 32', 'R16': 'Round of 16',
+    'QF': 'Quarter-finals', 'SF': 'Semi-finals', 'F': 'Final',
+  };
+  let bg, color, icon, title, sub;
+  if (state.state === 'config-missing') return;
+  if (state.state === 'pre-kickoff') {
+    bg = '#e0f2fe'; color = '#075985'; icon = '⏳';
+    title = 'Pre-kickoff';
+    sub = state.kickoff
+      ? `Drafts open until ${formatKickoff(state.kickoff)}`
+      : 'Drafts open — kickoff time TBD';
+  } else if (state.state === 'round-in-progress') {
+    bg = '#f3f4f6'; color = '#374151'; icon = '🔒';
+    title = `${ROUND_NAMES[state.round] || state.round} in progress`;
+    sub = `Rosters locked until the next transfer window opens.`;
+  } else if (state.state === 'window-open') {
+    bg = '#fef0f7'; color = '#9d174d'; icon = '🟢';
+    title = `Transfer window OPEN · ${ROUND_NAMES[state.round] || state.round}`;
+    sub = `Make your moves on the Transfer page. Closes 1h before the next match.`;
+  } else if (state.state === 'done') {
+    bg = '#fef0f7'; color = '#9d174d'; icon = '🏆';
+    title = 'Tournament complete';
+    sub = 'Final standings on the Leaderboard.';
+  } else {
+    return; // unknown state — skip
+  }
+  targetEl.innerHTML = `
+    <div style="background:${bg}; color:${color}; padding:10px 14px; border-radius:6px;
+                margin-bottom:16px; font-size:13px; display:flex; align-items:center; gap:10px">
+      <span style="font-size:18px">${icon}</span>
+      <div style="flex:1">
+        <strong>${title}</strong>
+        <span style="opacity:0.85; margin-left:6px">· ${sub}</span>
+      </div>
+    </div>`;
+}
+
+function formatKickoff(iso) {
+  try {
+    const d = iso?.toDate ? iso.toDate() : new Date(iso);
+    return d.toLocaleString(undefined, {
+      month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+      timeZoneName: 'short',
+    });
+  } catch { return 'kickoff'; }
+}
+
 function nameFor(userDoc) {
   if (!userDoc) return 'Unknown';
   const nick = (userDoc.leagueNickname || '').trim();
@@ -108,6 +193,7 @@ function nameFor(userDoc) {
 window.fwc = {
   auth, db,
   signInWithGoogle, signOut, onAuth, isAdmin, nameFor,
+  getGameState, renderStateBanner,
   configIsPlaceholder,
   // Re-export Firestore helpers commonly used on pages, so individual pages
   // don't have to repeat the import URL.
