@@ -15,9 +15,10 @@
 </header>
 
 <nav class="site-nav" id="siteNav" style="display:none">
+  <a href="./index.html" class="active">Home</a>
+  <a href="./draft.html" id="draftLink">Draft</a>
   <a href="./roster.html">My Roster</a>
   <a href="./leaderboard.html">Leaderboard</a>
-  <a href="./draft.html" id="draftLink" style="display:none">Draft</a>
   <a href="./transfer.html" id="transferLink" style="display:none">Transfer</a>
   <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
 </nav>
@@ -98,9 +99,9 @@
       signinCard.style.display = 'none';
       siteNav.style.display = 'flex';
 
-      // Pre-kickoff: show draft link. After kickoff: hide it (logic on draft page).
-      // For now, always show the draft link until we wire up config.currentRound.
-      draftLink.style.display = '';
+      // Draft link is always visible in the nav now (the draft page itself
+      // handles the locked-after-kickoff state). Kept the ref for future
+      // conditional hide once config.currentRound is wired through.
 
       if (window.fwc.isAdmin(user)) adminLink.style.display = '';
     } else {
