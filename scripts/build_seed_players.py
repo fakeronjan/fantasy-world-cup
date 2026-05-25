@@ -316,6 +316,7 @@ TIER_PRICE = {1: 10, 2: 7, 3: 5, 4: 3, 5: 2}  # legacy buckets — kept only for
 # goes through a formula that combines (team strength rank, within-team
 # rank, position).
 PLAYER_PRICE_OVERRIDES = {
+    # Top tier — anchored to top team ($30). Mbappé as ceiling (89% of top team).
     "Kylian Mbappé":      25,
     "Lionel Messi":       22,
     "Erling Haaland":     22,
@@ -327,40 +328,43 @@ PLAYER_PRICE_OVERRIDES = {
     "Heung-Min Son":      17,
     "Heung-min Son":      17,
     "Cristiano Ronaldo":  17,
-    "Harry Kane":         15,
-    "Bukayo Saka":        14,
-    "Luka Modrić":        14,
-    "Kevin De Bruyne":    13,
-    "Pedri":              13,
-    "Julián Álvarez":     12,
-    "Enzo Fernández":     11,
-    "Romelu Lukaku":      11,
-    "Emiliano Martínez":  11,
-    "Bruno Fernandes":    10,
-    "Bernardo Silva":     10,
-    "Rodri":              10,
-    "Achraf Hakimi":      10,
-    "Manuel Neuer":       10,
-    "Alisson Becker":     10,
-    "Casemiro":            9,
-    "Alexis Mac Allister": 9,
-    "Marquinhos":          9,
-    "Virgil van Dijk":     9,
-    "Antonio Rüdiger":     9,
-    "Joshua Kimmich":      9,
-    "Luis Díaz":           9,
-    "Thibaut Courtois":    8,
-    "Federico Valverde":   8,
-    "Darwin Núñez":        8,
-    "Jordan Pickford":     7,
-    "Dani Olmo":           7,
-    "Vitinha":             7,
-    "Mateo Kovačić":       7,
-    "Dani Carvajal":       7,
-    "Yassine Bounou":      7,
-    "Édouard Mendy":       7,
-    "Edouard Mendy":       7,
-    "Diogo Costa":         7,
+    # Mid-upper — lifted to balance ROI (was 13-15 before lift)
+    "Harry Kane":         16,
+    "Bukayo Saka":        15,
+    "Luka Modrić":        15,
+    "Kevin De Bruyne":    14,
+    "Pedri":              14,
+    # Mid — lifted ~40% per ROI analysis
+    "Julián Álvarez":     14,
+    "Enzo Fernández":     13,
+    "Romelu Lukaku":      14,
+    "Emiliano Martínez":  13,
+    "Bruno Fernandes":    13,
+    "Bernardo Silva":     13,
+    "Rodri":              13,
+    "Achraf Hakimi":      13,
+    "Manuel Neuer":       13,
+    "Alisson Becker":     13,
+    "Casemiro":           12,
+    "Alexis Mac Allister":12,
+    "Marquinhos":         12,
+    "Virgil van Dijk":    12,
+    "Antonio Rüdiger":    12,
+    "Joshua Kimmich":     12,
+    "Luis Díaz":          12,
+    "Thibaut Courtois":   11,
+    "Federico Valverde":  11,
+    "Darwin Núñez":       11,
+    # Solid starters — lifted ~40%
+    "Jordan Pickford":    10,
+    "Dani Olmo":          10,
+    "Vitinha":            10,
+    "Mateo Kovačić":      10,
+    "Dani Carvajal":      10,
+    "Yassine Bounou":     10,
+    "Édouard Mendy":      10,
+    "Edouard Mendy":      10,
+    "Diogo Costa":        10,
 }
 
 
@@ -372,13 +376,18 @@ _POS_MULT = {"FWD": 1.15, "MID": 1.00, "GK": 0.95, "DEF": 0.85, "?": 0.95}
 def formula_price(team_rank: int, total_teams: int,
                    within_rank: int, squad_size: int,
                    position: str) -> int:
-    """Continuous pricing formula. Returns an integer $1-$22 (top names
-    get higher via the explicit override list)."""
-    import math
+    """Continuous pricing formula. Returns an integer in [1, FORMULA_CAP].
+    Top hand-priced names ($17+) sit above this cap so the formula never
+    crowds out the marquee tier."""
+    FORMULA_CAP = 14   # any formula-derived price is capped here; hand
+                       # overrides sit above to anchor top of the scale
+    BASE = 26.0        # raised from 18 after 2026-05-25 ROI analysis
+                       # showed mid/low-tier players were systematically
+                       # under-priced (2.10 / 3.23 pts/$ vs ~1.5 target)
     team_factor = max(0.04, (1 - (team_rank - 1) / max(1, total_teams - 1)) ** 1.3)
     within_factor = max(0.05, (1 - (within_rank - 1) / max(1, squad_size)) ** 1.5)
-    base = 18.0 * team_factor * within_factor * _POS_MULT.get(position, 1.0)
-    return max(1, round(base))
+    base = BASE * team_factor * within_factor * _POS_MULT.get(position, 1.0)
+    return max(1, min(FORMULA_CAP, round(base)))
 
 
 def _missing_overrides(assigned_names: set[str]) -> dict[int, list[str]]:

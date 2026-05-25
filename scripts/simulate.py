@@ -60,54 +60,51 @@ class ScoringWeights:
 # Based on pre-tournament public strength signals (FIFA ranking, seed pot,
 # bookmaker odds). Set BEFORE the tournament begins — no post-hoc knowledge.
 
+# Widened pricing (2026-05-25) — historical tiers now map into the same
+# $1-$30 range used by the live 2026 game. Each tier is the midpoint of
+# what that tier's teams would land at under the new continuous scheme.
+# Historical tier prices updated 2026-05-25 to match the lifted mid-tier
+# pricing in the live game (T3 lifted from 7→10 to bring its ROI down
+# from 1.79 → ~1.3 pts/$).
 TEAM_PRICE_TIERS_2022 = {
-    # Tier 1 — title contenders
-    15: ["Brazil", "France", "Argentina", "England", "Spain"],
-    # Tier 2 — strong contenders
-    12: ["Germany", "Portugal", "Netherlands", "Belgium", "Denmark"],
-    # Tier 3 — outside chance
-    9:  ["Uruguay", "Croatia", "Switzerland", "Mexico", "USA", "United States",
+    22: ["Brazil", "France", "Argentina", "England", "Spain"],
+    14: ["Germany", "Portugal", "Netherlands", "Belgium", "Denmark"],
+    10: ["Uruguay", "Croatia", "Switzerland", "Mexico", "USA", "United States",
          "Senegal", "Serbia", "Poland"],
-    # Tier 4 — unlikely
-    6:  ["Japan", "South Korea", "Iran", "Wales", "Ecuador", "Morocco",
+    5:  ["Japan", "South Korea", "Iran", "Wales", "Ecuador", "Morocco",
          "Tunisia", "Cameroon", "Australia"],
-    # Tier 5 — host / qualifier outsiders
-    3:  ["Qatar", "Qatar (H)", "Saudi Arabia", "Costa Rica", "Ghana", "Canada"],
+    1:  ["Qatar", "Qatar (H)", "Saudi Arabia", "Costa Rica", "Ghana", "Canada"],
 }
 
 TEAM_PRICE_TIERS_2018 = {
-    15: ["Germany", "Brazil", "France", "Spain", "Argentina"],
-    12: ["Belgium", "Portugal", "England", "Uruguay", "Croatia"],
-    9:  ["Colombia", "Mexico", "Switzerland", "Denmark", "Sweden", "Poland",
+    22: ["Germany", "Brazil", "France", "Spain", "Argentina"],
+    14: ["Belgium", "Portugal", "England", "Uruguay", "Croatia"],
+    10: ["Colombia", "Mexico", "Switzerland", "Denmark", "Sweden", "Poland",
          "Senegal", "Russia"],
-    6:  ["Iran", "Egypt", "Morocco", "Tunisia", "Iceland", "Serbia", "Nigeria",
+    5:  ["Iran", "Egypt", "Morocco", "Tunisia", "Iceland", "Serbia", "Nigeria",
          "South Korea", "Japan", "Peru", "Australia", "Costa Rica"],
-    3:  ["Saudi Arabia", "Panama"],
+    1:  ["Saudi Arabia", "Panama"],
 }
 
-# 2014 pre-tournament tiers. Brazil host, Spain defending champ, Argentina with
-# peak Messi. Belgium "golden generation" — first major tournament since 2002.
 TEAM_PRICE_TIERS_2014 = {
-    15: ["Brazil", "Argentina", "Germany", "Spain"],
-    12: ["Belgium", "Netherlands", "France", "Italy", "Uruguay", "Portugal",
+    22: ["Brazil", "Argentina", "Germany", "Spain"],
+    14: ["Belgium", "Netherlands", "France", "Italy", "Uruguay", "Portugal",
          "Colombia", "England"],
-    9:  ["Mexico", "United States", "Russia", "Switzerland", "Chile",
+    10: ["Mexico", "United States", "Russia", "Switzerland", "Chile",
          "Côte d'Ivoire", "Bosnia and Herzegovina", "Ecuador"],
-    6:  ["Croatia", "Greece", "Costa Rica", "Algeria", "Nigeria", "Ghana",
+    5:  ["Croatia", "Greece", "Costa Rica", "Algeria", "Nigeria", "Ghana",
          "Japan", "South Korea", "Cameroon", "Iran", "Australia"],
-    3:  ["Honduras"],
+    1:  ["Honduras"],
 }
 
-# 2010 pre-tournament tiers. Italy defending, Spain Euro 2008 champs, Brazil
-# always favored. South Africa hosts. France made it via Henry-handball controversy.
 TEAM_PRICE_TIERS_2010 = {
-    15: ["Brazil", "Spain", "Argentina", "England", "Italy", "Germany"],
-    12: ["Netherlands", "France", "Portugal"],
-    9:  ["Mexico", "United States", "Uruguay", "Côte d'Ivoire", "Cameroon",
+    22: ["Brazil", "Spain", "Argentina", "England", "Italy", "Germany"],
+    14: ["Netherlands", "France", "Portugal"],
+    10: ["Mexico", "United States", "Uruguay", "Côte d'Ivoire", "Cameroon",
          "Ghana", "Serbia", "Greece", "Chile", "Paraguay"],
-    6:  ["South Africa", "Japan", "South Korea", "Australia", "Denmark",
+    5:  ["South Africa", "Japan", "South Korea", "Australia", "Denmark",
          "Switzerland", "Slovenia", "Slovakia", "Nigeria"],
-    3:  ["Honduras", "New Zealand", "Algeria", "North Korea"],
+    1:  ["Honduras", "New Zealand", "Algeria", "North Korea"],
 }
 
 # Player price tiers — top scorers/playmakers + GKs of top teams get higher tiers.
@@ -115,13 +112,13 @@ TEAM_PRICE_TIERS_2010 = {
 # default $1 tier. These reflect pre-tournament expectation (form + reputation).
 
 PLAYER_PRICE_TIERS_2022 = {
-    10: ["Kylian Mbappé", "Lionel Messi", "Neymar", "Cristiano Ronaldo",
-         "Harry Kane", "Karim Benzema", "Erling Haaland"],  # Benzema/Haaland not in tournament — illustrative
-    7:  ["Robert Lewandowski", "Sadio Mané", "Mohamed Salah", "Vinícius Júnior",
+    18: ["Kylian Mbappé", "Lionel Messi", "Neymar", "Cristiano Ronaldo",
+         "Harry Kane", "Karim Benzema", "Erling Haaland"],
+    14: ["Robert Lewandowski", "Sadio Mané", "Mohamed Salah", "Vinícius Júnior",
          "Bruno Fernandes", "Antoine Griezmann", "Phil Foden", "Bukayo Saka",
          "Raheem Sterling", "Olivier Giroud", "Álvaro Morata", "Romelu Lukaku",
          "Heung-min Son", "Memphis Depay", "Luka Modrić"],
-    5:  ["Julián Álvarez", "Lautaro Martínez", "Ángel Di María", "Jude Bellingham",
+    11: ["Julián Álvarez", "Lautaro Martínez", "Ángel Di María", "Jude Bellingham",
          "Mason Mount", "Marcus Rashford", "Jamal Musiala", "Kai Havertz",
          "Serge Gnabry", "Pedri", "Gavi", "Ferran Torres", "Cody Gakpo",
          "Frenkie de Jong", "Ivan Perišić", "Andrej Kramarić", "Joško Gvardiol",
@@ -133,18 +130,18 @@ PLAYER_PRICE_TIERS_2022 = {
          "Kalidou Koulibaly", "Wojciech Szczęsny", "Emiliano Martínez",
          "Yassine Bounou", "Hugo Lloris", "Thibaut Courtois", "Alisson",
          "Andries Noppert", "Dominik Livaković", "Édouard Mendy",
-         "Manuel Neuer", "Unai Simón"],  # mostly GKs
+         "Manuel Neuer", "Unai Simón"],
 }
 
 PLAYER_PRICE_TIERS_2018 = {
-    10: ["Lionel Messi", "Cristiano Ronaldo", "Neymar", "Mohamed Salah",
+    18: ["Lionel Messi", "Cristiano Ronaldo", "Neymar", "Mohamed Salah",
          "Kylian Mbappé", "Harry Kane"],
-    7:  ["Antoine Griezmann", "Paul Pogba", "Eden Hazard", "Kevin De Bruyne",
+    14: ["Antoine Griezmann", "Paul Pogba", "Eden Hazard", "Kevin De Bruyne",
          "Romelu Lukaku", "Luis Suárez", "Edinson Cavani", "Sergio Agüero",
          "Luka Modrić", "Ivan Rakitić", "Toni Kroos", "Thomas Müller",
          "Robert Lewandowski", "Diego Costa", "Isco", "James Rodríguez",
          "Heung-min Son"],
-    5:  ["Olivier Giroud", "Raheem Sterling", "Dele Alli", "Jesse Lingard",
+    11: ["Olivier Giroud", "Raheem Sterling", "Dele Alli", "Jesse Lingard",
          "Marcus Rashford", "Mario Mandžukić", "Ivan Perišić", "Ante Rebić",
          "Andrés Iniesta", "Sergio Busquets", "David Silva", "Marco Asensio",
          "Radamel Falcao", "Juan Cuadrado", "Roberto Firmino", "Philippe Coutinho",
@@ -154,19 +151,17 @@ PLAYER_PRICE_TIERS_2018 = {
     3:  ["Yerry Mina", "Denis Cheryshev", "Artem Dzyuba", "Aleksandr Golovin"],
 }
 
-# 2014 player tiers. Pre-tournament: Messi/Ronaldo/Neymar/Suárez/Rooney at peak.
-# James Rodríguez was at Monaco, talented but NOT yet a global megastar — Tier 3.
 PLAYER_PRICE_TIERS_2014 = {
-    10: ["Lionel Messi", "Cristiano Ronaldo", "Neymar", "Luis Suárez",
+    18: ["Lionel Messi", "Cristiano Ronaldo", "Neymar", "Luis Suárez",
          "Wayne Rooney", "Arjen Robben"],
-    7:  ["Thomas Müller", "Andrés Iniesta", "Xavi", "Eden Hazard",
+    14: ["Thomas Müller", "Andrés Iniesta", "Xavi", "Eden Hazard",
          "Sergio Agüero", "Ángel Di María", "Juan Mata", "Andrea Pirlo",
          "Mario Balotelli", "Arturo Vidal", "Alexis Sánchez",
          "Edinson Cavani", "Radamel Falcao", "Toni Kroos", "Marco Reus",
          "Mesut Özil", "Karim Benzema", "Franck Ribéry", "Cesc Fàbregas",
          "Diego Costa", "David Silva", "Robin van Persie", "Wesley Sneijder",
          "Yaya Touré", "Didier Drogba"],
-    5:  ["James Rodríguez", "Mario Götze", "André Schürrle", "Miroslav Klose",
+    11: ["James Rodríguez", "Mario Götze", "André Schürrle", "Miroslav Klose",
          "Mats Hummels", "Manuel Neuer", "Philipp Lahm", "Bastian Schweinsteiger",
          "Pepe", "Bruno Alves", "Joel Campbell", "Gonzalo Higuaín",
          "Javier Mascherano", "Sergio Romero", "Daniel Sturridge",
@@ -176,27 +171,25 @@ PLAYER_PRICE_TIERS_2014 = {
     3:  ["Enner Valencia", "Bryan Ruiz", "Keylor Navas", "Salomón Rondón"],
 }
 
-# 2010 player tiers. Pre-tournament: Messi was 22, world's best per most observers.
-# Forlán was respected La Liga top-scorer (Atletico) but not a Tier-1 global megastar.
 PLAYER_PRICE_TIERS_2010 = {
-    10: ["Lionel Messi", "Cristiano Ronaldo", "Kaká", "Wayne Rooney",
+    18: ["Lionel Messi", "Cristiano Ronaldo", "Kaká", "Wayne Rooney",
          "Didier Drogba", "Fernando Torres"],
-    7:  ["David Villa", "Xavi", "Andrés Iniesta", "Frank Lampard",
+    14: ["David Villa", "Xavi", "Andrés Iniesta", "Frank Lampard",
          "Steven Gerrard", "Carlos Tévez", "Diego Forlán", "Gonzalo Higuaín",
          "Robinho", "Cesc Fàbregas", "Arjen Robben", "Wesley Sneijder",
          "Robin van Persie", "Samuel Eto'o", "Andrea Pirlo", "Bastian Schweinsteiger",
          "Michael Ballack", "Luís Fabiano"],
-    5:  ["Thomas Müller", "Mesut Özil", "Miroslav Klose", "Lukas Podolski",
+    11: ["Thomas Müller", "Mesut Özil", "Miroslav Klose", "Lukas Podolski",
          "Philipp Lahm", "Sergio Ramos", "Iker Casillas", "Carles Puyol",
          "Gianluigi Buffon", "John Terry", "Mark van Bommel",
          "Bakary Sagna", "Patrice Évra", "Maicon", "Lúcio", "Dani Alves",
          "Júlio César", "Javier Mascherano", "Ángel Di María", "Sergio Agüero",
          "Edinson Cavani", "Luis Suárez", "Asamoah Gyan", "Kevin-Prince Boateng",
          "Park Ji-sung", "Keisuke Honda"],
-    3:  ["Diego Pérez", "Diego Lugano", "Maximiliano Pereira"],  # Uruguay supporting cast
+    3:  ["Diego Pérez", "Diego Lugano", "Maximiliano Pereira"],
 }
 
-DEFAULT_TEAM_PRICE = 3
+DEFAULT_TEAM_PRICE = 1
 DEFAULT_PLAYER_PRICE = 1  # also configurable per-run, see PlayerPricing below
 
 
@@ -777,8 +770,88 @@ PRESETS: list[tuple[str, ScoringWeights, PlayerPricing]] = [
 ]
 
 
+PRICE_BUCKETS = [
+    (25, 30, "$25-30  (premium)"),
+    (18, 24, "$18-24  (top)"),
+    (13, 17, "$13-17  (high)"),
+    (8, 12,  "$ 8-12  (mid)"),
+    (4,  7,  "$ 4- 7  (low)"),
+    (1,  3,  "$ 1- 3  (floor)"),
+]
+
+
+def _bucket_for_price(price: int) -> str | None:
+    for lo, hi, label in PRICE_BUCKETS:
+        if lo <= price <= hi:
+            return label
+    return None
+
+
+def bucket_return_analysis() -> None:
+    """Group historical assets into price BUCKETS (not exact tiers) and
+    report per-bucket: count, mean/median/p25/p75 pts, pts/$ at midpoint,
+    and the breakeven-rate (% of assets that returned ≥ their price).
+
+    Balanced game ≈ comparable mean pts/$ across buckets, with bigger
+    variance at higher buckets."""
+    from collections import defaultdict
+    import statistics
+
+    weights = ScoringWeights()
+    pricing = PlayerPricing(min_price=1)
+
+    team_by_bucket   = defaultdict(list)   # bucket → list of (price, points)
+    player_by_bucket = defaultdict(list)
+
+    for year in (2010, 2014, 2018, 2022):
+        teams, players = load_year(year, pricing, format_2026=True)
+        teams_by_name = {t.name: t for t in teams}
+        for t in teams:
+            bucket = _bucket_for_price(t.price)
+            if bucket: team_by_bucket[bucket].append((t.price, t.points(weights, format_2026=True)))
+        for p in players:
+            team = teams_by_name.get(p.team_name)
+            if team is None: continue
+            bucket = _bucket_for_price(p.price)
+            if bucket: player_by_bucket[bucket].append((p.price, p.points(weights, team)))
+
+    def _print_block(label: str, data: dict) -> None:
+        print(f"\n{label}")
+        print(f"  {'bucket':<22} {'n':>5} {'mean':>6} {'med':>5} {'p25':>5} {'p75':>5} "
+              f"{'min':>4} {'max':>4} {'pts/$':>6} {'break':>6}")
+        for lo, hi, b_label in PRICE_BUCKETS:
+            rows = data.get(b_label, [])
+            if not rows:
+                continue
+            pts_only = [pts for (_, pts) in rows]
+            prices = [pr for (pr, _) in rows]
+            pts_sorted = sorted(pts_only)
+            n = len(pts_only)
+            mean = statistics.mean(pts_only)
+            med = statistics.median(pts_only)
+            p25 = pts_sorted[n // 4] if n >= 4 else pts_sorted[0]
+            p75 = pts_sorted[(3 * n) // 4] if n >= 4 else pts_sorted[-1]
+            midpoint = (lo + hi) / 2
+            # breakeven = fraction of assets that returned ≥ their price
+            be_count = sum(1 for (pr, pts) in rows if pts >= pr)
+            breakeven = 100 * be_count / n
+            print(f"  {b_label:<22} {n:>5} {mean:>6.1f} {med:>5.0f} {p25:>5.0f} {p75:>5.0f} "
+                  f"{min(pts_only):>4.0f} {max(pts_only):>4.0f} "
+                  f"{mean/midpoint:>6.2f} {breakeven:>5.0f}%")
+
+    print(f"\n{'='*80}")
+    print("  PRICE-BUCKET ROI — averages across WC 2010, 2014, 2018, 2022")
+    print(f"  (locked scoring weights, 2026 48-team format, $1-$30 spread)")
+    print(f"{'='*80}")
+    print("\n  pts/$  = mean pts ÷ bucket midpoint  (higher = better ROI in bucket)")
+    print("  break  = % of assets that returned ≥ their price  (the 'paid off' rate)")
+
+    _print_block("TEAMS:", team_by_bucket)
+    _print_block("PLAYERS (named goalscorers from historical data):", player_by_bucket)
+
+
 def tier_return_analysis() -> None:
-    """For each price tier, across all 4 historical World Cups, report
+    """[Legacy] For each price tier, across all 4 historical World Cups, report
     average + median actual points earned. Lets us sanity-check whether
     each tier is paying off proportionally."""
     from collections import defaultdict
@@ -894,7 +967,9 @@ def main() -> None:
 
 if __name__ == "__main__":
     import sys
-    if "--tier-returns" in sys.argv:
+    if "--buckets" in sys.argv:
+        bucket_return_analysis()
+    elif "--tier-returns" in sys.argv:
         tier_return_analysis()
     else:
         main()
