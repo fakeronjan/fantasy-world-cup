@@ -10,7 +10,7 @@ bracket state, runs N trials, and computes:
 
 Eliminated assets settle at:
   marketValue = 0
-  sellPrice   = floor(last_marketValue * 0.40)   # 40% liquidation refund
+  sellPrice   = floor(last_marketValue * 0.25)   # 25% liquidation refund
   buyPrice    = N/A (cannot buy eliminated assets)
 
 This is the *pricing engine* only — Firestore I/O and UI wiring come in
@@ -48,7 +48,11 @@ from simulate_2026 import (
 TARGET_ROI       = 2.0    # target points per dollar (cap-anchored)
 VIG_BUY          = 1.10   # buy at 10% premium
 VIG_SELL         = 0.90   # sell at 10% discount
-ELIM_REFUND_RATE = 0.40   # 40% liquidation on eliminated picks
+ELIM_REFUND_RATE = 0.25   # 25% liquidation on eliminated picks
+                          # (Lower than it intuitively sounds because most of
+                          # an asset's value has already been realized as
+                          # points before it's eliminated — refund is a small
+                          # consolation, not a recovery.)
 
 
 def simulate_remaining(advancers, start_round, players_by_team):
@@ -222,7 +226,7 @@ def live_advancers(db, start_round):
 
 def write_prices_to_firestore(db, prices, advancers, all_teams):
     """Persist marketValue/buyPrice/sellPrice to each team + player doc.
-    Eliminated assets get marketValue=0 + sellPrice = floor(last MV * 0.40).
+    Eliminated assets get marketValue=0 + sellPrice = floor(last MV * 0.25).
     """
     import math
     alive_ids = {t["id"] for t in advancers}
