@@ -97,7 +97,7 @@
     "teamName": "Argentina",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 4
   },
   {
     "id": "46452-argentina",
@@ -127,7 +127,7 @@
     "teamName": "Argentina",
     "position": "MID",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 4
   },
   {
     "id": "6-argentina",
@@ -147,7 +147,7 @@
     "teamName": "Argentina",
     "position": "GK",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 3
   },
   {
     "id": "46046-argentina",
@@ -167,7 +167,7 @@
     "teamName": "Argentina",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 3
   },
   {
     "id": "3208-argentina",
@@ -517,7 +517,7 @@
     "teamName": "Canada",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 4
   },
   {
     "id": "21226-canada",
@@ -647,7 +647,7 @@
     "teamName": "Croatia",
     "position": "GK",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 4
   },
   {
     "id": "122266-croatia",
@@ -677,7 +677,7 @@
     "teamName": "Croatia",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 5
+    "basePrice": 4
   },
   {
     "id": "7437-curacao",
@@ -757,7 +757,7 @@
     "teamName": "Ecuador",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 3
   },
   {
     "id": "121103-ecuador",
@@ -917,7 +917,7 @@
     "teamName": "England",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "3309-england",
@@ -1337,7 +1337,7 @@
     "teamName": "Japan",
     "position": "MID",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "44017-japan",
@@ -1357,7 +1357,7 @@
     "teamName": "Japan",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "3269-japan",
@@ -1367,7 +1367,7 @@
     "teamName": "Japan",
     "position": "MID",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "119460-japan",
@@ -1377,7 +1377,7 @@
     "teamName": "Japan",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "49080-japan",
@@ -1387,7 +1387,7 @@
     "teamName": "Japan",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "48902-japan",
@@ -1487,7 +1487,7 @@
     "teamName": "Morocco",
     "position": "MID",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "7553-morocco",
@@ -1497,7 +1497,7 @@
     "teamName": "Morocco",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 4
   },
   {
     "id": "7459-netherlands",
@@ -1777,7 +1777,7 @@
     "teamName": "Portugal",
     "position": "DEF",
     "tier": 2,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "37362-portugal",
@@ -2077,7 +2077,7 @@
     "teamName": "South Korea",
     "position": "GK",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 3
   },
   {
     "id": "166683-south-korea",
@@ -2167,7 +2167,7 @@
     "teamName": "Spain",
     "position": "GK",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "15863-spain",
@@ -2187,7 +2187,7 @@
     "teamName": "Spain",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 4
   },
   {
     "id": "6486-sweden",
@@ -2197,7 +2197,7 @@
     "teamName": "Sweden",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "8279-sweden",
@@ -2247,7 +2247,7 @@
     "teamName": "Switzerland",
     "position": "MID",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 4
   },
   {
     "id": "143-switzerland",
@@ -2257,7 +2257,7 @@
     "teamName": "Switzerland",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 3
   },
   {
     "id": "99393-tunisia",
@@ -2327,7 +2327,7 @@
     "teamName": "Turkey",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 3
   },
   {
     "id": "16641-turkey",
@@ -2387,7 +2387,7 @@
     "teamName": "United States",
     "position": "MID",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 5
   },
   {
     "id": "3927-united-states",
@@ -2397,7 +2397,7 @@
     "teamName": "United States",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 4
   },
   {
     "id": "113262-united-states",
@@ -2417,7 +2417,7 @@
     "teamName": "United States",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 4
   },
   {
     "id": "76936-united-states",
@@ -2437,7 +2437,7 @@
     "teamName": "United States",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 4
   },
   {
     "id": "28618-uruguay",
@@ -2487,7 +2487,7 @@
     "teamName": "Uruguay",
     "position": "DEF",
     "tier": 2,
-    "basePrice": 4
+    "basePrice": 3
   },
   {
     "id": "11206-uruguay",
@@ -2497,7 +2497,7 @@
     "teamName": "Uruguay",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 4
   },
   {
     "id": "115-uruguay",
@@ -2517,7 +2517,7 @@
     "teamName": "Uruguay",
     "position": "MID",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 3
   },
   {
     "id": "28292-uruguay",
