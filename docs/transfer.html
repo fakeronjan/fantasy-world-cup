@@ -329,7 +329,9 @@
       const cur   = a ? (a.currentPrice ?? a.basePrice ?? pick.purchasePrice) : pick.purchasePrice;
       const elim  = a ? !!a.eliminated : false;
       const pts   = a ? (a.totalPoints || 0) : (pick.points || 0);
-      const histLine = pick.kind === 'team' ? teamHistoryBlurb(teamHistory[pick.assetId]) : '';
+      const histLine = pick.kind === 'team'
+        ? teamHistoryBlurb(teamHistory[pick.assetId])
+        : playerHistoryBlurb(playerHistory[pick.assetId]);
       const histHtml = histLine ? `<div class="muted" style="font-size:10px; margin-top:2px; padding-left:46px">${escape(histLine)}</div>` : '';
       return `<div class="item-row ${elim ? 'eliminated' : ''}" style="flex-wrap:wrap">
         <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:200px">
