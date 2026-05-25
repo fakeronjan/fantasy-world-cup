@@ -260,7 +260,7 @@
     <section class="card" style="margin-top:16px">
       <h2>Groups <span class="pill-status idle" id="groupsCount">…</span></h2>
       <p class="muted" style="font-size:13px; margin-bottom:12px">
-        Optional group labels for users. Foundation only — visibility
+        Optional group labels for users. Foundation only - visibility
         scoping (group-only leaderboards etc.) is wired up separately.
         Today this just stores the label.
       </p>
@@ -372,7 +372,7 @@
       const { collection, getDocs } = await import(
         "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
       );
-      // Catalogs first — needed to render pick names + refund prices
+      // Catalogs first - needed to render pick names + refund prices
       if (!Object.keys(teamsCache).length) {
         const tsnap = await getDocs(collection(window.fwc.db, 'teams'));
         tsnap.forEach(d => teamsCache[d.id] = { id: d.id, ...d.data() });
@@ -574,7 +574,7 @@
     if (!confirm(`DELETE ${name}'s user doc entirely? This removes their roster and history. Their Google account is NOT deleted and they can re-sign-in to start fresh. Type "yes" to confirm.`)) return;
     const confirmText = prompt(`Type "${name}" to confirm deletion:`);
     if (confirmText !== name) {
-      showToast('Cancelled — confirmation did not match', true);
+      showToast('Cancelled - confirmation did not match', true);
       return;
     }
     try {
@@ -607,7 +607,7 @@
         configDump.textContent = JSON.stringify(currentConfig, null, 2);
       } else {
         currentConfig = null;
-        configDump.textContent = '(config/global doc does not exist — run scripts/seed_assets.py to initialize)';
+        configDump.textContent = '(config/global doc does not exist - run scripts/seed_assets.py to initialize)';
       }
     } catch (e) {
       configDump.textContent = `error: ${e.message}`;
@@ -615,7 +615,7 @@
   }
 
   async function loadStateCounts() {
-    // Best-effort counts — uses Firestore JS SDK getDocs.
+    // Best-effort counts - uses Firestore JS SDK getDocs.
     const items = [];
     try {
       const { collection, getDocs, getCountFromServer } = await import(
@@ -724,13 +724,13 @@
           <div>
             ${homeGoals.map(g => `
               <div>${escape(g.scorerName || '?')} ${g.minute || ''}'${g.type && g.type !== 'REGULAR' ? ' (' + g.type.toLowerCase() + ')' : ''}
-              ${g.assistName ? `<span class="muted">— assist: ${escape(g.assistName)}</span>` : ''}</div>
+              ${g.assistName ? `<span class="muted"> -  assist: ${escape(g.assistName)}</span>` : ''}</div>
             `).join('') || '<span class="muted">no goals</span>'}
           </div>
           <div>
             ${awayGoals.map(g => `
               <div>${escape(g.scorerName || '?')} ${g.minute || ''}'${g.type && g.type !== 'REGULAR' ? ' (' + g.type.toLowerCase() + ')' : ''}
-              ${g.assistName ? `<span class="muted">— assist: ${escape(g.assistName)}</span>` : ''}</div>
+              ${g.assistName ? `<span class="muted"> -  assist: ${escape(g.assistName)}</span>` : ''}</div>
             `).join('') || '<span class="muted">no goals</span>'}
           </div>
         </div>

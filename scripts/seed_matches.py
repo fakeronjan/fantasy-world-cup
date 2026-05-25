@@ -1,6 +1,6 @@
 """One-off: seed the matches/ collection in Firestore from football-data.org.
 
-Idempotent — re-running just refreshes the catalog. Knockout-stage matches
+Idempotent - re-running just refreshes the catalog. Knockout-stage matches
 will appear empty (homeTeam/awayTeam = null) until the bracket is set
 after group stage; re-run this script then to populate them.
 

@@ -188,7 +188,7 @@
 
 <main>
   <div id="stateBanner"></div>
-  <!-- HERO — always visible, action button switches based on auth -->
+  <!-- HERO - always visible, action button switches based on auth -->
   <section class="hero">
     <span class="kickoff">⚽ Kickoff · June 11, 2026</span>
     <h2>Pick your World Cup</h2>
@@ -203,7 +203,7 @@
     </div>
   </section>
 
-  <!-- HOW IT WORKS — 4 steps -->
+  <!-- HOW IT WORKS - 4 steps -->
   <div class="steps-grid">
     <div class="step">
       <div class="num">STEP 1</div>
@@ -266,11 +266,11 @@
     </div>
   </div>
 
-  <!-- Profile / nickname editor — only visible when signed in -->
+  <!-- Profile / nickname editor - only visible when signed in -->
   <section class="card" id="profileCard" style="display:none">
     <h2 style="margin-bottom:6px">Your league nickname</h2>
     <p class="muted" style="font-size:12px;margin-bottom:10px">
-      How you'll show up on the leaderboard. Defaults to your Google name —
+      How you'll show up on the leaderboard. Defaults to your Google name  - 
       change it to anything you want.
     </p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
@@ -282,7 +282,7 @@
     </div>
   </section>
 
-  <!-- Setup-needed callout — only shows while Firebase config is still placeholder -->
+  <!-- Setup-needed callout - only shows while Firebase config is still placeholder -->
   <section class="card" id="setupNotice" style="display:none">
     <h2>⚙️  Setup needed</h2>
     <p>Firebase isn't configured yet. Before sign-in will work:</p>
@@ -379,7 +379,7 @@
         email: currentUser.email,
       }, { merge: true });
       currentUserDoc.leagueNickname = newNick;
-      nicknameStatus.textContent = newNick ? `Saved as "${newNick}"` : 'Cleared — using Google name';
+      nicknameStatus.textContent = newNick ? `Saved as "${newNick}"` : 'Cleared - using Google name';
 
       // Update header to reflect new name
       const shownName = window.fwc.nameFor({

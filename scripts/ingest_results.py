@@ -1,4 +1,4 @@
-"""Live update pipeline — Deep Data edition.
+"""Live update pipeline - Deep Data edition.
 
 Runs idempotently on a cron (every 15 min during match windows). Each run:
 
@@ -92,7 +92,7 @@ def _index_players_by_fdid(db):
 
 
 def _effective_lineup(team_data: dict, substitutions: list, team_fd_id: int) -> list[int]:
-    """All fdIds who played for this team — starters ∪ subs in."""
+    """All fdIds who played for this team - starters ∪ subs in."""
     ids = []
     seen = set()
     for p in team_data.get("lineup") or []:
@@ -228,7 +228,7 @@ def sync_matches(db, team_fd_to_slug: dict) -> int:
                 enriched = _enrich_with_detail(detail, summary)
                 batch.set(ref, enriched, merge=True)
                 detail_fetches += 1
-                # Be polite to API — 30/min cap, sleep briefly between calls
+                # Be polite to API - 30/min cap, sleep briefly between calls
                 time.sleep(2.5)
             except Exception as e:
                 print(f"  ! detail fetch failed for {summary['fdId']}: {e}", file=sys.stderr)
@@ -476,7 +476,7 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
       2. Open transfer window
       3. Run reprice (forward-looking pricing + auto-sell + value snapshots)
 
-    Idempotent — once currentRound has advanced, the new round's matches
+    Idempotent - once currentRound has advanced, the new round's matches
     are checked instead of the old, so we don't re-fire.
     Returns the new round label if a transition happened, else None."""
     current = (cfg.get("currentRound") or "pre")
@@ -484,9 +484,9 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
         return None
 
     # Special case: pre → group. Triggered ONLY when a match is actually
-    # IN_PLAY / PAUSED / FINISHED — i.e. the tournament has really started.
+    # IN_PLAY / PAUSED / FINISHED - i.e. the tournament has really started.
     # The earlier check (status != SCHEDULED) falsely fired on TIMED
-    # transitions weeks before kickoff. Doesn't open a transfer window —
+    # transitions weeks before kickoff. Doesn't open a transfer window  - 
     # that opens after group stage completes.
     if current == "pre":
         REAL_STATUSES = {"IN_PLAY", "PAUSED", "FINISHED"}
@@ -496,7 +496,7 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
                 db.collection("config").document("global").set({
                     "currentRound": "group",
                 }, merge=True)
-                print(f"  Kickoff detected — pre → group (no transfer window)")
+                print(f"  Kickoff detected - pre → group (no transfer window)")
                 return "group"
         return None
 
@@ -521,7 +521,7 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
             "currentRound":        "done",
             "transferWindowOpen":  False,
         }, merge=True)
-        print(f"  Tournament complete — currentRound=done, window closed")
+        print(f"  Tournament complete - currentRound=done, window closed")
         return nxt
 
     print(f"  Round transition detected: {current} → {nxt}")
@@ -558,7 +558,7 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
         print(f"  Reprice + auto-sell + snapshot complete for {nxt}")
     except Exception as e:
         print(f"  ERROR during reprice trigger: {e}")
-        # Don't crash the whole ingest — window is open, admin can re-run
+        # Don't crash the whole ingest - window is open, admin can re-run
         # reprice manually if needed.
     return nxt
 
@@ -601,7 +601,7 @@ def maybe_close_window(db, cfg: dict) -> bool:
     db.collection("config").document("global").set({
         "transferWindowOpen": False,
     }, merge=True)
-    print(f"  Transfer window closed — {current} first match starts in {int(delta/60)}min")
+    print(f"  Transfer window closed - {current} first match starts in {int(delta/60)}min")
     return True
 
 
@@ -626,7 +626,7 @@ def main() -> None:
     print("Loading config/global…")
     cfg_doc = db.collection("config").document("global").get()
     if not cfg_doc.exists:
-        sys.exit("config/global is missing — run scripts/seed_assets.py first")
+        sys.exit("config/global is missing - run scripts/seed_assets.py first")
     cfg = cfg_doc.to_dict()
     weights = cfg["scoringWeights"]
 
@@ -644,7 +644,7 @@ def main() -> None:
     leaderboard = recompute_users(db)
     write_leaderboard_snapshot(db, leaderboard)
 
-    # Reload config — Steps 1-4 may have changed it (e.g., kickoff detection).
+    # Reload config - Steps 1-4 may have changed it (e.g., kickoff detection).
     cfg = db.collection("config").document("global").get().to_dict() or {}
 
     print("Step 5: check for round transition…")

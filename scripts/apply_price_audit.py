@@ -15,18 +15,18 @@ AWAR = ROOT / 'docs' / 'data' / 'player_awards.json'
 # (player_id, new_price, new_tier_or_None)
 PRICE_BUMPS = [
     # A) Clear underpricings
-    ('3199-spain',      7, 1),   # Rodri  — 2024 Ballon d'Or winner
-    ('202283-spain',    7, 1),   # Yamal  — peer to Vini/Bellingham
-    ('8004-england',    6, 1),   # Kane   — WC 2018 Golden Boot
-    ('3373-france',     6, 1),   # Dembélé — current PSG/UCL form
-    ('98571-argentina', 6, 1),   # J. Álvarez — 4 WC 2022 goals
+    ('3199-spain',      7, 1),   # Rodri  - 2024 Ballon d'Or winner
+    ('202283-spain',    7, 1),   # Yamal  - peer to Vini/Bellingham
+    ('8004-england',    6, 1),   # Kane   - WC 2018 Golden Boot
+    ('3373-france',     6, 1),   # Dembélé - current PSG/UCL form
+    ('98571-argentina', 6, 1),   # J. Álvarez - 4 WC 2022 goals
     # B) Defensible bumps
-    ('19334-germany',   6, 1),   # Wirtz   — gen-talent
-    ('144393-germany',  6, 1),   # Musiala — gen-talent
+    ('19334-germany',   6, 1),   # Wirtz   - gen-talent
+    ('144393-germany',  6, 1),   # Musiala - gen-talent
     ('3257-portugal',   6, 1),   # Bruno Fernandes
-    ('7869-netherlands', 5, 2),  # Van Dijk — Dutch captain
-    ('3641-belgium',    5, 2),   # Courtois — WC 2018 Golden Glove
-    ('359-germany',     5, 2),   # Kimmich  — Germany captain class
+    ('7869-netherlands', 5, 2),  # Van Dijk - Dutch captain
+    ('3641-belgium',    5, 2),   # Courtois - WC 2018 Golden Glove
+    ('359-germany',     5, 2),   # Kimmich  - Germany captain class
 ]
 
 # Missing players from original seed (squad-pull bug). Adding by hand.
@@ -118,7 +118,7 @@ def main():
         print(f'  ${old_price}→${new_price}  T{old_tier}→T{new_tier or old_tier}  {p["name"]:<26} ({p["teamName"]})')
         bumped += 1
 
-    # Add new players (idempotent — skip if already present)
+    # Add new players (idempotent - skip if already present)
     added = 0
     for new_p in NEW_PLAYERS:
         if new_p['id'] in seed_by_id:
@@ -126,19 +126,19 @@ def main():
             continue
         seed.append(new_p)
         added += 1
-        print(f'  +ADD ${new_p["basePrice"]} T{new_p["tier"]} {new_p["position"]} {new_p["name"]:<26} ({new_p["teamName"]}) — {new_p["club"]}')
+        print(f'  +ADD ${new_p["basePrice"]} T{new_p["tier"]} {new_p["position"]} {new_p["name"]:<26} ({new_p["teamName"]}) - {new_p["club"]}')
 
     # Resort to preserve typical order
     seed.sort(key=lambda p: (p['teamId'], -p['basePrice'], p['name']))
     SEED.write_text(json.dumps(seed, indent=2, ensure_ascii=False) + '\n')
 
-    # 2. player_history.json — add stubs for new players
+    # 2. player_history.json - add stubs for new players
     hist = json.loads(HIST.read_text())
     for pid, h in NEW_HISTORY.items():
         hist[pid] = h
     HIST.write_text(json.dumps(hist, indent=2, ensure_ascii=False))
 
-    # 3. player_awards.json — add honors for new players that have them
+    # 3. player_awards.json - add honors for new players that have them
     awards = json.loads(AWAR.read_text())
     for pid, a in NEW_AWARDS.items():
         awards[pid] = a

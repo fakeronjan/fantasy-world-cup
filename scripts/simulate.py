@@ -26,7 +26,7 @@ ROSTER_SIZE_CAP = 12  # reduced from 20 on 2026-05-25 to suppress cinderella
 
 
 # ---------------------------------------------------------------------------
-# Scoring weights — knobs to tune
+# Scoring weights - knobs to tune
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -42,17 +42,17 @@ class ScoringWeights:
     bonus_sf: float = 6
     bonus_final: float = 10
     bonus_champion: float = 15
-    # Player scoring (per event) — Deep Data unlocked 2026-05-25
+    # Player scoring (per event) - Deep Data unlocked 2026-05-25
     player_goal: float = 5
     player_assist: float = 3       # restored after football-data.org Deep Data upgrade
     # Clean sheet: GK > DEF > everyone else (FPL-style, defensive-only).
     # NOTE: live game uses lineup-based (only players who actually played).
     # This historical sim is approximated as squad-based since we don't have
-    # historical lineup data — treat results as a directional sanity check.
+    # historical lineup data - treat results as a directional sanity check.
     player_clean_sheet_gk: float = 5
     player_clean_sheet_def: float = 2
     player_clean_sheet_other: float = 0
-    # Win share — see CS note above; live game is lineup-based, sim is squad-based.
+    # Win share - see CS note above; live game is lineup-based, sim is squad-based.
     player_win_share: float = 1
 
 
@@ -60,9 +60,9 @@ class ScoringWeights:
 # Pre-tournament price tiers
 # ---------------------------------------------------------------------------
 # Based on pre-tournament public strength signals (FIFA ranking, seed pot,
-# bookmaker odds). Set BEFORE the tournament begins — no post-hoc knowledge.
+# bookmaker odds). Set BEFORE the tournament begins - no post-hoc knowledge.
 
-# Widened pricing (2026-05-25) — historical tiers now map into the same
+# Widened pricing (2026-05-25) - historical tiers now map into the same
 # $1-$30 range used by the live 2026 game. Each tier is the midpoint of
 # what that tier's teams would land at under the new continuous scheme.
 # Historical tier prices updated 2026-05-25 to match the lifted mid-tier
@@ -109,7 +109,7 @@ TEAM_PRICE_TIERS_2010 = {
     1:  ["Honduras", "New Zealand", "Algeria", "North Korea"],
 }
 
-# Player price tiers — top scorers/playmakers + GKs of top teams get higher tiers.
+# Player price tiers - top scorers/playmakers + GKs of top teams get higher tiers.
 # For each tournament we list players by tier. Anyone not listed gets the
 # default $1 tier. These reflect pre-tournament expectation (form + reputation).
 
@@ -292,7 +292,7 @@ class Player:
 
 
 def team_clean_sheets_estimate(team: Team) -> int:
-    """Estimate clean sheets per team — always integer, since CS is binary per match.
+    """Estimate clean sheets per team - always integer, since CS is binary per match.
 
     Uses a Poisson approximation: assume goals_against are distributed
     across matches with rate λ = GA/matches. Probability of any given
@@ -337,7 +337,7 @@ def load_year(year: int, pricing: PlayerPricing | None = None,
         norm = _norm_team(raw)
         gw, gd, gl = int(row["W"]), int(row["D"]), int(row["L"])
 
-        # Find KO record — try both raw and normalized names
+        # Find KO record - try both raw and normalized names
         ko = ko_data.get(raw) or ko_data.get(norm)
         if ko is None:
             # Some 2022 group-only teams are listed with (H) only on host
@@ -360,7 +360,7 @@ def load_year(year: int, pricing: PlayerPricing | None = None,
 
     if format_2026:
         # Add the 16 expansion teams (their group-stage records aren't in the
-        # historical CSV — they're forward-looking estimates).
+        # historical CSV - they're forward-looking estimates).
         for exp_name, (gw, gd, gl) in WC2026_EXPANSION_TEAMS.items():
             teams.append(Team(
                 name=exp_name,
@@ -368,7 +368,7 @@ def load_year(year: int, pricing: PlayerPricing | None = None,
                 matches_drawn=gd,
                 matches_lost=gl,
                 final_round="group",
-                price=DEFAULT_TEAM_PRICE,  # $3 — outsider tier
+                price=DEFAULT_TEAM_PRICE,  # $3 - outsider tier
                 goals_against=max(3, 6 - 2 * gw),  # rough proxy
             ))
 
@@ -383,7 +383,7 @@ def load_year(year: int, pricing: PlayerPricing | None = None,
     players: list[Player] = []
     # Build a map of team name → goalscorers we already have, so we can
     # add "phantom squad" entries (non-scoring squad players) per team.
-    # Goalscorers JSON doesn't currently include team — we infer team from
+    # Goalscorers JSON doesn't currently include team - we infer team from
     # tier list mappings where possible, but for the simulation we just
     # need an aggregate count, so we add phantoms attached to each team.
     scorers_by_team: dict[str, list[dict]] = {}
@@ -432,14 +432,14 @@ def load_year(year: int, pricing: PlayerPricing | None = None,
 
 def _team_for_player(name: str, year: int) -> str:
     """Look up which team a player belonged to, via the price tier lists.
-    Returns 'Unknown' if not findable (rare — sim ignores those for win-share)."""
+    Returns 'Unknown' if not findable (rare - sim ignores those for win-share)."""
     tiers = {
         2022: PLAYER_PRICE_TIERS_2022,
         2018: PLAYER_PRICE_TIERS_2018,
         2014: PLAYER_PRICE_TIERS_2014,
         2010: PLAYER_PRICE_TIERS_2010,
     }[year]
-    # The price tier dict doesn't carry team info — fall back to known
+    # The price tier dict doesn't carry team info - fall back to known
     # team lookups for the most prolific scorers.
     KNOWN = {
         # 2022
@@ -551,7 +551,7 @@ def _team_for_player(name: str, year: int) -> str:
         "Oribe Peralta": "Mexico", "Rafael Márquez": "Mexico",
         "Guillermo Ochoa": "Mexico",
         "Andre Ayew": "Ghana", "Asamoah Gyan": "Ghana",
-        "Salomón Rondón": "Venezuela",  # not in 2014 actually — Venezuela didn't qualify
+        "Salomón Rondón": "Venezuela",  # not in 2014 actually - Venezuela didn't qualify
         # 2010
         "Diego Forlán": "Uruguay", "Luis Suárez": "Uruguay",
         "Edinson Cavani": "Uruguay", "Diego Pérez": "Uruguay",
@@ -566,7 +566,7 @@ def _team_for_player(name: str, year: int) -> str:
         "Thomas Müller": "Germany", "Miroslav Klose": "Germany",
         "Mesut Özil": "Germany", "Lukas Podolski": "Germany",
         "Bastian Schweinsteiger": "Germany", "Philipp Lahm": "Germany",
-        "Michael Ballack": "Germany",  # didn't actually play — injured
+        "Michael Ballack": "Germany",  # didn't actually play - injured
         "Luís Fabiano": "Brazil", "Robinho": "Brazil", "Kaká": "Brazil",
         "Maicon": "Brazil", "Lúcio": "Brazil", "Dani Alves": "Brazil",
         "Carlos Tévez": "Argentina", "Lionel Messi": "Argentina",
@@ -667,7 +667,7 @@ def greedy_max_points(assets: list[Asset], budget: int,
 def best_strategy(year: int, w: ScoringWeights, restrict: str | None = None,
                    pricing: PlayerPricing | None = None,
                    format_2026: bool = False) -> tuple[float, list[Asset]]:
-    """restrict: None | 'team' | 'player' — limit asset pool to one kind."""
+    """restrict: None | 'team' | 'player' - limit asset pool to one kind."""
     teams, players = load_year(year, pricing, format_2026)
     assets = to_assets(teams, players, w, format_2026)
     if restrict == "team":
@@ -733,7 +733,7 @@ def report(year: int, w: ScoringWeights, pricing: PlayerPricing | None = None,
         total = goal_pts + win_share_pts + cs_pts + w.player_assist * p.assists
         scored_players.append((p, t, goal_pts, win_share_pts, cs_pts, total))
     for p, t, gp, wp, cp, tot in sorted(scored_players, key=lambda x: x[5], reverse=True)[:10]:
-        pos = p.position or "—"
+        pos = p.position or " - "
         team_short = (p.team_name or "?")[:13]
         print(f"  {p.name[:27]:<28} {team_short:<14} {pos:<3} "
               f"${p.price:>4d} {p.goals:>2d} {gp:>7.1f} {wp:>7.1f} {cp:>6.1f} {tot:>6.1f}")
@@ -754,7 +754,7 @@ def report(year: int, w: ScoringWeights, pricing: PlayerPricing | None = None,
 
 
 PRESETS: list[tuple[str, ScoringWeights, PlayerPricing]] = [
-    # Goals-only baseline (no CS, no win share) — for comparison.
+    # Goals-only baseline (no CS, no win share) - for comparison.
     ("A. goals-only baseline",
      ScoringWeights(player_clean_sheet_gk=0, player_clean_sheet_def=0, player_clean_sheet_other=0,
                      player_win_share=0),
@@ -846,7 +846,7 @@ def bucket_return_analysis() -> None:
                   f"{mean/midpoint:>6.2f} {breakeven:>5.0f}%")
 
     print(f"\n{'='*80}")
-    print("  PRICE-BUCKET ROI — averages across WC 2010, 2014, 2018, 2022")
+    print("  PRICE-BUCKET ROI - averages across WC 2010, 2014, 2018, 2022")
     print(f"  (locked scoring weights, 2026 48-team format, $1-$30 spread)")
     print(f"{'='*80}")
     print("\n  pts/$  = mean pts ÷ bucket midpoint  (higher = better ROI in bucket)")
@@ -886,7 +886,7 @@ def tier_return_analysis() -> None:
                 player_by_tier_scored_only[p.price].append(pts)
 
     print(f"\n{'='*78}")
-    print(f"  TIER RETURN ANALYSIS — averages across WC 2010, 2014, 2018, 2022")
+    print(f"  TIER RETURN ANALYSIS - averages across WC 2010, 2014, 2018, 2022")
     print(f"  (using locked scoring weights; teams + players adapted to 2026 format)")
     print(f"{'='*78}")
 
@@ -905,7 +905,7 @@ def tier_return_analysis() -> None:
         print(f"  ${price:>4} {n:>4} {mean:>6.1f} {med:>6.1f} {p25:>5.1f} {p75:>5.1f} "
               f"{min(pts):>4.0f} {max(pts):>4.0f} {mean/price:>6.2f}")
 
-    print(f"\nPLAYERS (ALL squad members — what you'd ACTUALLY draft from):")
+    print(f"\nPLAYERS (ALL squad members - what you'd ACTUALLY draft from):")
     print(f"  {'price':>5} {'n':>4} {'mean':>6} {'median':>6} {'p25':>5} {'p75':>5} {'min':>4} {'max':>4} {'pts/$':>6}")
     for price in sorted(player_by_tier.keys(), reverse=True):
         pts = player_by_tier[price]
@@ -920,7 +920,7 @@ def tier_return_analysis() -> None:
         print(f"  ${price:>4} {n:>4} {mean:>6.1f} {med:>6.1f} {p25:>5.1f} {p75:>5.1f} "
               f"{min(pts):>4.0f} {max(pts):>4.0f} {mean/price:>6.2f}")
 
-    print(f"\nPLAYERS (scorers-only subset — for context: 'if they DID score, what was their return?'):")
+    print(f"\nPLAYERS (scorers-only subset - for context: 'if they DID score, what was their return?'):")
     print(f"  {'price':>5} {'n':>4} {'mean':>6} {'median':>6} {'p25':>5} {'p75':>5} {'min':>4} {'max':>4} {'pts/$':>6}")
     for price in sorted(player_by_tier_scored_only.keys(), reverse=True):
         pts = player_by_tier_scored_only[price]
@@ -962,7 +962,7 @@ def main() -> None:
                 summary_rows.append(row)
 
     print(f"\n\n{'='*78}")
-    print("  BALANCE SUMMARY — lower gap% and higher mix-advantage% are better")
+    print("  BALANCE SUMMARY - lower gap% and higher mix-advantage% are better")
     print(f"{'='*78}")
     print(f"{'preset':<38} {'yr':<5} {'fmt':<5} {'team':>5} {'plr':>5} {'mix':>5} {'gap%':>5} {'mix+%':>6}")
     for r in summary_rows:

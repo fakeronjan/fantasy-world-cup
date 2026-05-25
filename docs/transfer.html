@@ -14,7 +14,7 @@
   .window-banner.open  { background: #d1fae5; color: #065f46; }
   .window-banner.closed { background: #fee2e2; color: #991b1b; }
 
-  /* Pricing explainer — collapsible */
+  /* Pricing explainer - collapsible */
   .pricing-explainer {
     background: var(--bg-card); border-radius: 6px;
     padding: 12px 16px; margin-bottom: 16px;
@@ -189,17 +189,17 @@
            three numbers per pick:</p>
         <ul style="margin: 8px 0 8px 18px;">
           <li><span class="key paid">Paid</span> what you spent when you drafted or bought this pick. Locked in.</li>
-          <li><span class="key earn">Earned</span> points this asset has scored — yours forever.</li>
-          <li><span class="key mv">MV</span> the asset's current "fair" market value: <strong>E[remaining points] ÷ 2</strong>. The "2" is a calibration anchor (chosen, not measured). It's tuned so that after the 10% buy vig, buyers pay ~1.7 pts/$ on transfers — which matches the game's actual overall average ROI. Example: an asset expected to score 12 more points → MV $6 → Buy $7 → buyer ROI 12÷7 = 1.71 pts/$.</li>
+          <li><span class="key earn">Earned</span> points this asset has scored - yours forever.</li>
+          <li><span class="key mv">MV</span> the asset's current "fair" market value: <strong>E[remaining points] ÷ 2</strong>. The "2" is a calibration anchor (chosen, not measured). It's tuned so that after the 10% buy vig, buyers pay ~1.7 pts/$ on transfers - which matches the game's actual overall average ROI. Example: an asset expected to score 12 more points → MV $6 → Buy $7 → buyer ROI 12÷7 = 1.71 pts/$.</li>
           <li><span class="key sell">Sell</span> what the market pays you to sell (MV − 10% vig, rounded to nearest $).</li>
           <li><span class="key buy">Buy</span> what the market charges to acquire (MV + 10% vig, rounded to nearest $).</li>
         </ul>
         <p style="margin-top:8px"><strong>Rounding:</strong> all prices are whole dollars. We round to nearest
-           (halves go up), with a forced minimum $1 spread either side of MV — so even at low MVs there's
+           (halves go up), with a forced minimum $1 spread either side of MV - so even at low MVs there's
            always at least a $2 round-trip cost. Example: MV $6 → Buy $7, Sell $5.</p>
         <p><strong>Why "Paid" can be much higher than "MV":</strong> Initial draft prices
            cover the <em>whole tournament's</em> expected points. Mid-tournament prices
-           cover only what's <em>left</em>. So Spain's MV after groups will look small —
+           cover only what's <em>left</em>. So Spain's MV after groups will look small  - 
            but you've already banked group-stage points AND the asset has de-risked by
            surviving. Holding is a fair deal. Selling realizes only the residual.</p>
       </div>
@@ -374,7 +374,7 @@
       ? data.currentBudget
       : BUDGET - originalRoster.reduce((s, p) => s + (p.purchasePrice ?? 0), 0);
 
-    // Transfer counter — only voluntary BUYS count toward the cap.
+    // Transfer counter - only voluntary BUYS count toward the cap.
     // Sells self-punish via vig, so they're unlimited.
     // Bucket keyed by current round so it auto-resets on new round.
     const round = configDoc.currentRound || 'pre';
@@ -508,7 +508,7 @@
           ${flagFor(a.kind, a)}
           <span class="item-name">${escape(displayName(a.kind, a))}</span>
         </div>
-        <button data-buy-id="${escape(a.id)}" data-buy-kind="${a.kind}" ${buyDisabled ? 'disabled' : ''}>${buyDisabled ? '—' : `Buy · $${buyPrice}`}</button>
+        <button data-buy-id="${escape(a.id)}" data-buy-kind="${a.kind}" ${buyDisabled ? 'disabled' : ''}>${buyDisabled ? ' - ' : `Buy · $${buyPrice}`}</button>
         <div class="metrics">
           <span class="metric earn"><span class="lbl">YTD</span><span class="v">${pts} pts</span></span>
           <span class="metric mv"><span class="lbl">MV</span><span class="v">$${marketV}</span></span>
@@ -638,7 +638,7 @@
       batch.set(userRef, {
         roster: cleanRoster,
         currentBudget: left,
-        transfersByWindow,    // partial merge — only updates this round's bucket
+        transfersByWindow,    // partial merge - only updates this round's bucket
       }, { merge: true });
 
       const txRef = doc(collection(window.fwc.db, 'transactions'));

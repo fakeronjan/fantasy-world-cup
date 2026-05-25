@@ -1,4 +1,4 @@
-"""Build docs/data/player_history.json — accurate version.
+"""Build docs/data/player_history.json - accurate version.
 
 Strategy:
   1. Start with the WC 2010/2014/2018/2022 goalscorer JSON files we
@@ -9,7 +9,7 @@ Strategy:
      was the year's champion or runner-up.
   2. Layer hand-curated overrides from player_history_overrides.json
      on top (overrides take full precedence; intended for top ~50
-     marquee names where the auto-derivation is incomplete — e.g.,
+     marquee names where the auto-derivation is incomplete - e.g.,
      goalkeepers, non-scoring stars, players who participated without
      scoring).
   3. Write the merged result to docs/data/player_history.json.
@@ -45,7 +45,7 @@ WC_RESULTS = {
 
 
 # ---------------------------------------------------------------------------
-# Name normalization — handles accents, special chars, etc.
+# Name normalization - handles accents, special chars, etc.
 # Same logic as build_seed_players.py to keep matching consistent.
 # ---------------------------------------------------------------------------
 
@@ -135,7 +135,7 @@ def build() -> None:
             "_source": "historical-goals",
         }
 
-    # Layer overrides on top — skip keys that aren't player IDs (e.g. "_meta").
+    # Layer overrides on top - skip keys that aren't player IDs (e.g. "_meta").
     overrides = json.loads(OVERRIDES.read_text()) if OVERRIDES.exists() else {}
     for k, v in overrides.items():
         if not isinstance(v, dict):

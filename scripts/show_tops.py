@@ -15,7 +15,7 @@ from simulate import (
 
 
 CANDIDATES = [
-    ("F. RECOMMENDED — integer everywhere, less team high-end variance",
+    ("F. RECOMMENDED - integer everywhere, less team high-end variance",
      ScoringWeights(
         team_win=3, team_draw=1,
         bonus_r32=1, bonus_r16=2, bonus_qf=3, bonus_sf=5,
@@ -33,7 +33,7 @@ def report_year(year: int) -> None:
         teams_by_name = {t.name: t for t in teams}
 
         print(f"\n{'─'*78}")
-        print(f"  WC {year} adapted to 2026 format  —  {label}")
+        print(f"  WC {year} adapted to 2026 format  -  {label}")
         print(f"{'─'*78}")
 
         # Top 10 teams
@@ -67,7 +67,7 @@ def report_year(year: int) -> None:
             scored.append((p, t, gp, wp, cp, gp + wp + cp))
         for i, (p, t, gp, wp, cp, tot) in enumerate(
                 sorted(scored, key=lambda x: x[5], reverse=True)[:10], 1):
-            pos = p.position or "—"
+            pos = p.position or " - "
             print(f"  {i:<3}{p.name[:27]:<28}{(p.team_name or '?')[:13]:<14}"
                   f"{pos:<4}${p.price:<3d} "
                   f"{p.goals:>2d} {gp:>5.1f} {wp:>5.1f} {cp:>5.1f} {tot:>6.1f}")

@@ -8,7 +8,7 @@ For each of the 1,200+ players, assign a price tier:
   Tier 5 ($2):  everyone else (default ~1000)
 
 Hand-curated dictionaries below drive Tiers 1-4. Everyone unlisted falls
-to Tier 5. Designed to be re-runnable after editing — output rewrites
+to Tier 5. Designed to be re-runnable after editing - output rewrites
 seed_players.json cleanly.
 
 Usage:
@@ -29,10 +29,10 @@ OUT_PATH     = ROOT / "docs" / "data" / "seed_players.json"
 
 
 # ---------------------------------------------------------------------------
-# Tier dictionaries — hand-curated
+# Tier dictionaries - hand-curated
 # ---------------------------------------------------------------------------
 
-# Tier 1 ($10) — players who would be on a "best XI in the world" shortlist
+# Tier 1 ($10) - players who would be on a "best XI in the world" shortlist
 # going into WC 2026. Pre-tournament star power, not retrospective.
 TIER_1 = {
     "Kylian Mbappé",
@@ -47,7 +47,7 @@ TIER_1 = {
     "Phil Foden",
 }
 
-# Tier 2 ($7) — top international starters (key XI player on a Tier 1-2 team,
+# Tier 2 ($7) - top international starters (key XI player on a Tier 1-2 team,
 # or the marquee name on a Tier 3 team).
 TIER_2 = {
     # England
@@ -86,7 +86,7 @@ TIER_2 = {
     "Luis Díaz", "James Rodríguez",
 }
 
-# Tier 3 ($5) — solid starters / GKs of top teams / star on a Tier 3+ team
+# Tier 3 ($5) - solid starters / GKs of top teams / star on a Tier 3+ team
 TIER_3 = {
     # England (depth + GK)
     "Jordan Pickford", "John Stones", "Marc Guéhi", "Reece James",
@@ -144,11 +144,11 @@ TIER_3 = {
     "Trezeguet", "Mostafa Mohamed",
 }
 
-# Tier 4 ($3) — named squad players, key starters of weaker teams, GKs of mid teams
+# Tier 4 ($3) - named squad players, key starters of weaker teams, GKs of mid teams
 TIER_4 = {
     # Top teams' depth (Tier 1 teams)
     # England
-    "Phil Foden",  # duplicate intentionally — falls back to highest tier
+    "Phil Foden",  # duplicate intentionally - falls back to highest tier
     "Eberechi Eze", "Ollie Watkins", "Levi Colwill", "Cole Palmer",
     "Dean Henderson", "Curtis Jones",
     # Spain
@@ -196,7 +196,7 @@ TIER_4 = {
     "Sander Berge", "Patrick Berg", "Ørjan Nyland",
     # Uruguay
     "Mathías Olivera", "Manuel Ugarte", "Maximiliano Araújo",
-    # Tier 4 teams — star players
+    # Tier 4 teams - star players
     # Canada
     "Alphonso Davies", "Jonathan David", "Cyle Larin", "Stephen Eustáquio",
     "Maxime Crépeau",
@@ -238,7 +238,7 @@ TIER_4 = {
 # ---------------------------------------------------------------------------
 
 def _norm_name(s: str) -> str:
-    """Strip accents, lowercase, collapse whitespace — for lookup.
+    """Strip accents, lowercase, collapse whitespace - for lookup.
 
     NFKD only handles accents over base letters. Characters that ARE
     distinct letters (Ø, İ, ı, ł, ß, etc.) need manual mapping or
@@ -272,7 +272,7 @@ def _resolve_tier_for_squad(squad_names: list[str]) -> dict[str, int]:
 
     Two-pass matching against the override sets:
       1. Exact normalized match
-      2. Substring match (override name appears inside the squad name —
+      2. Substring match (override name appears inside the squad name  - 
          catches 'Alisson' → 'Alisson Becker' but won't cross-match
          unrelated players like 'Salah' → 'Salah-Eddine' because the
          full override 'mohamed salah' isn't a substring of the other.)
@@ -309,14 +309,14 @@ def _resolve_tier_for_squad(squad_names: list[str]) -> dict[str, int]:
     return assigned
 
 
-TIER_PRICE = {1: 10, 2: 7, 3: 5, 4: 3, 5: 2}  # legacy buckets — kept only for tier-meets-floor logic
+TIER_PRICE = {1: 10, 2: 7, 3: 5, 4: 3, 5: 2}  # legacy buckets - kept only for tier-meets-floor logic
 
-# Continuous pricing — every player gets a unique-ish price in [$1, $25].
+# Continuous pricing - every player gets a unique-ish price in [$1, $25].
 # Top ~40 marquee names get hand-curated explicit prices; everyone else
 # goes through a formula that combines (team strength rank, within-team
 # rank, position).
 PLAYER_PRICE_OVERRIDES = {
-    # Rebalanced again 2026-05-25 — scaled 0.85× after DEF-only CS rule
+    # Rebalanced again 2026-05-25 - scaled 0.85× after DEF-only CS rule
     # widened teams-vs-players gap. Compresses further to $3-$9 range.
     "Kylian Mbappé":       9,
     "Lionel Messi":        8,
@@ -366,7 +366,7 @@ PLAYER_PRICE_OVERRIDES = {
 }
 
 
-# Position multiplier — forwards have goal-scoring upside, GKs have CS
+# Position multiplier - forwards have goal-scoring upside, GKs have CS
 # upside but capped, defenders are most-discounted.
 _POS_MULT = {"FWD": 1.15, "MID": 1.00, "GK": 0.95, "DEF": 0.85, "?": 0.95}
 
@@ -460,13 +460,13 @@ def _promote_to_meet_floor(team_squad: list[dict], tier_assignments: dict[str, i
 
 def build() -> None:
     if not SQUADS_PATH.exists():
-        sys.exit(f"missing {SQUADS_PATH} — run scripts/pull_wc2026_squads.py first")
+        sys.exit(f"missing {SQUADS_PATH} - run scripts/pull_wc2026_squads.py first")
     squads_data = json.loads(SQUADS_PATH.read_text())
     teams_data = json.loads(TEAMS_PATH.read_text())
 
     name_to_slug: dict[str, str] = {t["name"]: t["id"] for t in teams_data}
 
-    # Build a team strength index from seed_teams.json — sorted by basePrice
+    # Build a team strength index from seed_teams.json - sorted by basePrice
     # descending. Used by the formula to get team_rank.
     teams_by_strength = sorted(teams_data, key=lambda t: -t["basePrice"])
     team_rank_by_slug = {t["id"]: i + 1 for i, t in enumerate(teams_by_strength)}
@@ -564,7 +564,7 @@ def build() -> None:
             print(f"  ${p['basePrice']}  {p['name']:<28} ({p['teamName']})")
 
     missing = _missing_overrides(assigned_names)
-    for tier in (1, 2):  # only flag the high-tier ones — T3/T4 misses are common
+    for tier in (1, 2):  # only flag the high-tier ones - T3/T4 misses are common
         if missing[tier]:
             print(f"\nTier {tier} names NOT FOUND in any squad ({len(missing[tier])}):")
             for n in missing[tier]:

@@ -1,4 +1,4 @@
-# Fantasy World Cup 2026 — Simulation Findings (2026-05-24)
+# Fantasy World Cup 2026 - Simulation Findings (2026-05-24)
 
 Historical-balance analysis using WC 2018 + WC 2022 data, adapted to the
 2026 48-team format. Goal: figure out whether a "$100 budget, mix teams
@@ -10,7 +10,7 @@ dominates.
 The 2026 format expansion (48 teams, new Round of 32) does most of the
 balancing work for us. Recommended starting design:
 
-1. **Simple scoring weights** — 3W/1D per match, advancement bonuses
+1. **Simple scoring weights** - 3W/1D per match, advancement bonuses
    1/2/4/6/10/15 for R32/R16/QF/SF/F/W, 5 pts per player goal.
 2. **Roster cap of 12 picks.** Forces real tradeoffs vs. spamming cheap
    options.
@@ -70,17 +70,17 @@ R32 match.
 
 ```python
 ScoringWeights(
-    # team — per match
+    # team - per match
     team_win = 4,
     team_draw = 1,
-    # team — advancement bonuses (CUMULATIVE; a champion gets all 6 stacked)
+    # team - advancement bonuses (CUMULATIVE; a champion gets all 6 stacked)
     bonus_r32 = 2,
     bonus_r16 = 3,
     bonus_qf = 5,
     bonus_sf = 8,
     bonus_final = 12,
     bonus_champion = 20,
-    # player — per event
+    # player - per event
     player_goal = 5,
     player_assist = 0,                # dropped (no free data source)
     player_win_share = 1,             # +1 to every squad player when team wins
@@ -97,11 +97,11 @@ Simulated WC 2010, 2014, 2018, 2022 (all adapted to 2026 48-team format).
 Champion ROI lands in 4.8–5.3 pts/$, well-priced cinderella teams in
 2.7–6.0 pts/$, top value-pick players in 5.6–7.8 pts/$. Highlights:
 
-- **Forlán 2010:** $7 → 37 pts (5.3 pts/$) — solid Tier 2 value pick
-- **Müller 2010:** $5 (Tier 3 pre-tournament) → 38 pts (7.6 pts/$) — value steal
-- **James Rodríguez 2014:** $5 → 39 pts (7.8 pts/$) — best ROI in tournament
-- **Morocco 2022:** $6 → 36 pts (6.0 pts/$) — cinderella beats champion ROI
-- **Costa Rica 2014:** $6 → 25 pts (4.2 pts/$) — cinderella nearly matches champion
+- **Forlán 2010:** $7 → 37 pts (5.3 pts/$) - solid Tier 2 value pick
+- **Müller 2010:** $5 (Tier 3 pre-tournament) → 38 pts (7.6 pts/$) - value steal
+- **James Rodríguez 2014:** $5 → 39 pts (7.8 pts/$) - best ROI in tournament
+- **Morocco 2022:** $6 → 36 pts (6.0 pts/$) - cinderella beats champion ROI
+- **Costa Rica 2014:** $6 → 25 pts (4.2 pts/$) - cinderella nearly matches champion
 
 The design works: favorites are decent value, dark horses pay big when
 right, and underpriced players who break out are the king-makers.
@@ -126,9 +126,9 @@ right, and underpriced players who break out are the king-makers.
 | 2    | $7    | top international starters |
 | 3    | $5    | strong starters |
 | 4    | $3    | dependable squad players |
-| 5    | $2    | floor — every other notable player |
+| 5    | $2    | floor - every other notable player |
 
-## Repricing between rounds (first cut — refine after sim has assists data)
+## Repricing between rounds (first cut - refine after sim has assists data)
 
 When a team or player is **eliminated**, price drops to **$0** (no salvage).
 
@@ -146,7 +146,7 @@ sell price, but no one becomes unaffordably expensive.
 Update cadence: **once per round** (after R32, after R16, after QF, after SF).
 Matches the natural transfer windows the user described.
 
-## Caveats — work to do before launch
+## Caveats - work to do before launch
 
 1. **Assists dropped from scoring** (2026-05-24, user decision). No free
    API source has reliable assist data, and user opted not to pay for the
@@ -168,7 +168,7 @@ Matches the natural transfer windows the user described.
    actual 2026 expansion teams may overperform (e.g., Norway with Haaland)
    and may need to be re-tiered in advance.
 
-5. **12-pick roster cap** confirms with users — adds a constraint on top of
+5. **12-pick roster cap** confirms with users - adds a constraint on top of
    "fully flexible budget" but data shows it's necessary to prevent
    degenerate spam strategies.
 

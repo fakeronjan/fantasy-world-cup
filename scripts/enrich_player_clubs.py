@@ -1,6 +1,6 @@
 """Enrich docs/data/seed_players.json with each player's current club.
 
-Strategy: /v4/persons/{id} is unreliable — it returns the national team
+Strategy: /v4/persons/{id} is unreliable - it returns the national team
 during international breaks. Instead we pull all team squads from the
 major European + American + relevant Asian leagues in one API call per
 league (~10 calls total) and build a fdId → club-name mapping.
@@ -40,7 +40,7 @@ LEAGUES = [
     'PPL',  # Liga Portugal
     'BSA',  # Brazilian Série A
     'CL',   # UEFA Champions League (includes non-top-5 European clubs)
-    'ELC',  # English Championship (2nd tier — some WC players)
+    'ELC',  # English Championship (2nd tier - some WC players)
 ]
 
 H = {'X-Auth-Token': API_KEY}
@@ -54,7 +54,7 @@ MANUAL_CLUBS = {
     '8069-algeria':         'Al-Ahli SFC',          # Mahrez (Saudi)
     '3759-egypt':           'Trabzonspor',          # Trezeguet (Turkey)
     '83057-egypt':          'Al Ahly',              # Hany (Egypt)
-    '114672-egypt':         'FC Nantes',            # Mostafa Mohamed — should hit FL1 actually
+    '114672-egypt':         'FC Nantes',            # Mostafa Mohamed - should hit FL1 actually
     '3231-brazil':          'Al-Nassr FC',          # Casemiro? (Actually Man Utd – will let API win)
     '3222-brazil':          'Al-Ittihad',           # Ederson (Saudi, recently moved)
     '3214-argentina':       'AS Roma',              # Paredes

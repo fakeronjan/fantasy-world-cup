@@ -91,7 +91,7 @@
   <!-- Roster view -->
   <div id="rosterView" style="display:none">
 
-    <!-- Auto-sell notification banner — shown when unseen elimination
+    <!-- Auto-sell notification banner - shown when unseen elimination
          auto-sells exist. Dismissible. -->
     <div id="autoSellBanner" style="display:none; background:#fef0f7; border:1px solid #ff6eb4;
          border-radius:6px; padding:14px 16px; margin-bottom:16px;
@@ -226,7 +226,7 @@
       parts.push(`${h.runnerUps} runner-up${h.runnerUps === 1 ? '' : 's'}`);
       showedAchievement = true;
     }
-    if (!showedAchievement && h.bestFinish && h.bestFinish !== '—') {
+    if (!showedAchievement && h.bestFinish && h.bestFinish !== ' - ') {
       parts.push(`Best: ${h.bestFinish}`);
     }
     return parts.join(' · ');
@@ -411,7 +411,7 @@
 
       document.getElementById('autoSellTitle').textContent = title;
       document.getElementById('autoSellBody').innerHTML = bodyLines +
-        ` &nbsp; <span class="muted">— scroll down to Transaction History for the full record.</span>`;
+        ` &nbsp; <span class="muted"> -  scroll down to Transaction History for the full record.</span>`;
       banner.style.display = 'block';
 
       document.getElementById('autoSellDismiss').addEventListener('click', async () => {
@@ -444,7 +444,7 @@
       snap.forEach(d => txs.push({ id: d.id, ...d.data() }));
       txs.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
       if (!txs.length) {
-        historyList.innerHTML = `<li class="muted" style="font-size:12px">No transactions yet — save a roster to see your first entry here.</li>`;
+        historyList.innerHTML = `<li class="muted" style="font-size:12px">No transactions yet - save a roster to see your first entry here.</li>`;
         return;
       }
       historyList.innerHTML = txs.map(tx => {
@@ -487,7 +487,7 @@
     try {
       const d = new Date(iso);
       return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    } catch { return '—'; }
+    } catch { return ' - '; }
   }
 
   // ---- total roster value chart (Stage 3) ------------------------------
@@ -549,7 +549,7 @@
         ? (pick.kind === 'team' ? catalog.emoji : teamIdToEmoji[catalog.teamId])
         : null;
       const flagImg = flagSpan(emoji);
-      const purchasedAt = pick.purchasedAt ? shortDate(pick.purchasedAt) : '—';
+      const purchasedAt = pick.purchasedAt ? shortDate(pick.purchasedAt) : ' - ';
 
       spent  += bought;
       totalP += pts;

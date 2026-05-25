@@ -154,7 +154,7 @@
 
   const REFRESH_MS = 30_000;
 
-  // Palette mirrors the tennis Power Rankings — distinct, color-blind-friendly,
+  // Palette mirrors the tennis Power Rankings - distinct, color-blind-friendly,
   // keeps the FWC teal + pink at the top of the rotation.
   const PALETTE = [
     '#1a6b8a', '#ff6eb4', '#16a34a', '#ea580c', '#4f46e5',
@@ -307,7 +307,7 @@
       ylab += `<text x="${padL - 4}" y="${(y + 3).toFixed(1)}" font-size="10" fill="#999" text-anchor="end">${v}</text>`;
     }
 
-    // X-axis date ticks — label up to ~6 dates evenly
+    // X-axis date ticks - label up to ~6 dates evenly
     let xtick = '', xlab = '';
     const tickStride = Math.max(1, Math.ceil(dates.length / 6));
     for (let i = 0; i < dates.length; i += tickStride) {
@@ -318,7 +318,7 @@
       xlab += `<text x="${x.toFixed(1)}" y="${H - padB + 16}" font-size="10" fill="#999" text-anchor="middle">${label}</text>`;
     }
 
-    // Compute leader at each date — for dashed leader line
+    // Compute leader at each date - for dashed leader line
     const leaderPts = [];
     for (const d of dates) {
       let leaderV = 0;
@@ -364,7 +364,7 @@
     chartLegend.innerHTML = legendHTML;
   }
 
-  // pointsByDate may be sparse — for any target date d, take the most recent
+  // pointsByDate may be sparse - for any target date d, take the most recent
   // value at or before d (treating unrecorded days as "no change since last
   // known total").
   function lastValueAtOrBefore(hist, d) {

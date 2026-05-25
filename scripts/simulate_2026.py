@@ -38,14 +38,14 @@ SEED_TEAMS_PATH   = ROOT / "docs" / "data" / "seed_teams.json"
 SEED_PLAYERS_PATH = ROOT / "docs" / "data" / "seed_players.json"
 MATCHES_CACHE     = ROOT / "data" / "wc2026_matches_cache.json"
 
-# Locked scoring weights (2026-05-25 — Deep Data tier active)
+# Locked scoring weights (2026-05-25 - Deep Data tier active)
 WEIGHTS = {
     "team_win": 3, "team_draw": 1,
     "bonus_r32": 1, "bonus_r16": 2, "bonus_qf": 3, "bonus_sf": 5,
     "bonus_final": 8, "bonus_champion": 12,
     "player_goal": 5,
     "player_assist": 3,           # restored after Deep Data unlocked assist data
-    "player_win_share": 1,        # lineup-based — only players who played
+    "player_win_share": 1,        # lineup-based - only players who played
     "player_clean_sheet_gk": 5,   # lineup-based
     "player_clean_sheet_def": 2,  # FPL-style: defenders earn CS bonus
     "player_clean_sheet_other": 0,  # MID/FWD/Unknown earn nothing for CS
@@ -117,7 +117,7 @@ def build_team_indexes(teams):
 # ---------------------------------------------------------------------------
 
 def poisson_sample(lam: float) -> int:
-    """Knuth's algorithm — sample from Poisson(lam)."""
+    """Knuth's algorithm - sample from Poisson(lam)."""
     L = math.exp(-lam)
     k = 0
     p = 1.0
@@ -202,7 +202,7 @@ def pick_lineup(team, players_by_team):
     gks = [p for p in candidates if p.get("position") == "GK"]
     outfield = [p for p in candidates if p.get("position") != "GK"]
     played = set()
-    # 1 GK — weighted by price
+    # 1 GK - weighted by price
     if gks:
         w = [max(0.1, p.get("basePrice", 1)) for p in gks]
         chosen = random.choices(gks, weights=w, k=1)[0]
@@ -223,7 +223,7 @@ def pick_lineup(team, players_by_team):
                     played.add(outfield[idx]["id"])
                     idx_pool.pop(i)
                     break
-        # Subs come on — sample more from remaining pool
+        # Subs come on - sample more from remaining pool
         for _ in range(min(LINEUP_SUBS_USED, len(idx_pool))):
             total = sum(w[i] for i in idx_pool)
             if total <= 0: break
@@ -284,7 +284,7 @@ def run_tournament(teams, matches, by_fdid, players_by_team):
     for t in advancers:
         team_stats[t["id"]]["final_round"] = "R32"
 
-    # Knockouts — simplified pairing by overall rank among advancers
+    # Knockouts - simplified pairing by overall rank among advancers
     current = list(advancers)
     knockout_rounds = ["R16", "QF", "SF", "F"]
     losers_at = {}  # team_id → round they lost in
@@ -458,7 +458,7 @@ def _determine_advancers(team_stats, team_group):
     ), reverse=True)
     # Build advancers list of team dicts (we need team dicts to call simulate_match)
     advancers = [advancing_ids[i] for i in range(min(32, len(advancing_ids)))]
-    # Pair 1v32, 2v31, ..., 16v17 — interleave so the bracket pairs match
+    # Pair 1v32, 2v31, ..., 16v17 - interleave so the bracket pairs match
     paired = []
     for i in range(len(advancers) // 2):
         paired.append(advancers[i])
@@ -574,31 +574,31 @@ def build_controlled_contestants(teams, players):
     out = []
 
     # A1. All TEAMS, TOP-heavy (most expensive first)
-    out.append({"name": "A. Teams — TOP-heavy",
+    out.append({"name": "A. Teams - TOP-heavy",
                 "picks": fill_greedy(teams_desc, "team")})
 
     # A2. All TEAMS, MIDDLE (only $8-15 teams)
-    out.append({"name": "B. Teams — MIDDLE ($8-15)",
+    out.append({"name": "B. Teams - MIDDLE ($8-15)",
                 "picks": fill_greedy(sorted(teams_mid, key=lambda x: -x["basePrice"]), "team")})
 
-    # A3. All TEAMS, CINDERELLA — capped at $10 to allow $100 spend within 20 picks
+    # A3. All TEAMS, CINDERELLA - capped at $10 to allow $100 spend within 20 picks
     cinderella_teams_desc = sorted([t for t in teams if t["basePrice"] <= 10],
                                      key=lambda x: -x["basePrice"])
-    out.append({"name": "C. Teams — CINDERELLA (≤$10)",
+    out.append({"name": "C. Teams - CINDERELLA (≤$10)",
                 "picks": fill_greedy(cinderella_teams_desc, "team")})
 
     # B1. All PLAYERS, TOP-heavy
-    out.append({"name": "D. Players — TOP-heavy",
+    out.append({"name": "D. Players - TOP-heavy",
                 "picks": fill_greedy(players_desc, "player")})
 
     # B2. All PLAYERS, MIDDLE ($8-14)
-    out.append({"name": "E. Players — MIDDLE ($8-14)",
+    out.append({"name": "E. Players - MIDDLE ($8-14)",
                 "picks": fill_greedy(sorted(players_mid, key=lambda x: -x["basePrice"]), "player")})
 
-    # B3. All PLAYERS, CINDERELLA — capped at $7, descending to spend budget faster
+    # B3. All PLAYERS, CINDERELLA - capped at $7, descending to spend budget faster
     cinderella_players_desc = sorted([p for p in players if p["basePrice"] <= 7],
                                        key=lambda x: -x["basePrice"])
-    out.append({"name": "F. Players — CINDERELLA (≤$7)",
+    out.append({"name": "F. Players - CINDERELLA (≤$7)",
                 "picks": fill_greedy(cinderella_players_desc, "player")})
 
     # Top up any contestant that didn't hit $100 (cinderella often runs out of
@@ -628,7 +628,7 @@ def build_contestants(teams, players):
 
     # ---- TEAMS-ONLY (5) ----
 
-    # 1. Big4 Spender — top 3 teams + cheap fillers
+    # 1. Big4 Spender - top 3 teams + cheap fillers
     c1 = [pick_id("team", t["id"]) for t in teams_sorted[:3]]  # ARG, FRA, BRA = 30+28+26 = 84
     # Need $16 more. Fill with cheap.
     remaining = 100 - 84
@@ -662,7 +662,7 @@ def build_contestants(teams, players):
                 remaining -= 1
     contestants.append({"name": "2. Argentina + spread", "picks": c2})
 
-    # 3. Mid Strength — all $8-15 teams
+    # 3. Mid Strength - all $8-15 teams
     c3 = []
     remaining = 100
     for t in teams_sorted:
@@ -671,7 +671,7 @@ def build_contestants(teams, players):
             remaining -= t["basePrice"]
     contestants.append({"name": "3. Mid-strength teams only", "picks": c3})
 
-    # 4. Cinderella Spammer — cheap teams, max picks
+    # 4. Cinderella Spammer - cheap teams, max picks
     c4 = []
     remaining = 100
     cheap_teams = sorted([t for t in teams if t["basePrice"] <= 7], key=lambda t: -t["basePrice"])
@@ -681,7 +681,7 @@ def build_contestants(teams, players):
             remaining -= t["basePrice"]
     contestants.append({"name": "4. Cinderella spam (all cheap teams)", "picks": c4})
 
-    # 5. Balanced Teams — 1 top + 2 mid + cheap
+    # 5. Balanced Teams - 1 top + 2 mid + cheap
     c5 = [pick_id("team", team_id("Argentina"))]  # $30
     remaining = 70
     for name in ["Belgium", "Croatia"]:  # mid
@@ -702,7 +702,7 @@ def build_contestants(teams, players):
 
     # ---- PLAYERS-ONLY (5) ----
 
-    # 6. All Stars — top 5 superstars
+    # 6. All Stars - top 5 superstars
     c6 = []
     remaining = 100
     for p in players_sorted:
@@ -719,7 +719,7 @@ def build_contestants(teams, players):
         if remaining == 0: break
     contestants.append({"name": "6. All-stars (top 5-6 superstars)", "picks": c6})
 
-    # 7. Mid Veterans — all $10-15 players
+    # 7. Mid Veterans - all $10-15 players
     c7 = []
     remaining = 100
     for p in players_sorted:
@@ -782,7 +782,7 @@ def build_contestants(teams, players):
         if remaining == 0: break
     contestants.append({"name": "11. Star + Champion + spread", "picks": c11})
 
-    # 12. Diversifier — 1 team + 1 player from each rough price band
+    # 12. Diversifier - 1 team + 1 player from each rough price band
     c12 = []
     remaining = 100
     # 1 top team + 1 top player + 1 mid + 1 mid + 1 low team + 1 low player + ...
@@ -814,7 +814,7 @@ def build_contestants(teams, players):
         if remaining == 0: break
     contestants.append({"name": "12. Diversifier (one per band)", "picks": c12})
 
-    # 13. Mid Mix — mid teams + mid players
+    # 13. Mid Mix - mid teams + mid players
     c13 = []
     remaining = 100
     mid_teams = sorted([t for t in teams if 8 <= t["basePrice"] <= 14], key=lambda t: -t["basePrice"])[:3]
@@ -860,7 +860,7 @@ def build_contestants(teams, players):
         if pid and remaining >= players_by_id[pid]["basePrice"]:
             c15.append(pick_id("player", pid))
             remaining -= players_by_id[pid]["basePrice"]
-    # Top up to $100 with whatever fits — use _top_up later
+    # Top up to $100 with whatever fits - use _top_up later
     contestants.append({"name": "15. Anchored balance (champ + 4 stars)", "picks": c15})
 
     # Top up any roster that has unspent budget (some strategies hit price
@@ -965,7 +965,7 @@ def main() -> None:
         win_counts[winner] += 1
 
     print(f"\n{'='*100}")
-    print(f"  RESULTS — 15 contestants × {args.runs} simulations")
+    print(f"  RESULTS - 15 contestants × {args.runs} simulations")
     print(f"{'='*100}")
     print(f"\n  {'#':<3}{'Contestant':<48}{'mean':>6}{'med':>6}{'p25':>6}{'p75':>6}{'min':>5}{'max':>5}{'win%':>6}")
     # Sort by mean

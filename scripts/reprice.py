@@ -15,7 +15,7 @@ Eliminated assets settle at:
   sellPrice   = round(last_marketValue * 0.25)        # 25% liquidation
   buyPrice    = N/A (cannot buy eliminated assets)
 
-This is the *pricing engine* only — Firestore I/O and UI wiring come in
+This is the *pricing engine* only - Firestore I/O and UI wiring come in
 the next pass. Run --dry-run to see prices for a hypothetical state.
 
 Usage:
@@ -54,13 +54,13 @@ VIG_SELL         = 0.90   # sell at 10% discount
 ELIM_REFUND_RATE = 0.25   # 25% liquidation on eliminated picks
                           # (Lower than it intuitively sounds because most of
                           # an asset's value has already been realized as
-                          # points before it's eliminated — refund is a small
+                          # points before it's eliminated - refund is a small
                           # consolation, not a recovery.)
 
 
 def round_half_up(x: float) -> int:
     """Round to nearest integer, halves go UP. (Python's default round()
-    uses banker's rounding which surprises non-engineers — e.g. 2.5→2.
+    uses banker's rounding which surprises non-engineers - e.g. 2.5→2.
     For a fantasy game UI, we want 2.5→3 always.)"""
     return math.floor(x + 0.5)
 
@@ -119,7 +119,7 @@ def simulate_remaining(advancers, start_round, players_by_team):
             next_round.append(winner)
         current = next_round
 
-    # 3rd-place match (real WC has one — counts for player stats)
+    # 3rd-place match (real WC has one - counts for player stats)
     if len(semis_losers) == 2:
         ta, tb = semis_losers
         ga, gb, pen = simulate_match(ta, tb, ko=True)
@@ -255,7 +255,7 @@ def write_prices_to_firestore(db, prices, advancers, all_teams, round_label):
     Eliminated assets get marketValue=0 + sellPrice = liquidationValue.
 
     liquidationValue is captured ONCE per asset on first detection of
-    elimination — subsequent reruns leave it alone. This guarantees that
+    elimination - subsequent reruns leave it alone. This guarantees that
     auto-sell refunds users the same amount no matter how many times we
     reprice after an elimination event.
 
@@ -294,7 +294,7 @@ def write_prices_to_firestore(db, prices, advancers, all_teams, round_label):
         elif t.get("liquidationValue") is not None:
             n_elim_existing += 1
         else:
-            # Newly eliminated — capture liquidation value FROM LAST KNOWN MV
+            # Newly eliminated - capture liquidation value FROM LAST KNOWN MV
             # and append a final priceHistory entry marking the exit.
             last_mv = t.get("marketValue") or t.get("currentPrice") or t.get("basePrice", 0)
             liquidation = liquidation_price(last_mv)

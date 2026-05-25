@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "scope": "Major individual international honors only — Ballon d'Or, FIFA The Best, and World Cup individual awards. Continental tournament wins live on team_history.json. Last reviewed 2026-05-25.",
+    "scope": "Major individual international honors only - Ballon d'Or, FIFA The Best, and World Cup individual awards. Continental tournament wins live on team_history.json. Last reviewed 2026-05-25.",
     "honorFormat": "Each player has an `honors` array of short display strings, ordered by perceived prestige."
   },
   "3218-argentina": {

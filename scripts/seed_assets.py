@@ -24,12 +24,12 @@ DATA_DIR = ROOT / "docs" / "data"
 SEED_TEAMS = DATA_DIR / "seed_teams.json"
 SEED_PLAYERS = DATA_DIR / "seed_players.json"
 
-# Initial scoring weights — must match SIMULATION_FINDINGS.md recommendations.
+# Initial scoring weights - must match SIMULATION_FINDINGS.md recommendations.
 INITIAL_CONFIG = {
     "currentRound": "pre",            # "pre" | "group" | "R32" | "R16" | "QF" | "SF" | "F" | "done"
     "transferWindowOpen": False,
     "scoringWeights": {
-        # Locked 2026-05-25 (Deep Data upgrade) — all integers.
+        # Locked 2026-05-25 (Deep Data upgrade) - all integers.
         "team_win": 3,
         "team_draw": 1,
         "bonus_r32": 1,
@@ -44,7 +44,7 @@ INITIAL_CONFIG = {
         "player_win_share": 1,             # +1 per match the player PLAYED IN that team won (lineup-based)
         "player_clean_sheet_gk": 5,        # +5 to GK who played in a clean-sheet match
         "player_clean_sheet_def": 2,       # +2 to defenders who played in a CS match
-        "player_clean_sheet_other": 0,     # 0 — MID/FWD/Unknown don't earn CS (FPL-style)
+        "player_clean_sheet_other": 0,     # 0 - MID/FWD/Unknown don't earn CS (FPL-style)
     },
     "kickoffTimestamp": None,         # set to the WC 2026 kickoff datetime (Firestore Timestamp)
     "budget": 60,
@@ -59,7 +59,7 @@ def _load_json(path: Path, required: bool = True) -> list[dict]:
             sys.exit(f"missing seed file: {path}\n"
                      "Curate the 2026 tiers and write them to this path first "
                      "(see SIMULATION_FINDINGS.md for the recommended tier shape).")
-        print(f"  (no {path.name} yet — skipping)")
+        print(f"  (no {path.name} yet - skipping)")
         return []
     return json.loads(path.read_text())
 
@@ -83,7 +83,7 @@ def seed(dry_run: bool = False) -> None:
 
     print(f"Loaded {len(teams)} teams, {len(players)} players from seed files.")
     if not players:
-        print("  (player tiers not yet curated — run pull_wc2026_squads.py + tier the players, then re-run this script)")
+        print("  (player tiers not yet curated - run pull_wc2026_squads.py + tier the players, then re-run this script)")
 
     if dry_run:
         print("[dry-run] Skipping Firestore writes. Sample team:")

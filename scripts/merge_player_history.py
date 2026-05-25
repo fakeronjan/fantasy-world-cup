@@ -1,11 +1,11 @@
 """Merge scraped + manually-overridden player history into the final file.
 
 Inputs:
-  docs/data/player_history_scraped.json   — produced by scrape_player_wikipedia.py
-  docs/data/player_history_overrides.json — hand-curated, takes precedence
+  docs/data/player_history_scraped.json   - produced by scrape_player_wikipedia.py
+  docs/data/player_history_overrides.json - hand-curated, takes precedence
 
 Output:
-  docs/data/player_history.json           — what the frontend reads
+  docs/data/player_history.json           - what the frontend reads
 
 Override keys use the same player.id format as seed_players.json
 (i.e., "{fdId}-{teamSlug}"). This makes merge unambiguous.

@@ -88,8 +88,8 @@ Once the tournament is underway, `.github/workflows/ingest.yml` runs every
 
 The workflow needs two GitHub Secrets configured in the repo
 (Settings → Secrets and variables → Actions → New repository secret):
-- `FOOTBALL_DATA_KEY` — paste the football-data.org API key
-- `FIREBASE_SA_BASE64` — base64-encoded contents of the service account JSON:
+- `FOOTBALL_DATA_KEY` - paste the football-data.org API key
+- `FIREBASE_SA_BASE64` - base64-encoded contents of the service account JSON:
   ```bash
   base64 -i fantasy-world-cup-2026-firebase-adminsdk-fbsvc-*.json | pbcopy
   ```
@@ -120,7 +120,7 @@ Re-run the squad pull + tier build to pick up missing stars:
 GOOGLE_APPLICATION_CREDENTIALS=$PWD/...adminsdk*.json \
   ./venv/bin/python scripts/seed_assets.py          # writes the updates to Firestore
 ```
-(seed_assets is idempotent — it merges updates onto existing player
+(seed_assets is idempotent - it merges updates onto existing player
 docs, preserving stats already accumulated.)
 
 ### Setting kickoff timestamp

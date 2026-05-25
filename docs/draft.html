@@ -244,7 +244,7 @@
             </div>
           </div>
           <ul class="roster-list" id="rosterList">
-            <li class="roster-empty" id="rosterEmpty">No picks yet — click a row to add</li>
+            <li class="roster-empty" id="rosterEmpty">No picks yet - click a row to add</li>
           </ul>
           <div class="save-row">
             <button class="btn" id="resetBtn" title="Clear all picks">Reset</button>
@@ -329,7 +329,7 @@
       parts.push(`${h.runnerUps} runner-up${h.runnerUps === 1 ? '' : 's'}`);
       showedAchievement = true;
     }
-    if (!showedAchievement && h.bestFinish && h.bestFinish !== '—') {
+    if (!showedAchievement && h.bestFinish && h.bestFinish !== ' - ') {
       parts.push(`Best: ${h.bestFinish}`);
     }
     return parts.join(' · ');
@@ -426,7 +426,7 @@
       const res4 = await fetch('./data/player_history.json');
       playerHistory = await res4.json();
     } catch (e) {
-      // File may not exist yet — gracefully no player history.
+      // File may not exist yet - gracefully no player history.
       playerHistory = {};
     }
     try {
@@ -543,7 +543,7 @@
     if (!filtered.length) {
       assetBody.innerHTML = `<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text-muted)">
         ${currentTab === 'players' && !players.length
-          ? 'Player data not loaded yet — run the squad-pull script to seed players.'
+          ? 'Player data not loaded yet - run the squad-pull script to seed players.'
           : 'No matches.'}
       </td></tr>`;
       return;
@@ -607,7 +607,7 @@
     pickCount.textContent = `${roster.length} / ${ROSTER_CAP}`;
 
     if (!roster.length) {
-      rosterList.innerHTML = `<li class="roster-empty">No picks yet — click "+ Add" to draft</li>`;
+      rosterList.innerHTML = `<li class="roster-empty">No picks yet - click "+ Add" to draft</li>`;
     } else {
       rosterList.innerHTML = roster.map(r => `
         <li>
@@ -624,7 +624,7 @@
 
   function updateSaveHint() {
     if (window.fwc.configIsPlaceholder) {
-      saveHint.textContent = 'Firebase not configured yet — local drafts persist in browser storage.';
+      saveHint.textContent = 'Firebase not configured yet - local drafts persist in browser storage.';
     } else if (!currentUser) {
       saveHint.textContent = 'Sign in with Google to save your roster.';
     } else {

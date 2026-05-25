@@ -37,7 +37,7 @@ def get_group_standings(year: int) -> pd.DataFrame:
         except Exception as e:
             print(f"  ! Group {letter}: {e}", file=sys.stderr)
             continue
-        # Find the standings table — typically the one with columns
+        # Find the standings table - typically the one with columns
         # like Pld, W, D, L, GF, GA, GD, Pts and 4 rows.
         chosen = None
         for t in tables:

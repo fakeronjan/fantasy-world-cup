@@ -66,7 +66,7 @@ WC2018_KNOCKOUT = {
     "Uruguay":  ("QF", 1, 0, 1),
     "Brazil":   ("QF", 1, 0, 1),
     "Sweden":   ("QF", 1, 0, 1),
-    "Russia":   ("QF", 0, 1, 1),  # R16 D ESP (PK W), QF D CRO (PK L) — actually 0W 2D 1L? Let me recount
+    "Russia":   ("QF", 0, 1, 1),  # R16 D ESP (PK W), QF D CRO (PK L) - actually 0W 2D 1L? Let me recount
     # Russia: R16 1-1 (PK W) = D, QF 2-2 (PK L) = D → 0W 2D, but the QF loss should count as a loss in our model? No: PK losses = D
     # So Russia: 0 KO wins, 2 KO draws, 0 KO losses → ended in QF eliminated on PKs
     "Argentina":("R16",0, 0, 1),
@@ -82,7 +82,7 @@ WC2018_KNOCKOUT["Russia"]   = ("QF", 0, 2, 0)
 WC2018_KNOCKOUT["Croatia"]  = ("F",  1, 2, 1)  # 1W (SF) + 2D (R16,QF won on PKs) + 1L (final)
 
 WC2018_GROUP_ONLY = {
-    "Uruguay (H)" if False else "Saudi Arabia",  # placeholder — see set below
+    "Uruguay (H)" if False else "Saudi Arabia",  # placeholder - see set below
 }
 WC2018_GROUP_ONLY = {
     "Saudi Arabia", "Egypt",
@@ -97,7 +97,7 @@ WC2018_GROUP_ONLY = {
 
 
 # ---------------------------------------------------------------------------
-# WC 2014 (Brazil — Germany won)
+# WC 2014 (Brazil - Germany won)
 # ---------------------------------------------------------------------------
 
 WC2014_KNOCKOUT: dict[str, tuple[str, int, int, int]] = {
@@ -110,7 +110,7 @@ WC2014_KNOCKOUT: dict[str, tuple[str, int, int, int]] = {
     "Brazil":      ("SF", 1, 1, 2),  # CHI 1-1 (PK W) = D, COL W, GER 1-7 L, NED 0-3 L
     "France":      ("QF", 1, 0, 1),
     "Belgium":     ("QF", 1, 0, 1),
-    "Costa Rica":  ("QF", 0, 2, 0),  # GRE 1-1 (PK W), NED 0-0 (PK L) — both D
+    "Costa Rica":  ("QF", 0, 2, 0),  # GRE 1-1 (PK W), NED 0-0 (PK L) - both D
     "Colombia":    ("QF", 1, 0, 1),
     "Algeria":     ("R16",0, 0, 1),
     "Switzerland": ("R16",0, 0, 1),
@@ -134,7 +134,7 @@ WC2014_GROUP_ONLY = {
 
 
 # ---------------------------------------------------------------------------
-# WC 2010 (South Africa — Spain won)
+# WC 2010 (South Africa - Spain won)
 # ---------------------------------------------------------------------------
 
 WC2010_KNOCKOUT: dict[str, tuple[str, int, int, int]] = {
@@ -144,7 +144,7 @@ WC2010_KNOCKOUT: dict[str, tuple[str, int, int, int]] = {
     "Uruguay":     ("SF", 1, 1, 2),  # KOR W, GHA 1-1 (PK W) = D, NED L, 3rd L GER
     "Argentina":   ("QF", 1, 0, 1),  # MEX W, GER L
     "Brazil":      ("QF", 1, 0, 1),  # CHI W, NED L
-    "Ghana":       ("QF", 1, 1, 0),  # USA W (ET), URU 1-1 (PK L) = D — eliminated in QF
+    "Ghana":       ("QF", 1, 1, 0),  # USA W (ET), URU 1-1 (PK L) = D - eliminated in QF
     "Paraguay":    ("QF", 0, 1, 1),  # JPN 0-0 (PK W) = D, ESP L
     "Mexico":      ("R16",0, 0, 1),
     "United States":("R16",0, 0, 1),

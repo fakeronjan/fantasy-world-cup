@@ -1,5 +1,5 @@
 {
-  "_meta": "Hand-curated WC history for top marquee players. Overrides the historical-goalscorer-derived defaults. Keyed by seed_players.json player.id. Add entries here when (a) a player's WC stats are wrong, (b) they played past WCs without scoring (auto-detection missed them — esp. GKs and defenders), or (c) they have notable achievements worth a custom tag.",
+  "_meta": "Hand-curated WC history for top marquee players. Overrides the historical-goalscorer-derived defaults. Keyed by seed_players.json player.id. Add entries here when (a) a player's WC stats are wrong, (b) they played past WCs without scoring (auto-detection missed them - esp. GKs and defenders), or (c) they have notable achievements worth a custom tag.",
 
   "3218-argentina":  { "wcsPlayed": 5, "wcYears": [2006, 2010, 2014, 2018, 2022], "goals": 13, "titles": 1, "titleYears": [2022], "runnerUps": 1, "runnerUpYears": [2014], "tag": "GOAT" },
   "98571-argentina": { "wcsPlayed": 1, "wcYears": [2022], "goals": 4, "titles": 1, "titleYears": [2022], "runnerUps": 0, "runnerUpYears": [] },

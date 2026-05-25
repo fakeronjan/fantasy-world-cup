@@ -34,7 +34,7 @@ SEED_TEAMS = ROOT / "docs" / "data" / "seed_teams.json"
 OUT_PATH = ROOT / "docs" / "data" / "player_history_scraped.json"
 
 UA = "FakeRonjanFantasyWC/1.0 (rjsikdar@gmail.com) personal project"
-SLEEP_BETWEEN = 0.6  # seconds between requests — be polite to Wikipedia
+SLEEP_BETWEEN = 0.6  # seconds between requests - be polite to Wikipedia
 
 
 def _fetch(url: str) -> str:
@@ -47,7 +47,7 @@ def find_wikipedia_url(player_name: str, team_country: str) -> str | None:
     """Use Wikipedia OpenSearch API to find the best match for this player.
 
     Tries progressively wider queries. For each result set, scores titles
-    by relevance — prefers "footballer" in title, matches the player's
+    by relevance - prefers "footballer" in title, matches the player's
     country, skips disambiguation pages.
     """
     queries = [
@@ -153,7 +153,7 @@ def extract_history(html: str) -> dict:
     out["wcYears"] = sorted(years)
     out["wcsPlayed"] = len(out["wcYears"])
 
-    # Titles — find "(year) FIFA World Cup" near a champion/winner mention
+    # Titles - find "(year) FIFA World Cup" near a champion/winner mention
     title_years = set()
     for sentence in re.split(r"[.\n]", honours_text + " " + intro_text):
         if WC_TITLE_RE.search(sentence):
@@ -197,7 +197,7 @@ def main() -> None:
     out: dict[str, dict] = {}
     if args.resume and OUT_PATH.exists():
         out = json.loads(OUT_PATH.read_text())
-        print(f"Resuming — {len(out)} players already scraped")
+        print(f"Resuming - {len(out)} players already scraped")
 
     total = len(players) if args.limit is None else min(args.limit, len(players))
     for i, p in enumerate(players[:total], 1):
@@ -208,7 +208,7 @@ def main() -> None:
             url = find_wikipedia_url(p["name"], p["teamName"])
             if not url:
                 out[key] = {"sourceUrl": None, "notFound": True}
-                print(f"  [{i}/{total}] {p['name']:<30} ({p['teamName']:<20}) — no page")
+                print(f"  [{i}/{total}] {p['name']:<30} ({p['teamName']:<20}) - no page")
             else:
                 time.sleep(SLEEP_BETWEEN)
                 html = _fetch(url)
@@ -219,10 +219,10 @@ def main() -> None:
                 if hist["titles"]:    summary += f", {hist['titles']} title(s)"
                 if hist["runnerUps"]: summary += f", {hist['runnerUps']} RU"
                 if hist["goals"]:     summary += f", {hist['goals']} goals"
-                print(f"  [{i}/{total}] {p['name']:<30} ({p['teamName']:<20}) — {summary}")
+                print(f"  [{i}/{total}] {p['name']:<30} ({p['teamName']:<20}) - {summary}")
         except Exception as e:
             out[key] = {"sourceUrl": None, "error": str(e)}
-            print(f"  [{i}/{total}] {p['name']:<30} ({p['teamName']:<20}) — ERROR: {e}")
+            print(f"  [{i}/{total}] {p['name']:<30} ({p['teamName']:<20}) - ERROR: {e}")
 
         time.sleep(SLEEP_BETWEEN)
 

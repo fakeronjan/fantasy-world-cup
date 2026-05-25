@@ -1,4 +1,4 @@
-// Fantasy World Cup — shared Firebase init + auth helpers.
+// Fantasy World Cup - shared Firebase init + auth helpers.
 //
 // HOW THIS WORKS:
 //   - This file loads the Firebase JS SDK from Google's CDN (no build step).
@@ -29,7 +29,7 @@ import {
   setDoc,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-// Firebase web config. These values are intentionally PUBLIC — security
+// Firebase web config. These values are intentionally PUBLIC - security
 // comes from Firestore rules + Auth provider restrictions, NOT from
 // keeping these secret. Safe to commit.
 const FIREBASE_CONFIG = {
@@ -41,7 +41,7 @@ const FIREBASE_CONFIG = {
   appId: "1:155847257242:web:a674e2aa741e9705c74323",
 };
 
-// Admin uid(s) — these accounts can write to teams, players, matches, config.
+// Admin uid(s) - these accounts can write to teams, players, matches, config.
 // Will be enforced by Firestore security rules. Populate after first sign-in
 // (sign in once with the admin Google account, look up the uid in Firebase
 // console → Authentication, paste it here AND in firestore.rules).
@@ -100,14 +100,14 @@ function isAdmin(user) {
 // Single source of truth for "what do we call this user in the UI?"
 // Priority: their custom league nickname → Google account displayName →
 // email local-part (half-masked) → first 6 chars of UID.
-// Accepts a Firestore user doc (with uid added) — works in both leaderboard
+// Accepts a Firestore user doc (with uid added) - works in both leaderboard
 // rows and self-display contexts.
 // Read live game state from Firestore. Returns one of:
-//   { state: 'config-missing' }                     — Firebase not configured
-//   { state: 'pre-kickoff', kickoff: <iso|null> }   — drafts open, no tourney
-//   { state: 'round-in-progress', round: 'R32' }    — match in progress, rosters locked
-//   { state: 'window-open', round: 'R32' }          — transfer window open for round R32
-//   { state: 'done' }                               — tournament complete
+//   { state: 'config-missing' }                     - Firebase not configured
+//   { state: 'pre-kickoff', kickoff: <iso|null> }   - drafts open, no tourney
+//   { state: 'round-in-progress', round: 'R32' }    - match in progress, rosters locked
+//   { state: 'window-open', round: 'R32' }          - transfer window open for round R32
+//   { state: 'done' }                               - tournament complete
 async function getGameState() {
   if (configIsPlaceholder) return { state: 'config-missing' };
   try {
@@ -152,7 +152,7 @@ function renderStateBanner(targetEl, state) {
     title = 'Pre-kickoff';
     sub = state.kickoff
       ? `Drafts open until ${formatKickoff(state.kickoff)}`
-      : 'Drafts open — kickoff time TBD';
+      : 'Drafts open - kickoff time TBD';
   } else if (state.state === 'round-in-progress') {
     bg = '#f3f4f6'; color = '#374151'; icon = '🔒';
     title = `${ROUND_NAMES[state.round] || state.round} in progress`;
@@ -166,7 +166,7 @@ function renderStateBanner(targetEl, state) {
     title = 'Tournament complete';
     sub = 'Final standings on the Leaderboard.';
   } else {
-    return; // unknown state — skip
+    return; // unknown state - skip
   }
   targetEl.innerHTML = `
     <div style="background:${bg}; color:${color}; padding:10px 14px; border-radius:6px;
