@@ -114,8 +114,18 @@ async function getGameState() {
     const snap = await getDoc(doc(db, 'config', 'global'));
     const c = snap.exists() ? snap.data() : {};
     const round = c.currentRound || 'pre';
+    const kickoff = c.kickoffTimestamp;
+    // The TRUE roster-lock signal is "now >= kickoffTimestamp", not the
+    // currentRound label. If currentRound got bumped early (manual admin
+    // change, false auto-transition), we still want to show pre-kickoff
+    // until the actual kickoff moment.
+    const kickoffDate = kickoff?.toDate
+      ? kickoff.toDate()
+      : (kickoff ? new Date(kickoff) : null);
+    const beforeKickoff = !kickoffDate || new Date() < kickoffDate;
+
     if (round === 'done') return { state: 'done' };
-    if (round === 'pre')  return { state: 'pre-kickoff', kickoff: c.kickoffTimestamp || null };
+    if (beforeKickoff)    return { state: 'pre-kickoff', kickoff };
     if (c.transferWindowOpen === true) return { state: 'window-open', round };
     return { state: 'round-in-progress', round };
   } catch (e) {

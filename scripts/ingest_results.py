@@ -483,13 +483,16 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
     if current == "done":
         return None
 
-    # Special case: pre → group. Triggered the first time ANY match has
-    # status != SCHEDULED (kickoff has begun). Doesn't open a transfer
-    # window — that opens after group stage completes.
+    # Special case: pre → group. Triggered ONLY when a match is actually
+    # IN_PLAY / PAUSED / FINISHED — i.e. the tournament has really started.
+    # The earlier check (status != SCHEDULED) falsely fired on TIMED
+    # transitions weeks before kickoff. Doesn't open a transfer window —
+    # that opens after group stage completes.
     if current == "pre":
+        REAL_STATUSES = {"IN_PLAY", "PAUSED", "FINISHED"}
         for mdoc in db.collection("matches").stream():
             m = mdoc.to_dict() or {}
-            if m.get("status") and m.get("status") != "SCHEDULED":
+            if m.get("status") in REAL_STATUSES:
                 db.collection("config").document("global").set({
                     "currentRound": "group",
                 }, merge=True)
