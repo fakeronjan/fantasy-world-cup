@@ -46,10 +46,15 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.auth.uid == uid;
-      allow update: if isSignedIn() && request.auth.uid == uid
-                     && (beforeKickoff() || transferWindowOpen()
-                         || onlyTouchesProfileFields());
-      allow delete: if false;
+      allow update: if isSignedIn() && (
+                       // Owner editing their own doc, subject to game-state gates
+                       (request.auth.uid == uid
+                        && (beforeKickoff() || transferWindowOpen()
+                            || onlyTouchesProfileFields()))
+                       // Admin can edit any user doc, any time (league management)
+                       || isAdmin()
+                     );
+      allow delete: if isAdmin();
     }
     function onlyTouchesProfileFields() {
       // Allow harmless updates (e.g., displayName refresh) outside transfer

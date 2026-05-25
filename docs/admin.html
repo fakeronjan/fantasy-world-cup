@@ -110,6 +110,63 @@
     text-align: center; padding: 48px 24px;
     max-width: 480px; margin: 40px auto;
   }
+
+  /* User list (admin League members) */
+  .user-list .user-row {
+    border-bottom: 1px solid var(--border-row);
+    padding: 10px 0;
+  }
+  .user-list .user-row:last-child { border-bottom: none; }
+  .user-list .user-header {
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; font-size: 13px;
+  }
+  .user-list .user-header .name {
+    flex: 1; font-weight: 600;
+  }
+  .user-list .user-header .meta {
+    color: var(--text-muted); font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .user-list .user-header .caret { color: var(--text-muted); font-size: 12px; }
+  .user-list .user-detail {
+    margin-top: 10px; padding: 10px;
+    background: #f8f8f6; border-radius: 4px;
+    display: none;
+  }
+  .user-list .user-row.open .user-detail { display: block; }
+  .user-list .user-row.open .caret { transform: rotate(90deg); }
+
+  .user-detail .pick-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 4px 0; font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .user-detail .pick-row .pick-name { flex: 1; }
+  .user-detail .pick-row .kind-tag {
+    font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .user-detail .pick-row .kind-tag.team   { background: var(--bg-header); color: #fff; }
+  .user-detail .pick-row .kind-tag.player { background: var(--accent); color: #fff; }
+  .user-detail .pick-row button {
+    background: none; border: 1px solid var(--border);
+    color: #991b1b; padding: 2px 8px; border-radius: 3px;
+    font-size: 11px; cursor: pointer;
+  }
+  .user-detail .pick-row button:hover { border-color: #991b1b; background: #fee2e2; }
+  .user-detail .admin-actions {
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid var(--border-row);
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .user-detail .admin-actions button {
+    font-size: 11px; padding: 4px 10px;
+  }
+  .user-detail .danger-btn {
+    background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;
+  }
+  .user-detail .danger-btn:hover { background: #fecaca; }
 </style>
 </head>
 <body>
@@ -199,6 +256,18 @@
       </ul>
     </section>
 
+    <!-- Users panel -->
+    <section class="card" style="margin-top:16px">
+      <h2>League members <span class="pill-status idle" id="usersCount">…</span></h2>
+      <p class="muted" style="font-size:13px; margin-bottom:12px">
+        Every signed-up user. Click a row to expand and view/edit their roster.
+        Admin edits bypass the normal transfer-window gates.
+      </p>
+      <ul class="user-list" id="userList" style="list-style:none">
+        <li class="muted">Loading…</li>
+      </ul>
+    </section>
+
     <section class="card" style="margin-top:16px">
       <h2>Scoring weights <span class="pill-status warn">Read-only for now</span></h2>
       <p class="muted" style="font-size:13px">
@@ -230,7 +299,14 @@
   const closeTxBtn   = document.getElementById('closeTxBtn');
   const advanceSel   = document.getElementById('advanceRoundSel');
   const advanceBtn   = document.getElementById('advanceBtn');
+  const userList     = document.getElementById('userList');
+  const usersCount   = document.getElementById('usersCount');
   const toast        = document.getElementById('toast');
+
+  // Local caches for the Users panel (loaded once + lazy-refreshed on edits)
+  let allUsers = [];      // [{uid, ...userDoc}]
+  let teamsCache = {};    // teamId → team doc (for prices + names)
+  let playersCache = {};  // playerId → player doc
 
   await new Promise(r => requestAnimationFrame(r));
   signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
@@ -272,7 +348,155 @@
     await loadTeamEmojis();
     await loadConfig();
     await loadStateCounts();
+    await loadUsers();
     try { await loadGoalEntryData(); } catch (e) { console.error('goal entry load failed', e); }
+  }
+
+  async function loadUsers() {
+    try {
+      const { collection, getDocs } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      // Catalogs first — needed to render pick names + refund prices
+      if (!Object.keys(teamsCache).length) {
+        const tsnap = await getDocs(collection(window.fwc.db, 'teams'));
+        tsnap.forEach(d => teamsCache[d.id] = { id: d.id, ...d.data() });
+      }
+      if (!Object.keys(playersCache).length) {
+        const psnap = await getDocs(collection(window.fwc.db, 'players'));
+        psnap.forEach(d => playersCache[d.id] = { id: d.id, ...d.data() });
+      }
+      const usnap = await getDocs(collection(window.fwc.db, 'users'));
+      allUsers = [];
+      usnap.forEach(d => allUsers.push({ uid: d.id, ...d.data() }));
+      allUsers.sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0)
+                              || (a.displayName || '').localeCompare(b.displayName || ''));
+      renderUserList();
+    } catch (e) {
+      userList.innerHTML = `<li class="muted">Couldn't load users: ${escape(e.message)}</li>`;
+    }
+  }
+
+  function renderUserList() {
+    usersCount.textContent = `${allUsers.length} user${allUsers.length === 1 ? '' : 's'}`;
+    if (!allUsers.length) {
+      userList.innerHTML = `<li class="muted">No users have signed up yet.</li>`;
+      return;
+    }
+    userList.innerHTML = allUsers.map(u => {
+      const name = window.fwc.nameFor(u);
+      const picks = (u.roster || []).length;
+      const pts = u.totalPoints ?? 0;
+      const budget = u.currentBudget ?? '?';
+      const email = u.email || '';
+      return `<li class="user-row" data-uid="${escape(u.uid)}">
+        <div class="user-header" data-toggle="${escape(u.uid)}">
+          <span class="caret">▸</span>
+          <span class="name">${escape(name)}</span>
+          <span class="meta">${picks} picks · $${budget} left · ${pts} pts</span>
+        </div>
+        <div class="user-detail" id="detail-${escape(u.uid)}">
+          <div class="muted" style="font-size:11px; margin-bottom:6px">
+            ${escape(email)} · UID ${escape(u.uid.slice(0, 12))}…
+          </div>
+          ${(u.roster || []).map(p => renderPickRow(u.uid, p)).join('') || '<div class="muted" style="font-size:12px">No picks.</div>'}
+          <div class="admin-actions">
+            <button class="btn" data-reset-roster="${escape(u.uid)}">Clear roster</button>
+            <button class="btn danger-btn" data-delete-user="${escape(u.uid)}">Delete user</button>
+          </div>
+        </div>
+      </li>`;
+    }).join('');
+
+    userList.querySelectorAll('[data-toggle]').forEach(el => {
+      el.addEventListener('click', () => {
+        el.closest('.user-row').classList.toggle('open');
+      });
+    });
+    userList.querySelectorAll('[data-remove-pick]').forEach(b => {
+      b.addEventListener('click', () => removePick(b.dataset.removePick, b.dataset.kind, b.dataset.assetId));
+    });
+    userList.querySelectorAll('[data-reset-roster]').forEach(b => {
+      b.addEventListener('click', () => resetRoster(b.dataset.resetRoster));
+    });
+    userList.querySelectorAll('[data-delete-user]').forEach(b => {
+      b.addEventListener('click', () => deleteUser(b.dataset.deleteUser));
+    });
+  }
+
+  function renderPickRow(uid, pick) {
+    const catalog = pick.kind === 'team' ? teamsCache[pick.assetId] : playersCache[pick.assetId];
+    const name = catalog ? catalog.name : pick.assetId;
+    const paid = pick.purchasePrice ?? 0;
+    return `<div class="pick-row">
+      <span class="kind-tag ${pick.kind}">${pick.kind === 'team' ? 'T' : 'P'}</span>
+      <span class="pick-name">${escape(name)}</span>
+      <span class="muted">paid $${paid}</span>
+      <button data-remove-pick="${escape(uid)}" data-kind="${pick.kind}" data-asset-id="${escape(pick.assetId)}">Remove</button>
+    </div>`;
+  }
+
+  async function removePick(uid, kind, assetId) {
+    const user = allUsers.find(u => u.uid === uid);
+    if (!user) return;
+    const pick = (user.roster || []).find(p => p.kind === kind && p.assetId === assetId);
+    if (!pick) return;
+    if (!confirm(`Remove ${assetId} from ${window.fwc.nameFor(user)}'s roster? Their budget will be refunded $${pick.purchasePrice}.`)) return;
+    try {
+      const newRoster = (user.roster || []).filter(p => !(p.kind === kind && p.assetId === assetId));
+      const newBudget = (user.currentBudget ?? 0) + (pick.purchasePrice || 0);
+      const ref = window.fwc.doc(window.fwc.db, 'users', uid);
+      await window.fwc.setDoc(ref, { roster: newRoster, currentBudget: newBudget }, { merge: true });
+      user.roster = newRoster;
+      user.currentBudget = newBudget;
+      renderUserList();
+      // Keep the row expanded after re-render
+      document.querySelector(`[data-uid="${uid}"]`)?.classList.add('open');
+      showToast('Pick removed');
+    } catch (e) {
+      showToast(`Failed: ${e.message}`, true);
+    }
+  }
+
+  async function resetRoster(uid) {
+    const user = allUsers.find(u => u.uid === uid);
+    if (!user) return;
+    if (!confirm(`Clear ALL picks for ${window.fwc.nameFor(user)} and reset their budget to $60? This cannot be undone.`)) return;
+    try {
+      const ref = window.fwc.doc(window.fwc.db, 'users', uid);
+      await window.fwc.setDoc(ref, { roster: [], currentBudget: 60, totalSpent: 0 }, { merge: true });
+      user.roster = [];
+      user.currentBudget = 60;
+      user.totalSpent = 0;
+      renderUserList();
+      document.querySelector(`[data-uid="${uid}"]`)?.classList.add('open');
+      showToast('Roster cleared');
+    } catch (e) {
+      showToast(`Failed: ${e.message}`, true);
+    }
+  }
+
+  async function deleteUser(uid) {
+    const user = allUsers.find(u => u.uid === uid);
+    if (!user) return;
+    const name = window.fwc.nameFor(user);
+    if (!confirm(`DELETE ${name}'s user doc entirely? This removes their roster and history. Their Google account is NOT deleted and they can re-sign-in to start fresh. Type "yes" to confirm.`)) return;
+    const confirmText = prompt(`Type "${name}" to confirm deletion:`);
+    if (confirmText !== name) {
+      showToast('Cancelled — confirmation did not match', true);
+      return;
+    }
+    try {
+      const { deleteDoc, doc } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      await deleteDoc(doc(window.fwc.db, 'users', uid));
+      allUsers = allUsers.filter(u => u.uid !== uid);
+      renderUserList();
+      showToast(`Deleted ${name}`);
+    } catch (e) {
+      showToast(`Failed: ${e.message}`, true);
+    }
   }
 
   async function loadTeamEmojis() {
