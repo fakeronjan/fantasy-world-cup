@@ -190,7 +190,7 @@
         <ul style="margin: 8px 0 8px 18px;">
           <li><span class="key paid">Paid</span> what you spent when you drafted or bought this pick. Locked in.</li>
           <li><span class="key earn">Earned</span> points this asset has scored — yours forever.</li>
-          <li><span class="key mv">MV</span> the asset's current "fair" market value: <strong>E[remaining points] ÷ 2</strong>. The "2" is our target points-per-dollar — the game's pricing is anchored so $1 buys 2 expected points on average. So a team expected to score 12 more points is fairly priced at $6.</li>
+          <li><span class="key mv">MV</span> the asset's current "fair" market value: <strong>E[remaining points] ÷ 2</strong>. The "2" is a calibration anchor (chosen, not measured). It's tuned so that after the 10% buy vig, buyers pay ~1.7 pts/$ on transfers — which matches the game's actual overall average ROI. Example: an asset expected to score 12 more points → MV $6 → Buy $7 → buyer ROI 12÷7 = 1.71 pts/$.</li>
           <li><span class="key sell">Sell</span> what the market pays you to sell (MV − 10% vig, rounded to nearest $).</li>
           <li><span class="key buy">Buy</span> what the market charges to acquire (MV + 10% vig, rounded to nearest $).</li>
         </ul>
