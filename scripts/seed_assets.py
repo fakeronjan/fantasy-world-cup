@@ -48,7 +48,7 @@ INITIAL_CONFIG = {
     },
     "kickoffTimestamp": None,         # set to the WC 2026 kickoff datetime (Firestore Timestamp)
     "budget": 100,
-    "rosterCap": 12,
+    "rosterCap": 20,
     "playerMinPrice": 2,
 }
 

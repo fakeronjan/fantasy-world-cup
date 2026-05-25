@@ -22,7 +22,7 @@ from knockout_results import (
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 BUDGET = 100
-ROSTER_SIZE_CAP = 12  # max picks — keeps strategy meaningful (vs. spam $1 players)
+ROSTER_SIZE_CAP = 20  # max picks — keeps strategy meaningful (vs. spam $1 players)
 
 
 # ---------------------------------------------------------------------------
