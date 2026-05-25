@@ -162,6 +162,13 @@
           <select id="countryFilter" style="display:none">
             <option value="">All countries</option>
           </select>
+          <select id="positionFilter" style="display:none">
+            <option value="">All positions</option>
+            <option value="GK">GK</option>
+            <option value="DEF">DEF</option>
+            <option value="MID">MID</option>
+            <option value="FWD">FWD</option>
+          </select>
           <span class="count-label" id="resultCount"></span>
         </div>
 
@@ -301,6 +308,7 @@
   const searchBox   = document.getElementById('searchBox');
   const tierFilter  = document.getElementById('tierFilter');
   const countryFilter = document.getElementById('countryFilter');
+  const positionFilter = document.getElementById('positionFilter');
   const resultCount = document.getElementById('resultCount');
   const assetBody   = document.getElementById('assetBody');
   const budgetLeft  = document.getElementById('budgetLeft');
@@ -431,16 +439,21 @@
     const q = searchBox.value.trim().toLowerCase();
     const tier = tierFilter.value;
     const country = countryFilter.value;
+    const position = positionFilter.value;
     const filtered = source.filter(a => {
       // Search by both stored name AND display name (so "Son" matches "Son Heung-min")
+      // For players, also match against club name.
       if (q) {
-        const haystack = currentTab === 'players'
-          ? (a.name + ' ' + displayName(a)).toLowerCase()
-          : a.name.toLowerCase();
+        let haystack = a.name.toLowerCase();
+        if (currentTab === 'players') {
+          haystack += ' ' + displayName(a).toLowerCase();
+          if (a.club) haystack += ' ' + a.club.toLowerCase();
+        }
         if (!haystack.includes(q)) return false;
       }
       if (tier && String(a.tier) !== tier) return false;
       if (country && currentTab === 'players' && a.teamId !== country) return false;
+      if (position && currentTab === 'players' && a.position !== position) return false;
       return true;
     }).sort((a, b) => b.basePrice - a.basePrice || a.name.localeCompare(b.name));
 
@@ -463,7 +476,12 @@
       const canAdd = !owned && remainsBudget && room;
       // Flag emoji: for team rows from the team itself, for player rows from their team
       const emoji = kind === 'team' ? a.emoji : teamIdToEmoji[a.teamId];
-      const teamLabel = kind === 'player' && a.teamName ? ` <span class="muted" style="font-size:11px">${escape(a.teamName)}</span>` : '';
+      // Subtitle for player rows: "Club · Country" if we know the club,
+      // otherwise just country. Country is also visible via the flag emoji
+      // but keeping the name keeps the line readable.
+      const clubLine = kind === 'player'
+        ? `<div class="muted" style="font-size:11px; margin-top:2px; padding-left:32px">${escape(a.club ? `${a.club} · ${a.teamName}` : a.teamName)}</div>`
+        : '';
       const flagImg = flagSpan(emoji);
       // History blurb (team for team rows; player WC history for player rows)
       const histBlurb = kind === 'team'
@@ -481,7 +499,7 @@
       }
       return `<tr class="${owned ? 'in-roster' : ''}">
         <td class="rank-cell">${i + 1}</td>
-        <td class="team-cell">${flagImg}${escape(kind === 'player' ? displayName(a) : a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}${teamLabel}${histLine}${honorsLine}</td>
+        <td class="team-cell">${flagImg}${escape(kind === 'player' ? displayName(a) : a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}${clubLine}${histLine}${honorsLine}</td>
         <td><span class="tier-badge tier-${a.tier}">T${a.tier}</span></td>
         <td class="num">$${a.basePrice}</td>
         <td><button class="add-btn ${owned ? 'in-roster' : ''}" data-kind="${kind}" data-id="${escape(a.id)}" ${owned ? '' : (canAdd ? '' : 'disabled')}>
@@ -535,6 +553,7 @@
   searchBox.addEventListener('input', renderAssetTable);
   tierFilter.addEventListener('change', renderAssetTable);
   countryFilter.addEventListener('change', renderAssetTable);
+  positionFilter.addEventListener('change', renderAssetTable);
 
   // Build tier dropdown labels from the actual price ranges in the current
   // tab's data, and show/hide the country filter for the players tab.
@@ -569,9 +588,12 @@
       countryFilter.innerHTML = opts.join('');
       countryFilter.value = prevCountry;
       countryFilter.style.display = '';
+      positionFilter.style.display = '';
     } else {
       countryFilter.style.display = 'none';
       countryFilter.value = '';
+      positionFilter.style.display = 'none';
+      positionFilter.value = '';
     }
   }
   assetBody.addEventListener('click', (e) => {

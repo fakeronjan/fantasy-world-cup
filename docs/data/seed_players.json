@@ -27,7 +27,8 @@
     "teamName": "Algeria",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Al-Ahli SFC"
   },
   {
     "id": "3218-argentina",
@@ -37,7 +38,8 @@
     "teamName": "Argentina",
     "position": "MID",
     "tier": 1,
-    "basePrice": 8
+    "basePrice": 8,
+    "club": "Inter Miami CF"
   },
   {
     "id": "45681-argentina",
@@ -47,7 +49,8 @@
     "teamName": "Argentina",
     "position": "MID",
     "tier": 2,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Liverpool"
   },
   {
     "id": "3141-argentina",
@@ -57,7 +60,8 @@
     "teamName": "Argentina",
     "position": "GK",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Aston Villa"
   },
   {
     "id": "102603-argentina",
@@ -67,7 +71,8 @@
     "teamName": "Argentina",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Chelsea"
   },
   {
     "id": "98571-argentina",
@@ -77,7 +82,8 @@
     "teamName": "Argentina",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Atleti"
   },
   {
     "id": "3214-argentina",
@@ -87,7 +93,8 @@
     "teamName": "Argentina",
     "position": "MID",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "AS Roma"
   },
   {
     "id": "3212-argentina",
@@ -107,7 +114,8 @@
     "teamName": "Argentina",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Atleti"
   },
   {
     "id": "3205-argentina",
@@ -117,7 +125,8 @@
     "teamName": "Argentina",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "SL Benfica"
   },
   {
     "id": "2127-argentina",
@@ -137,7 +146,8 @@
     "teamName": "Argentina",
     "position": "GK",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Marseille"
   },
   {
     "id": "46554-argentina",
@@ -147,7 +157,8 @@
     "teamName": "Argentina",
     "position": "GK",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Atleti"
   },
   {
     "id": "46046-argentina",
@@ -157,7 +168,8 @@
     "teamName": "Argentina",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Bournemouth"
   },
   {
     "id": "45680-argentina",
@@ -167,7 +179,8 @@
     "teamName": "Argentina",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Atleti"
   },
   {
     "id": "3208-argentina",
@@ -177,7 +190,8 @@
     "teamName": "Argentina",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Olympique Lyon"
   },
   {
     "id": "79953-argentina",
@@ -187,7 +201,8 @@
     "teamName": "Argentina",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Atleti"
   },
   {
     "id": "3407-australia",
@@ -207,7 +222,8 @@
     "teamName": "Australia",
     "position": "GK",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Levante"
   },
   {
     "id": "4697-australia",
@@ -227,7 +243,8 @@
     "teamName": "Austria",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "RB Leipzig"
   },
   {
     "id": "349-austria",
@@ -237,7 +254,8 @@
     "teamName": "Austria",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Real Madrid"
   },
   {
     "id": "9549-austria",
@@ -247,7 +265,8 @@
     "teamName": "Austria",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Bayern"
   },
   {
     "id": "9551-austria",
@@ -257,7 +276,8 @@
     "teamName": "Austria",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Dortmund"
   },
   {
     "id": "8223-austria",
@@ -277,7 +297,8 @@
     "teamName": "Belgium",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Man City"
   },
   {
     "id": "3654-belgium",
@@ -287,7 +308,8 @@
     "teamName": "Belgium",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Napoli"
   },
   {
     "id": "3662-belgium",
@@ -297,7 +319,8 @@
     "teamName": "Belgium",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Napoli"
   },
   {
     "id": "3641-belgium",
@@ -307,7 +330,8 @@
     "teamName": "Belgium",
     "position": "GK",
     "tier": 2,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Real Madrid"
   },
   {
     "id": "3656-belgium",
@@ -317,7 +341,8 @@
     "teamName": "Belgium",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Girona"
   },
   {
     "id": "8984-belgium",
@@ -327,7 +352,8 @@
     "teamName": "Belgium",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Arsenal"
   },
   {
     "id": "3658-belgium",
@@ -337,7 +363,8 @@
     "teamName": "Belgium",
     "position": "MID",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Aston Villa"
   },
   {
     "id": "114024-belgium",
@@ -347,7 +374,8 @@
     "teamName": "Belgium",
     "position": "MID",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Aston Villa"
   },
   {
     "id": "129947-belgium",
@@ -357,7 +385,8 @@
     "teamName": "Belgium",
     "position": "MID",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Atalanta"
   },
   {
     "id": "17645-bosnia",
@@ -377,7 +406,8 @@
     "teamName": "Bosnia-Herzegovina",
     "position": "GK",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "St. Pauli"
   },
   {
     "id": "10836-bosnia",
@@ -397,7 +427,8 @@
     "teamName": "Brazil",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 7
+    "basePrice": 7,
+    "club": "Real Madrid"
   },
   {
     "id": "1795-brazil",
@@ -407,7 +438,8 @@
     "teamName": "Brazil",
     "position": "GK",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Liverpool"
   },
   {
     "id": "3231-brazil",
@@ -417,7 +449,8 @@
     "teamName": "Brazil",
     "position": "MID",
     "tier": 2,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Man United"
   },
   {
     "id": "37428-brazil",
@@ -427,7 +460,8 @@
     "teamName": "Brazil",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Barça"
   },
   {
     "id": "1684-brazil",
@@ -437,7 +471,8 @@
     "teamName": "Brazil",
     "position": "MID",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Newcastle"
   },
   {
     "id": "3222-brazil",
@@ -447,7 +482,8 @@
     "teamName": "Brazil",
     "position": "GK",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Al-Ittihad"
   },
   {
     "id": "188487-brazil",
@@ -457,7 +493,8 @@
     "teamName": "Brazil",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Olympique Lyon"
   },
   {
     "id": "23128-brazil",
@@ -467,7 +504,8 @@
     "teamName": "Brazil",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Arsenal"
   },
   {
     "id": "1543-brazil",
@@ -477,7 +515,8 @@
     "teamName": "Brazil",
     "position": "MID",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Flamengo"
   },
   {
     "id": "3225-brazil",
@@ -487,7 +526,8 @@
     "teamName": "Brazil",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "PSG"
   },
   {
     "id": "138230-brazil",
@@ -507,7 +547,8 @@
     "teamName": "Canada",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Southampton"
   },
   {
     "id": "8924-canada",
@@ -517,7 +558,8 @@
     "teamName": "Canada",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Juventus"
   },
   {
     "id": "21226-canada",
@@ -547,7 +589,8 @@
     "teamName": "Cape Verde Islands",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Villarreal"
   },
   {
     "id": "53172-cape-verde",
@@ -577,7 +620,8 @@
     "teamName": "Colombia",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Bayern"
   },
   {
     "id": "202797-colombia",
@@ -597,7 +641,8 @@
     "teamName": "Congo DR",
     "position": "GK",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Le Havre"
   },
   {
     "id": "170838-congo-dr",
@@ -627,7 +672,8 @@
     "teamName": "Croatia",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Milan"
   },
   {
     "id": "318-croatia",
@@ -637,7 +683,8 @@
     "teamName": "Croatia",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Hoffenheim"
   },
   {
     "id": "3548-croatia",
@@ -657,7 +704,8 @@
     "teamName": "Croatia",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Man City"
   },
   {
     "id": "65-croatia",
@@ -667,7 +715,8 @@
     "teamName": "Croatia",
     "position": "MID",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Man City"
   },
   {
     "id": "2004-croatia",
@@ -677,7 +726,8 @@
     "teamName": "Croatia",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "PSV"
   },
   {
     "id": "7437-curacao",
@@ -707,7 +757,8 @@
     "teamName": "Curaçao",
     "position": "GK",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Telstar"
   },
   {
     "id": "1826-czechia",
@@ -717,7 +768,8 @@
     "teamName": "Czechia",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Leverkusen"
   },
   {
     "id": "15742-czechia",
@@ -727,7 +779,8 @@
     "teamName": "Czechia",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "West Ham"
   },
   {
     "id": "62631-czechia",
@@ -737,7 +790,8 @@
     "teamName": "Czechia",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Hoffenheim"
   },
   {
     "id": "215510-ecuador",
@@ -747,7 +801,8 @@
     "teamName": "Ecuador",
     "position": "MID",
     "tier": 2,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Stuttgart"
   },
   {
     "id": "40009-ecuador",
@@ -767,7 +822,8 @@
     "teamName": "Ecuador",
     "position": "MID",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Chelsea"
   },
   {
     "id": "32642-ecuador",
@@ -777,7 +833,8 @@
     "teamName": "Ecuador",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Milan"
   },
   {
     "id": "125674-ecuador",
@@ -787,7 +844,8 @@
     "teamName": "Ecuador",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Arsenal"
   },
   {
     "id": "24740-ecuador",
@@ -797,7 +855,8 @@
     "teamName": "Ecuador",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Internacional"
   },
   {
     "id": "24545-ecuador",
@@ -817,7 +876,8 @@
     "teamName": "Egypt",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Nantes"
   },
   {
     "id": "3759-egypt",
@@ -827,7 +887,8 @@
     "teamName": "Egypt",
     "position": "MID",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Trabzonspor"
   },
   {
     "id": "83057-egypt",
@@ -837,7 +898,8 @@
     "teamName": "Egypt",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Al Ahly"
   },
   {
     "id": "125010-england",
@@ -847,7 +909,8 @@
     "teamName": "England",
     "position": "MID",
     "tier": 1,
-    "basePrice": 7
+    "basePrice": 7,
+    "club": "Real Madrid"
   },
   {
     "id": "7888-england",
@@ -857,7 +920,8 @@
     "teamName": "England",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 6
+    "basePrice": 6,
+    "club": "Man City"
   },
   {
     "id": "99813-england",
@@ -867,7 +931,8 @@
     "teamName": "England",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Arsenal"
   },
   {
     "id": "144892-england",
@@ -877,7 +942,8 @@
     "teamName": "England",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Chelsea"
   },
   {
     "id": "8215-england",
@@ -887,7 +953,8 @@
     "teamName": "England",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Arsenal"
   },
   {
     "id": "8004-england",
@@ -897,7 +964,8 @@
     "teamName": "England",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Bayern"
   },
   {
     "id": "7848-england",
@@ -907,7 +975,8 @@
     "teamName": "England",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Newcastle"
   },
   {
     "id": "3313-england",
@@ -917,7 +986,8 @@
     "teamName": "England",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Man City"
   },
   {
     "id": "3309-england",
@@ -927,7 +997,8 @@
     "teamName": "England",
     "position": "GK",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Everton"
   },
   {
     "id": "118489-england",
@@ -937,7 +1008,8 @@
     "teamName": "England",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Man City"
   },
   {
     "id": "5457-england",
@@ -947,7 +1019,8 @@
     "teamName": "England",
     "position": "GK",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Crystal Palace"
   },
   {
     "id": "3374-france",
@@ -957,7 +1030,8 @@
     "teamName": "France",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 9
+    "basePrice": 9,
+    "club": "Real Madrid"
   },
   {
     "id": "8514-france",
@@ -967,7 +1041,8 @@
     "teamName": "France",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Real Madrid"
   },
   {
     "id": "102343-france",
@@ -977,7 +1052,8 @@
     "teamName": "France",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Real Madrid"
   },
   {
     "id": "3373-france",
@@ -987,7 +1063,8 @@
     "teamName": "France",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "PSG"
   },
   {
     "id": "3368-france",
@@ -997,7 +1074,8 @@
     "teamName": "France",
     "position": "MID",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Milan"
   },
   {
     "id": "8685-france",
@@ -1007,7 +1085,8 @@
     "teamName": "France",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Inter"
   },
   {
     "id": "8390-france",
@@ -1017,7 +1096,8 @@
     "teamName": "France",
     "position": "GK",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Milan"
   },
   {
     "id": "3367-france",
@@ -1037,7 +1117,8 @@
     "teamName": "France",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Tottenham"
   },
   {
     "id": "71-france",
@@ -1057,7 +1138,8 @@
     "teamName": "France",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "PSG"
   },
   {
     "id": "3365-france",
@@ -1067,7 +1149,8 @@
     "teamName": "France",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "PSG"
   },
   {
     "id": "19334-germany",
@@ -1077,7 +1160,8 @@
     "teamName": "Germany",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Liverpool"
   },
   {
     "id": "144393-germany",
@@ -1087,7 +1171,8 @@
     "teamName": "Germany",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Bayern"
   },
   {
     "id": "359-germany",
@@ -1097,7 +1182,8 @@
     "teamName": "Germany",
     "position": "DEF",
     "tier": 2,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Bayern"
   },
   {
     "id": "171-germany",
@@ -1107,7 +1193,8 @@
     "teamName": "Germany",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Arsenal"
   },
   {
     "id": "3177-germany",
@@ -1117,7 +1204,8 @@
     "teamName": "Germany",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Real Madrid"
   },
   {
     "id": "3184-germany",
@@ -1127,7 +1215,8 @@
     "teamName": "Germany",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Galatasaray"
   },
   {
     "id": "341-germany",
@@ -1137,7 +1226,8 @@
     "teamName": "Germany",
     "position": "GK",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Bayern"
   },
   {
     "id": "202665-germany",
@@ -1147,7 +1237,8 @@
     "teamName": "Germany",
     "position": "MID",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Bayern"
   },
   {
     "id": "9905-germany",
@@ -1157,7 +1248,8 @@
     "teamName": "Germany",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "RB Leipzig"
   },
   {
     "id": "8273-germany",
@@ -1167,7 +1259,8 @@
     "teamName": "Germany",
     "position": "MID",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Brighton Hove"
   },
   {
     "id": "7984-ghana",
@@ -1177,7 +1270,8 @@
     "teamName": "Ghana",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Leicester City"
   },
   {
     "id": "495-ghana",
@@ -1197,7 +1291,8 @@
     "teamName": "Ghana",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Villarreal"
   },
   {
     "id": "154781-haiti",
@@ -1297,7 +1392,8 @@
     "teamName": "Ivory Coast",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Villarreal"
   },
   {
     "id": "1747-ivory-coast",
@@ -1317,7 +1413,8 @@
     "teamName": "Ivory Coast",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Monaco"
   },
   {
     "id": "113375-ivory-coast",
@@ -1327,7 +1424,8 @@
     "teamName": "Ivory Coast",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Galatasaray"
   },
   {
     "id": "6716-japan",
@@ -1337,7 +1435,8 @@
     "teamName": "Japan",
     "position": "MID",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Crystal Palace"
   },
   {
     "id": "44017-japan",
@@ -1357,7 +1456,8 @@
     "teamName": "Japan",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Real Sociedad"
   },
   {
     "id": "3269-japan",
@@ -1367,7 +1467,8 @@
     "teamName": "Japan",
     "position": "MID",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Liverpool"
   },
   {
     "id": "119460-japan",
@@ -1377,7 +1478,8 @@
     "teamName": "Japan",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Feyenoord"
   },
   {
     "id": "49080-japan",
@@ -1397,7 +1499,8 @@
     "teamName": "Japan",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Ajax"
   },
   {
     "id": "249669-jordan",
@@ -1467,7 +1570,8 @@
     "teamName": "Morocco",
     "position": "DEF",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "PSG"
   },
   {
     "id": "3694-morocco",
@@ -1487,7 +1591,8 @@
     "teamName": "Morocco",
     "position": "MID",
     "tier": 4,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Stuttgart"
   },
   {
     "id": "7553-morocco",
@@ -1497,7 +1602,8 @@
     "teamName": "Morocco",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Man United"
   },
   {
     "id": "7459-netherlands",
@@ -1507,7 +1613,8 @@
     "teamName": "Netherlands",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Liverpool"
   },
   {
     "id": "7869-netherlands",
@@ -1517,7 +1624,8 @@
     "teamName": "Netherlands",
     "position": "DEF",
     "tier": 2,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Liverpool"
   },
   {
     "id": "126870-netherlands",
@@ -1527,7 +1635,8 @@
     "teamName": "Netherlands",
     "position": "GK",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Brighton Hove"
   },
   {
     "id": "7417-netherlands",
@@ -1537,7 +1646,8 @@
     "teamName": "Netherlands",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Inter"
   },
   {
     "id": "7696-netherlands",
@@ -1547,7 +1657,8 @@
     "teamName": "Netherlands",
     "position": "MID",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Man City"
   },
   {
     "id": "7457-netherlands",
@@ -1557,7 +1668,8 @@
     "teamName": "Netherlands",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Roma"
   },
   {
     "id": "8057-new-zealand",
@@ -1567,7 +1679,8 @@
     "teamName": "New Zealand",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Nottingham"
   },
   {
     "id": "48418-new-zealand",
@@ -1577,7 +1690,8 @@
     "teamName": "New Zealand",
     "position": "GK",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Millwall"
   },
   {
     "id": "80167-new-zealand",
@@ -1597,7 +1711,8 @@
     "teamName": "Norway",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 8
+    "basePrice": 8,
+    "club": "Man City"
   },
   {
     "id": "8167-norway",
@@ -1607,7 +1722,8 @@
     "teamName": "Norway",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Atleti"
   },
   {
     "id": "169295-norway",
@@ -1617,7 +1733,8 @@
     "teamName": "Norway",
     "position": "MID",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "RB Leipzig"
   },
   {
     "id": "157796-norway",
@@ -1627,7 +1744,8 @@
     "teamName": "Norway",
     "position": "MID",
     "tier": 4,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "SL Benfica"
   },
   {
     "id": "177303-norway",
@@ -1647,7 +1765,8 @@
     "teamName": "Norway",
     "position": "MID",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Bodø/Glimt"
   },
   {
     "id": "8973-norway",
@@ -1657,7 +1776,8 @@
     "teamName": "Norway",
     "position": "MID",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Fulham"
   },
   {
     "id": "6843-norway",
@@ -1667,7 +1787,8 @@
     "teamName": "Norway",
     "position": "GK",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Sevilla FC"
   },
   {
     "id": "8919-panama",
@@ -1707,7 +1828,8 @@
     "teamName": "Paraguay",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Cremonese"
   },
   {
     "id": "28294-paraguay",
@@ -1737,7 +1859,8 @@
     "teamName": "Portugal",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 6
+    "basePrice": 6,
+    "club": "Al-Nassr FC"
   },
   {
     "id": "3254-portugal",
@@ -1747,7 +1870,8 @@
     "teamName": "Portugal",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Man City"
   },
   {
     "id": "3257-portugal",
@@ -1757,7 +1881,8 @@
     "teamName": "Portugal",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Man United"
   },
   {
     "id": "15892-portugal",
@@ -1767,7 +1892,8 @@
     "teamName": "Portugal",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Milan"
   },
   {
     "id": "10183-portugal",
@@ -1777,7 +1903,8 @@
     "teamName": "Portugal",
     "position": "DEF",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Man City"
   },
   {
     "id": "37362-portugal",
@@ -1787,7 +1914,8 @@
     "teamName": "Portugal",
     "position": "GK",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Porto"
   },
   {
     "id": "101431-portugal",
@@ -1797,7 +1925,8 @@
     "teamName": "Portugal",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "PSG"
   },
   {
     "id": "2000-portugal",
@@ -1807,7 +1936,8 @@
     "teamName": "Portugal",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Barça"
   },
   {
     "id": "178722-portugal",
@@ -1817,7 +1947,8 @@
     "teamName": "Portugal",
     "position": "MID",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "PSG"
   },
   {
     "id": "190877-portugal",
@@ -1827,7 +1958,8 @@
     "teamName": "Portugal",
     "position": "MID",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "PSG"
   },
   {
     "id": "15899-portugal",
@@ -1837,7 +1969,8 @@
     "teamName": "Portugal",
     "position": "GK",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Wolverhampton"
   },
   {
     "id": "39265-portugal",
@@ -1857,7 +1990,8 @@
     "teamName": "Portugal",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "PSG"
   },
   {
     "id": "57652-qatar",
@@ -1927,7 +2061,8 @@
     "teamName": "Scotland",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Liverpool"
   },
   {
     "id": "3981-scotland",
@@ -1937,7 +2072,8 @@
     "teamName": "Scotland",
     "position": "GK",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Nottingham"
   },
   {
     "id": "34646-scotland",
@@ -1947,7 +2083,8 @@
     "teamName": "Scotland",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Aston Villa"
   },
   {
     "id": "15615-scotland",
@@ -1967,7 +2104,8 @@
     "teamName": "Scotland",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Charlton"
   },
   {
     "id": "7905-scotland",
@@ -1977,7 +2115,8 @@
     "teamName": "Scotland",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Napoli"
   },
   {
     "id": "805-senegal",
@@ -1997,7 +2136,8 @@
     "teamName": "Senegal",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Crystal Palace"
   },
   {
     "id": "2086-senegal",
@@ -2017,7 +2157,8 @@
     "teamName": "Senegal",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Monaco"
   },
   {
     "id": "152515-senegal",
@@ -2027,7 +2168,8 @@
     "teamName": "Senegal",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Bayern"
   },
   {
     "id": "33994-south-africa",
@@ -2067,7 +2209,8 @@
     "teamName": "South Korea",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 6
+    "basePrice": 6,
+    "club": "Los Angeles FC"
   },
   {
     "id": "189673-south-korea",
@@ -2077,7 +2220,8 @@
     "teamName": "South Korea",
     "position": "GK",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Suwon FC"
   },
   {
     "id": "166683-south-korea",
@@ -2097,7 +2241,8 @@
     "teamName": "Spain",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 6
+    "basePrice": 6,
+    "club": "Barça"
   },
   {
     "id": "133860-spain",
@@ -2107,7 +2252,8 @@
     "teamName": "Spain",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Barça"
   },
   {
     "id": "3199-spain",
@@ -2117,7 +2263,8 @@
     "teamName": "Spain",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Man City"
   },
   {
     "id": "7884-spain",
@@ -2127,7 +2274,8 @@
     "teamName": "Spain",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Athletic"
   },
   {
     "id": "23132-spain",
@@ -2137,7 +2285,8 @@
     "teamName": "Spain",
     "position": "MID",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Barça"
   },
   {
     "id": "33154-spain",
@@ -2147,7 +2296,8 @@
     "teamName": "Spain",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Barça"
   },
   {
     "id": "180137-spain",
@@ -2157,7 +2307,8 @@
     "teamName": "Spain",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Real Sociedad"
   },
   {
     "id": "32570-spain",
@@ -2167,7 +2318,8 @@
     "teamName": "Spain",
     "position": "GK",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Athletic"
   },
   {
     "id": "15863-spain",
@@ -2177,7 +2329,8 @@
     "teamName": "Spain",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Chelsea"
   },
   {
     "id": "217540-spain",
@@ -2187,7 +2340,8 @@
     "teamName": "Spain",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Barça"
   },
   {
     "id": "6486-sweden",
@@ -2197,7 +2351,8 @@
     "teamName": "Sweden",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Liverpool"
   },
   {
     "id": "8279-sweden",
@@ -2207,7 +2362,8 @@
     "teamName": "Sweden",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Arsenal"
   },
   {
     "id": "166376-sweden",
@@ -2217,7 +2373,8 @@
     "teamName": "Sweden",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Newcastle"
   },
   {
     "id": "1745-switzerland",
@@ -2227,7 +2384,8 @@
     "teamName": "Switzerland",
     "position": "DEF",
     "tier": 2,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Real Betis"
   },
   {
     "id": "3483-switzerland",
@@ -2237,7 +2395,8 @@
     "teamName": "Switzerland",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Stade Rennais"
   },
   {
     "id": "3477-switzerland",
@@ -2247,7 +2406,8 @@
     "teamName": "Switzerland",
     "position": "MID",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Sunderland"
   },
   {
     "id": "143-switzerland",
@@ -2257,7 +2417,8 @@
     "teamName": "Switzerland",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Inter"
   },
   {
     "id": "99393-tunisia",
@@ -2287,7 +2448,8 @@
     "teamName": "Tunisia",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Burnley"
   },
   {
     "id": "169162-turkey",
@@ -2297,7 +2459,8 @@
     "teamName": "Turkey",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Real Madrid"
   },
   {
     "id": "9869-turkey",
@@ -2307,7 +2470,8 @@
     "teamName": "Turkey",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Brighton Hove"
   },
   {
     "id": "1754-turkey",
@@ -2317,7 +2481,8 @@
     "teamName": "Turkey",
     "position": "MID",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Inter"
   },
   {
     "id": "191712-turkey",
@@ -2327,7 +2492,8 @@
     "teamName": "Turkey",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Juventus"
   },
   {
     "id": "16641-turkey",
@@ -2347,7 +2513,8 @@
     "teamName": "Turkey",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Dortmund"
   },
   {
     "id": "145-united-states",
@@ -2357,7 +2524,8 @@
     "teamName": "United States",
     "position": "FWD",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Milan"
   },
   {
     "id": "131040-united-states",
@@ -2367,7 +2535,8 @@
     "teamName": "United States",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Monaco"
   },
   {
     "id": "8492-united-states",
@@ -2377,7 +2546,8 @@
     "teamName": "United States",
     "position": "FWD",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Marseille"
   },
   {
     "id": "6507-united-states",
@@ -2387,7 +2557,8 @@
     "teamName": "United States",
     "position": "MID",
     "tier": 3,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Juventus"
   },
   {
     "id": "3927-united-states",
@@ -2397,7 +2568,8 @@
     "teamName": "United States",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Fulham"
   },
   {
     "id": "113262-united-states",
@@ -2407,7 +2579,8 @@
     "teamName": "United States",
     "position": "MID",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Leeds United"
   },
   {
     "id": "136733-united-states",
@@ -2417,7 +2590,8 @@
     "teamName": "United States",
     "position": "MID",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "M'gladbach"
   },
   {
     "id": "76936-united-states",
@@ -2437,7 +2611,8 @@
     "teamName": "United States",
     "position": "FWD",
     "tier": 4,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "PSV"
   },
   {
     "id": "28618-uruguay",
@@ -2467,7 +2642,8 @@
     "teamName": "Uruguay",
     "position": "MID",
     "tier": 2,
-    "basePrice": 5
+    "basePrice": 5,
+    "club": "Palmeiras"
   },
   {
     "id": "96-uruguay",
@@ -2477,7 +2653,8 @@
     "teamName": "Uruguay",
     "position": "MID",
     "tier": 2,
-    "basePrice": 4
+    "basePrice": 4,
+    "club": "Real Madrid"
   },
   {
     "id": "189823-uruguay",
@@ -2517,7 +2694,8 @@
     "teamName": "Uruguay",
     "position": "MID",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Sporting CP"
   },
   {
     "id": "28292-uruguay",
@@ -2527,7 +2705,8 @@
     "teamName": "Uruguay",
     "position": "DEF",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Barça"
   },
   {
     "id": "30386-uruguay",
@@ -2537,7 +2716,8 @@
     "teamName": "Uruguay",
     "position": "GK",
     "tier": 3,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Internacional"
   },
   {
     "id": "28549-uruguay",
@@ -2547,7 +2727,8 @@
     "teamName": "Uruguay",
     "position": "MID",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Man United"
   },
   {
     "id": "32754-uruguay",
@@ -2557,7 +2738,8 @@
     "teamName": "Uruguay",
     "position": "DEF",
     "tier": 4,
-    "basePrice": 3
+    "basePrice": 3,
+    "club": "Napoli"
   },
   {
     "id": "243911-uzbekistan",
