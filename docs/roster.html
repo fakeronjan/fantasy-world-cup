@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Roster · Fantasy World Cup 2026</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .summary-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 700px) { .summary-strip { grid-template-columns: repeat(2, 1fr); } }
+  .stat-card {
+    background: var(--bg-card);
+    padding: 14px 16px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .stat-card .label {
+    font-size: 11px; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .stat-card .val {
+    font-size: 24px; font-weight: 800;
+    color: var(--bg-header); margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-card .val.accent { color: var(--accent); }
+
+  .tier-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 1px 6px; border-radius: 3px;
+    color: #fff; letter-spacing: 0.3px;
+  }
+  .tier-1 { background: #b91c1c; }
+  .tier-2 { background: #ea580c; }
+  .tier-3 { background: #ca8a04; }
+  .tier-4 { background: #16a34a; }
+  .tier-5 { background: #6b7280; }
+
+  .kind-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 1px 6px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .kind-team   { background: var(--bg-header); color: #fff; }
+  .kind-player { background: var(--accent); color: #fff; }
+
+  .no-roster {
+    text-align: center; padding: 48px 24px;
+    max-width: 480px; margin: 40px auto;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>MY ROSTER</h1>
+  <p class="subtitle">Your $100 squad · Locked at kickoff · Tradeable between rounds</p>
+  <p class="user-line" id="userLine"></p>
+</header>
+
+<nav class="site-nav" id="siteNav" style="display:none">
+  <a href="./index.html">Home</a>
+  <a href="./draft.html">Draft</a>
+  <a href="./roster.html" class="active">My Roster</a>
+  <a href="./leaderboard.html">Leaderboard</a>
+  <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+</nav>
+
+<main>
+  <!-- Signed-out -->
+  <section class="card signin-card" id="signinCard" style="display:none">
+    <h2>Sign in to view your roster</h2>
+    <p>You need to sign in with Google.</p>
+    <button class="btn" id="signInBtn">Sign in with Google</button>
+  </section>
+
+  <!-- Empty state: signed in but no roster yet -->
+  <section class="card no-roster" id="noRoster" style="display:none">
+    <h2>No roster yet</h2>
+    <p class="muted" style="margin-bottom:24px">You haven't drafted a roster yet. Pick up to 12 teams and players within a $100 budget.</p>
+    <a href="./draft.html" class="btn btn-accent">Go to Draft</a>
+  </section>
+
+  <!-- Roster view -->
+  <div id="rosterView" style="display:none">
+    <div class="summary-strip">
+      <div class="stat-card">
+        <div class="label">Total Points</div>
+        <div class="val accent" id="totalPts">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Picks</div>
+        <div class="val" id="pickCount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Spent</div>
+        <div class="val" id="totalSpent">$0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Budget left</div>
+        <div class="val" id="budgetLeft">$100</div>
+      </div>
+    </div>
+
+    <table class="data" id="rosterTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Pick</th>
+          <th>Kind</th>
+          <th>Tier</th>
+          <th class="num">Bought at</th>
+          <th class="num">Now worth</th>
+          <th class="num">Points</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="rosterBody">
+        <tr><td colspan="8" style="padding:24px;text-align:center;color:var(--text-muted)">Loading…</td></tr>
+      </tbody>
+    </table>
+
+    <p class="muted" style="text-align:center;font-size:12px;margin-top:16px" id="footerNote"></p>
+  </div>
+</main>
+
+<script type="module">
+  import "./shared.js";
+
+  const userLine    = document.getElementById('userLine');
+  const signinCard  = document.getElementById('signinCard');
+  const noRoster    = document.getElementById('noRoster');
+  const rosterView  = document.getElementById('rosterView');
+  const siteNav     = document.getElementById('siteNav');
+  const adminLink   = document.getElementById('adminLink');
+  const signInBtn   = document.getElementById('signInBtn');
+  const totalPts    = document.getElementById('totalPts');
+  const pickCount   = document.getElementById('pickCount');
+  const totalSpent  = document.getElementById('totalSpent');
+  const budgetLeft  = document.getElementById('budgetLeft');
+  const rosterBody  = document.getElementById('rosterBody');
+  const footerNote  = document.getElementById('footerNote');
+
+  await new Promise(r => requestAnimationFrame(r));
+  signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
+
+  let teams = [];
+  let players = [];
+
+  async function loadCatalog() {
+    try {
+      const res = await fetch('./data/seed_teams.json');
+      teams = await res.json();
+    } catch { teams = []; }
+    try {
+      const res = await fetch('./data/seed_players.json');
+      players = await res.json();
+    } catch { players = []; }
+  }
+
+  function getCatalogAsset(kind, id) {
+    return kind === 'team'
+      ? teams.find(t => t.id === id)
+      : players.find(p => p.id === id);
+  }
+
+  window.fwc.onAuth(async (user) => {
+    if (!user) {
+      signinCard.style.display = 'block';
+      noRoster.style.display = 'none';
+      rosterView.style.display = 'none';
+      siteNav.style.display = 'none';
+      return;
+    }
+    userLine.innerHTML = `Signed in as <strong>${user.displayName || user.email}</strong>
+      <button id="signOutBtn">Sign out</button>`;
+    document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
+    siteNav.style.display = 'flex';
+    if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+
+    if (!teams.length) await loadCatalog();
+
+    // Load user doc
+    let userDoc = null;
+    try {
+      const ref = window.fwc.doc(window.fwc.db, 'users', user.uid);
+      const snap = await window.fwc.getDoc(ref);
+      if (snap.exists()) userDoc = snap.data();
+    } catch (e) {
+      console.error(e);
+    }
+
+    const roster = (userDoc && userDoc.roster) || [];
+    if (!roster.length) {
+      signinCard.style.display = 'none';
+      noRoster.style.display = 'block';
+      rosterView.style.display = 'none';
+      return;
+    }
+
+    signinCard.style.display = 'none';
+    noRoster.style.display = 'none';
+    rosterView.style.display = 'block';
+
+    renderRoster(roster, userDoc);
+  });
+
+  function renderRoster(roster, userDoc) {
+    let totalP = 0, spent = 0;
+
+    rosterBody.innerHTML = roster.map((pick, i) => {
+      const catalog = getCatalogAsset(pick.kind, pick.assetId);
+      const name    = catalog ? catalog.name : pick.assetId;
+      const tier    = catalog ? catalog.tier : '?';
+      const bought  = pick.purchasePrice;
+      // currentValue + pts will populate once teams/players are seeded
+      // into Firestore and ingest_results.py starts writing point updates.
+      const nowWorth = catalog ? catalog.basePrice : bought;
+      const pts = pick.points ?? 0;
+      const eliminated = pick.eliminated === true;
+
+      spent  += bought;
+      totalP += pts;
+
+      return `<tr class="${eliminated ? 'eliminated' : ''}">
+        <td class="rank-cell">${i + 1}</td>
+        <td class="team-cell">${escape(name)}</td>
+        <td><span class="kind-badge kind-${pick.kind}">${pick.kind}</span></td>
+        <td><span class="tier-badge tier-${tier}">T${tier}</span></td>
+        <td class="num">$${bought}</td>
+        <td class="num">${eliminated ? '$0' : '$' + nowWorth}</td>
+        <td class="num"><strong>${pts}</strong></td>
+        <td>${eliminated ? '<span class="muted">eliminated</span>' : 'active'}</td>
+      </tr>`;
+    }).join('');
+
+    totalPts.textContent = totalP;
+    pickCount.textContent = roster.length;
+    totalSpent.textContent = `$${spent}`;
+    budgetLeft.textContent = `$${100 - spent}`;
+
+    // Show a hint about live scoring status
+    const hasScoring = roster.some(p => (p.points ?? 0) > 0);
+    if (!hasScoring) {
+      footerNote.textContent = 'Live scoring kicks in once the tournament starts and the ingest pipeline is wired up. Until then, all picks show 0 pts.';
+    } else {
+      footerNote.textContent = '';
+    }
+  }
+
+  function escape(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+  }
+</script>
+
+</body>
+</html>
