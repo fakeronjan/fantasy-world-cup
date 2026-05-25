@@ -1,0 +1,104 @@
+{
+  "_meta": {
+    "scope": "Major individual international honors only — Ballon d'Or, FIFA The Best, and World Cup individual awards. Continental tournament wins live on team_history.json. Last reviewed 2026-05-25.",
+    "honorFormat": "Each player has an `honors` array of short display strings, ordered by perceived prestige."
+  },
+
+  "3218-argentina": {
+    "honors": [
+      "8× Ballon d'Or (2009, 2010, 2011, 2012, 2015, 2019, 2021, 2023)",
+      "3× FIFA Best (2019, 2022, 2023)",
+      "2× WC Golden Ball (2014, 2022)",
+      "WC Silver Boot 2022"
+    ]
+  },
+  "3141-argentina": {
+    "honors": [
+      "WC Golden Glove 2022"
+    ]
+  },
+  "102603-argentina": {
+    "honors": [
+      "WC Young Player 2022"
+    ]
+  },
+
+  "44-portugal": {
+    "honors": [
+      "5× Ballon d'Or (2008, 2013, 2014, 2016, 2017)",
+      "2× FIFA Best (2016, 2017)",
+      "Euro 2016 Champion"
+    ]
+  },
+
+  "43-croatia": {
+    "honors": [
+      "Ballon d'Or 2018",
+      "FIFA Best 2018",
+      "WC Golden Ball 2018"
+    ]
+  },
+
+  "3199-spain": {
+    "honors": [
+      "Ballon d'Or 2024"
+    ]
+  },
+
+  "1556-brazil": {
+    "honors": [
+      "FIFA Best 2024",
+      "Ballon d'Or runner-up 2024"
+    ]
+  },
+
+  "3374-france": {
+    "honors": [
+      "WC Golden Boot 2022 (8 goals)",
+      "WC Silver Ball 2022",
+      "WC Young Player 2018",
+      "3× Ballon d'Or podium (2018, 2023, 2024)"
+    ]
+  },
+
+  "38101-norway": {
+    "honors": [
+      "Ballon d'Or runner-up 2023"
+    ]
+  },
+
+  "125010-england": {
+    "honors": [
+      "Ballon d'Or 3rd 2024"
+    ]
+  },
+
+  "8004-england": {
+    "honors": [
+      "WC Golden Boot 2018 (6 goals)"
+    ]
+  },
+
+  "3641-belgium": {
+    "honors": [
+      "WC Golden Glove 2018"
+    ]
+  },
+  "3662-belgium": {
+    "honors": [
+      "WC Bronze Boot 2018 (4 goals)"
+    ]
+  },
+
+  "341-germany": {
+    "honors": [
+      "WC Golden Glove 2014"
+    ]
+  },
+
+  "365-colombia": {
+    "honors": [
+      "WC Golden Boot 2014 (6 goals)"
+    ]
+  }
+}

@@ -216,6 +216,28 @@ input[type="text"]:focus, input[type="search"]:focus, select:focus {
 .flag    { font-size: 20px; margin-right: 8px; }
 .flag-sm { font-size: 14px; margin-right: 6px; }
 
+/* ---------- honor pills (awards + recent titles) ----------------------- */
+.honors-line {
+  margin-top: 3px;
+  line-height: 1.7;
+}
+.honor-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 3px;
+  background: rgba(255, 110, 180, 0.13);
+  color: var(--accent);
+  margin-right: 4px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.honor-pill.recent-title {
+  background: rgba(26, 107, 138, 0.10);
+  color: var(--bg-header);
+}
+
 /* ---------- helpers ---------- */
 .muted { color: var(--text-muted); }
 .accent-text { color: var(--accent); font-weight: 700; }

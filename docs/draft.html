@@ -227,6 +227,7 @@
   let teamIdToEmoji = {};  // slug → flag emoji
   let teamHistory = {};    // slug → history blob
   let playerHistory = {};  // playerId → history blob
+  let playerAwards = {};   // playerId → { honors: [string] }
 
   const flagSpan = (emoji, sm = false) => emoji ? `<span class="${sm ? 'flag-sm' : 'flag'}">${emoji}</span>` : '';
 
@@ -266,6 +267,12 @@
       parts.push(`RU${yrs.length ? ' (' + yrs.join(', ') + ')' : ''}`);
     }
     return parts.join(' · ');
+  }
+
+  function honorPillsHtml(honors, className = '') {
+    if (!honors || !honors.length) return '';
+    const pills = honors.map(h => `<span class="honor-pill ${className}">${escape(h)}</span>`).join('');
+    return `<div class="honors-line" style="padding-left:32px">${pills}</div>`;
   }
 
   // ---- DOM refs ----------------------------------------------------------
@@ -316,6 +323,12 @@
     } catch (e) {
       // File may not exist yet — gracefully no player history.
       playerHistory = {};
+    }
+    try {
+      const res5 = await fetch('./data/player_awards.json');
+      playerAwards = await res5.json();
+    } catch (e) {
+      playerAwards = {};
     }
   }
 
@@ -432,9 +445,16 @@
       const histLine = histBlurb
         ? `<div class="muted" style="font-size:11px; margin-top:2px; padding-left:32px">${escape(histBlurb)}</div>`
         : '';
+      // Honors: player individual awards or team recent continental titles
+      let honorsLine = '';
+      if (kind === 'player' && playerAwards[a.id]?.honors) {
+        honorsLine = honorPillsHtml(playerAwards[a.id].honors);
+      } else if (kind === 'team' && teamHistory[a.id]?.recentTitles) {
+        honorsLine = honorPillsHtml(teamHistory[a.id].recentTitles, 'recent-title');
+      }
       return `<tr class="${owned ? 'in-roster' : ''}">
         <td class="rank-cell">${i + 1}</td>
-        <td class="team-cell">${flagImg}${escape(a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}${teamLabel}${histLine}</td>
+        <td class="team-cell">${flagImg}${escape(a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}${teamLabel}${histLine}${honorsLine}</td>
         <td><span class="tier-badge tier-${a.tier}">T${a.tier}</span></td>
         <td class="num">$${a.basePrice}</td>
         <td><button class="add-btn ${owned ? 'in-roster' : ''}" data-kind="${kind}" data-id="${escape(a.id)}" ${owned ? '' : (canAdd ? '' : 'disabled')}>
