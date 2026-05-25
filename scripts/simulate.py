@@ -42,15 +42,17 @@ class ScoringWeights:
     bonus_sf: float = 6
     bonus_final: float = 10
     bonus_champion: float = 15
-    # Player scoring (per event)
+    # Player scoring (per event) — Deep Data unlocked 2026-05-25
     player_goal: float = 5
-    player_assist: float = 0       # DROPPED — no free source for assists
+    player_assist: float = 3       # restored after football-data.org Deep Data upgrade
     # Clean sheet: GK gets player_clean_sheet_gk, all other squad members
     # on the same team get player_clean_sheet_other.
+    # NOTE: live game uses lineup-based (only players who actually played).
+    # This historical sim is approximated as squad-based since we don't have
+    # historical lineup data — treat results as a directional sanity check.
     player_clean_sheet_gk: float = 5
     player_clean_sheet_other: float = 1
-    # Win share: every squad member of a team that wins a match gets this
-    # many points. Encourages drafting players from strong teams.
+    # Win share — see CS note above; live game is lineup-based, sim is squad-based.
     player_win_share: float = 1
 
 

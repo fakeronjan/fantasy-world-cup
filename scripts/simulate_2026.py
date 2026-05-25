@@ -38,14 +38,21 @@ SEED_TEAMS_PATH   = ROOT / "docs" / "data" / "seed_teams.json"
 SEED_PLAYERS_PATH = ROOT / "docs" / "data" / "seed_players.json"
 MATCHES_CACHE     = ROOT / "data" / "wc2026_matches_cache.json"
 
-# Locked scoring weights
+# Locked scoring weights (2026-05-25 — Deep Data tier active)
 WEIGHTS = {
     "team_win": 4, "team_draw": 1,
     "bonus_r32": 2, "bonus_r16": 3, "bonus_qf": 5, "bonus_sf": 8,
     "bonus_final": 12, "bonus_champion": 20,
-    "player_goal": 5, "player_assist": 0, "player_win_share": 1,
-    "player_clean_sheet_gk": 5, "player_clean_sheet_other": 1,
+    "player_goal": 5,
+    "player_assist": 3,           # restored after Deep Data unlocked assist data
+    "player_win_share": 1,        # lineup-based — only players who played
+    "player_clean_sheet_gk": 5,   # lineup-based
+    "player_clean_sheet_other": 1,
 }
+
+# Match simulation lineup parameters
+LINEUP_STARTERS = 11
+LINEUP_SUBS_USED = 3   # avg substitutes that come on per match
 
 ADVANCEMENT_ORDER = ["group", "R32", "R16", "QF", "SF", "F", "W"]
 BONUS_BY_ROUND = {
@@ -157,21 +164,77 @@ def simulate_match(team_a, team_b, ko=False, base=None):
 # ---------------------------------------------------------------------------
 
 POS_WEIGHTS = {"FWD": 4.0, "MID": 2.0, "DEF": 1.0, "GK": 0.1, "?": 1.0}
+ASSIST_WEIGHTS = {"FWD": 2.0, "MID": 3.0, "DEF": 1.0, "GK": 0.1, "?": 1.0}
 
 
 def attribute_goals(team, num_goals, players_by_team):
-    """Pick N draftable players from team's squad to credit each goal."""
+    """Pick N draftable players to credit each goal."""
     if num_goals == 0:
         return []
     candidates = players_by_team.get(team["id"], [])
     if not candidates:
         return []
-    weights = []
-    for p in candidates:
-        pos = p.get("position", "?")
-        pw = POS_WEIGHTS.get(pos, 1.0)
-        weights.append(max(0.01, pw * p.get("basePrice", 1)))
+    weights = [max(0.01, POS_WEIGHTS.get(p.get("position", "?"), 1.0) * p.get("basePrice", 1))
+                for p in candidates]
     return random.choices(candidates, weights=weights, k=num_goals)
+
+
+def attribute_assists(team, num_assists, players_by_team, scorer_ids):
+    """Pick assist credits. Midfielders weighted higher. Avoid same player as scorer."""
+    if num_assists == 0:
+        return []
+    candidates = [p for p in players_by_team.get(team["id"], []) if p["id"] not in scorer_ids]
+    if not candidates:
+        return []
+    weights = [max(0.01, ASSIST_WEIGHTS.get(p.get("position", "?"), 1.0) * p.get("basePrice", 1))
+                for p in candidates]
+    return random.choices(candidates, weights=weights, k=num_assists)
+
+
+def pick_lineup(team, players_by_team):
+    """Pick a probable starting XI + subs-in for one match.
+    Weighted by price + position (GK always starts 1, outfield by price).
+    Returns set of player IDs who 'played' (eligible for win-share/CS)."""
+    candidates = players_by_team.get(team["id"], [])
+    if not candidates:
+        return set()
+    gks = [p for p in candidates if p.get("position") == "GK"]
+    outfield = [p for p in candidates if p.get("position") != "GK"]
+    played = set()
+    # 1 GK — weighted by price
+    if gks:
+        w = [max(0.1, p.get("basePrice", 1)) for p in gks]
+        chosen = random.choices(gks, weights=w, k=1)[0]
+        played.add(chosen["id"])
+    # 10 outfield starters
+    if outfield:
+        w = [max(0.1, p.get("basePrice", 1)) for p in outfield]
+        # Sample without replacement, weighted
+        idx_pool = list(range(len(outfield)))
+        for _ in range(min(LINEUP_STARTERS - 1, len(outfield))):
+            total = sum(w[i] for i in idx_pool)
+            if total <= 0: break
+            r = random.uniform(0, total)
+            cum = 0
+            for i, idx in enumerate(idx_pool):
+                cum += w[idx]
+                if r <= cum:
+                    played.add(outfield[idx]["id"])
+                    idx_pool.pop(i)
+                    break
+        # Subs come on — sample more from remaining pool
+        for _ in range(min(LINEUP_SUBS_USED, len(idx_pool))):
+            total = sum(w[i] for i in idx_pool)
+            if total <= 0: break
+            r = random.uniform(0, total)
+            cum = 0
+            for i, idx in enumerate(idx_pool):
+                cum += w[idx]
+                if r <= cum:
+                    played.add(outfield[idx]["id"])
+                    idx_pool.pop(i)
+                    break
+    return played
 
 
 # ---------------------------------------------------------------------------
@@ -188,8 +251,11 @@ def run_tournament(teams, matches, by_fdid, players_by_team):
         final_round="group",
         group_pts=0, group_gd=0, group_gf=0,
     ) for t in teams}
-    # Per-player goal count
+    # Per-player accumulators
     player_goals = defaultdict(int)
+    player_assists = defaultdict(int)
+    player_wins_played = defaultdict(int)
+    player_cs_played = defaultdict(int)
     # Track which group each team is in
     team_group = {}
 
@@ -206,7 +272,8 @@ def run_tournament(teams, matches, by_fdid, players_by_team):
         team_group[tb["id"]] = m.get("group")
 
         ga, gb, _ = simulate_match(ta, tb, ko=False)
-        _record_match(ta, tb, ga, gb, team_stats, player_goals,
+        _record_match(ta, tb, ga, gb, team_stats, player_goals, player_assists,
+                      player_wins_played, player_cs_played,
                       players_by_team, is_group=True)
 
     # Compute group standings, determine advancers
@@ -230,7 +297,8 @@ def run_tournament(teams, matches, by_fdid, players_by_team):
         ta, tb = current[i], current[i + 1]
         ga, gb, pen = simulate_match(ta, tb, ko=True)
         winner, loser = _winner_loser(ta, tb, ga, gb, pen)
-        _record_match(ta, tb, ga, gb, team_stats, player_goals,
+        _record_match(ta, tb, ga, gb, team_stats, player_goals, player_assists,
+                      player_wins_played, player_cs_played,
                       players_by_team, is_group=False)
         team_stats[winner["id"]]["final_round"] = "R16"
         losers_at[loser["id"]] = "R32"
@@ -249,7 +317,8 @@ def run_tournament(teams, matches, by_fdid, players_by_team):
             ta, tb = current[i], current[i + 1]
             ga, gb, pen = simulate_match(ta, tb, ko=True)
             winner, loser = _winner_loser(ta, tb, ga, gb, pen)
-            _record_match(ta, tb, ga, gb, team_stats, player_goals,
+            _record_match(ta, tb, ga, gb, team_stats, player_goals, player_assists,
+                          player_wins_played, player_cs_played,
                           players_by_team, is_group=False)
             team_stats[winner["id"]]["final_round"] = next_label
             losers_at[loser["id"]] = round_label
@@ -265,18 +334,23 @@ def run_tournament(teams, matches, by_fdid, players_by_team):
     if len(semis_losers) == 2:
         ta, tb = semis_losers
         ga, gb, pen = simulate_match(ta, tb, ko=True)
-        _record_match(ta, tb, ga, gb, team_stats, player_goals,
+        _record_match(ta, tb, ga, gb, team_stats, player_goals, player_assists,
+                      player_wins_played, player_cs_played,
                       players_by_team, is_group=False)
         # 3rd-place doesn't change final_round (both stay at SF)
 
     return {
         "team_stats": team_stats,
         "player_goals": dict(player_goals),
+        "player_assists": dict(player_assists),
+        "player_wins_played": dict(player_wins_played),
+        "player_cs_played": dict(player_cs_played),
         "champion_id": champion["id"] if champion else None,
     }
 
 
-def _record_match(ta, tb, ga, gb, team_stats, player_goals,
+def _record_match(ta, tb, ga, gb, team_stats, player_goals, player_assists,
+                   player_wins_played, player_cs_played,
                    players_by_team, is_group):
     sa = team_stats[ta["id"]]
     sb = team_stats[tb["id"]]
@@ -292,20 +366,40 @@ def _record_match(ta, tb, ga, gb, team_stats, player_goals,
         sb["wins"] += 1; sa["losses"] += 1
         if is_group: sb["group_pts"] += 3
     else:
-        # Draw (in groups it stays a draw; in KO ET/PK winner advances but
-        # match record reads as a draw)
         sa["draws"] += 1; sb["draws"] += 1
         if is_group:
             sa["group_pts"] += 1; sb["group_pts"] += 1
-    if gb == 0:
-        sa["clean_sheets"] += 1
-    if ga == 0:
-        sb["clean_sheets"] += 1
-    # Attribute goals to players
-    for p in attribute_goals(ta, ga, players_by_team):
-        player_goals[p["id"]] += 1
-    for p in attribute_goals(tb, gb, players_by_team):
-        player_goals[p["id"]] += 1
+    cs_a = (gb == 0)
+    cs_b = (ga == 0)
+    if cs_a: sa["clean_sheets"] += 1
+    if cs_b: sb["clean_sheets"] += 1
+
+    # Pick effective lineups for this match (lineup-based scoring)
+    lineup_a = pick_lineup(ta, players_by_team)
+    lineup_b = pick_lineup(tb, players_by_team)
+
+    # Goals + assists
+    scorers_a = attribute_goals(ta, ga, players_by_team)
+    scorers_b = attribute_goals(tb, gb, players_by_team)
+    for p in scorers_a: player_goals[p["id"]] += 1
+    for p in scorers_b: player_goals[p["id"]] += 1
+    # Assists: ~60% of goals have an assist
+    assists_a = attribute_assists(ta, sum(1 for _ in scorers_a if random.random() < 0.6),
+                                    players_by_team, {p["id"] for p in scorers_a})
+    assists_b = attribute_assists(tb, sum(1 for _ in scorers_b if random.random() < 0.6),
+                                    players_by_team, {p["id"] for p in scorers_b})
+    for p in assists_a: player_assists[p["id"]] += 1
+    for p in assists_b: player_assists[p["id"]] += 1
+
+    # Lineup-based win share + CS
+    a_won = ga > gb
+    b_won = gb > ga
+    for pid in lineup_a:
+        if a_won: player_wins_played[pid] += 1
+        if cs_a:  player_cs_played[pid]   += 1
+    for pid in lineup_b:
+        if b_won: player_wins_played[pid] += 1
+        if cs_b:  player_cs_played[pid]   += 1
 
 
 def _winner_loser(ta, tb, ga, gb, pen):
@@ -376,7 +470,9 @@ def _determine_advancers(team_stats, team_group):
 # Scoring
 # ---------------------------------------------------------------------------
 
-def score_asset_points(teams_dicts, team_stats, players_by_team, player_goals):
+def score_asset_points(teams_dicts, team_stats, players_by_team,
+                        player_goals, player_assists,
+                        player_wins_played, player_cs_played):
     """Return (team_pts[id], player_pts[id])."""
     team_pts = {}
     for tid, stats in team_stats.items():
@@ -390,16 +486,15 @@ def score_asset_points(teams_dicts, team_stats, players_by_team, player_goals):
 
     player_pts = {}
     for tid, ps in players_by_team.items():
-        stats = team_stats.get(tid, {})
-        wins = stats.get("wins", 0)
-        cs = stats.get("clean_sheets", 0)
         for p in ps:
-            goals = player_goals.get(p["id"], 0)
             is_gk = p.get("position") == "GK"
             cs_rate = WEIGHTS["player_clean_sheet_gk"] if is_gk else WEIGHTS["player_clean_sheet_other"]
-            pts = (WEIGHTS["player_goal"] * goals
-                   + WEIGHTS["player_win_share"] * wins
-                   + cs_rate * cs)
+            pts = (
+                WEIGHTS["player_goal"]       * player_goals.get(p["id"], 0)
+                + WEIGHTS["player_assist"]    * player_assists.get(p["id"], 0)
+                + WEIGHTS["player_win_share"] * player_wins_played.get(p["id"], 0)
+                + cs_rate                     * player_cs_played.get(p["id"], 0)
+            )
             player_pts[p["id"]] = pts
     return team_pts, player_pts
 
@@ -759,7 +854,9 @@ def main() -> None:
 
         result = run_tournament(teams, matches, by_fdid, players_by_team)
         team_pts, player_pts = score_asset_points(
-            teams, result["team_stats"], players_by_team, result["player_goals"]
+            teams, result["team_stats"], players_by_team,
+            result["player_goals"], result["player_assists"],
+            result["player_wins_played"], result["player_cs_played"],
         )
         if result["champion_id"]:
             champion_counts[result["champion_id"]] += 1
