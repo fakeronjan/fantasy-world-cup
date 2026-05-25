@@ -152,7 +152,20 @@
   let teams = [];
   let players = [];
   let teamIdToFdId = {};
+  let teamHistory = {};
   const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
+  function teamHistoryBlurb(h) {
+    if (!h) return '';
+    const parts = [];
+    if (h.tag)                       parts.push(h.tag);
+    else if (h.titles > 0)           parts.push(`${h.titles}× Champion`);
+    else if (h.runnerUps > 0)        parts.push(`Runner-up ${h.runnerUpYears.length === 1 ? '(' + h.runnerUpYears[0] + ')' : '(' + h.runnerUps + '×)'}`);
+    else if (h.bestFinish && h.bestFinish !== '—') parts.push(h.bestFinish);
+    else if (h.tournaments === 0)    parts.push('WC debut');
+    parts.push(`${h.tournaments} WC${h.tournaments === 1 ? '' : 's'}`);
+    if (h.fifaRank) parts.push(`#${h.fifaRank} FIFA`);
+    return parts.join(' · ');
+  }
 
   async function loadCatalog() {
     try {
@@ -164,6 +177,10 @@
       const res = await fetch('./data/seed_players.json');
       players = await res.json();
     } catch { players = []; }
+    try {
+      const res = await fetch('./data/team_history.json');
+      teamHistory = await res.json();
+    } catch { teamHistory = {}; }
   }
 
   function getCatalogAsset(kind, id) {
@@ -234,9 +251,17 @@
       spent  += bought;
       totalP += pts;
 
+      // For team picks, show the WC history line; for player picks, show their team name.
+      const subline = pick.kind === 'team'
+        ? teamHistoryBlurb(teamHistory[pick.assetId])
+        : (catalog && catalog.teamName ? catalog.teamName : '');
+      const sublineHtml = subline
+        ? `<div class="muted" style="font-size:11px; margin-top:2px; padding-left:32px">${escape(subline)}</div>`
+        : '';
+
       return `<tr class="${eliminated ? 'eliminated' : ''}">
         <td class="rank-cell">${i + 1}</td>
-        <td class="team-cell">${flagImg}${escape(name)}${catalog && pick.kind === 'player' && catalog.teamName ? ` <span class="muted" style="font-size:11px">${escape(catalog.teamName)}</span>` : ''}</td>
+        <td class="team-cell">${flagImg}${escape(name)}${sublineHtml}</td>
         <td><span class="kind-badge kind-${pick.kind}">${pick.kind}</span></td>
         <td><span class="tier-badge tier-${tier}">T${tier}</span></td>
         <td class="num">$${bought}</td>

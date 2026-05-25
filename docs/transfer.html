@@ -197,6 +197,7 @@
   let workingRoster  = [];           // edits applied so far
   let teams = {};                    // teamSlug → team doc
   let players = {};                  // playerId → player doc
+  let teamHistory = {};
   let configDoc = null;
   const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
   const flagFor = (kind, asset) => {
@@ -204,6 +205,18 @@
     const fdId = kind === 'team' ? asset.fdId : (teams[asset.teamId]?.fdId);
     return fdId ? `<img class="flag-sm" src="${flagUrl(fdId)}" alt="" onerror="this.style.display='none'">` : '';
   };
+  function teamHistoryBlurb(h) {
+    if (!h) return '';
+    const parts = [];
+    if (h.tag)                       parts.push(h.tag);
+    else if (h.titles > 0)           parts.push(`${h.titles}× Champion`);
+    else if (h.runnerUps > 0)        parts.push(`Runner-up ${h.runnerUpYears.length === 1 ? '(' + h.runnerUpYears[0] + ')' : '(' + h.runnerUps + '×)'}`);
+    else if (h.bestFinish && h.bestFinish !== '—') parts.push(h.bestFinish);
+    else if (h.tournaments === 0)    parts.push('WC debut');
+    parts.push(`${h.tournaments} WC${h.tournaments === 1 ? '' : 's'}`);
+    if (h.fifaRank) parts.push(`#${h.fifaRank} FIFA`);
+    return parts.join(' · ');
+  }
 
   await new Promise(r => requestAnimationFrame(r));
   signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
@@ -251,6 +264,10 @@
     ts.forEach(d => teams[d.id] = { id: d.id, ...d.data() });
     const ps = await getDocs(collection(window.fwc.db, 'players'));
     ps.forEach(d => players[d.id] = { id: d.id, ...d.data() });
+    try {
+      const r = await fetch('./data/team_history.json');
+      teamHistory = await r.json();
+    } catch { teamHistory = {}; }
 
     // User doc (current roster)
     const u = await getDoc(doc(window.fwc.db, 'users', currentUser.uid));
@@ -290,12 +307,17 @@
       const cur   = a ? (a.currentPrice ?? a.basePrice ?? pick.purchasePrice) : pick.purchasePrice;
       const elim  = a ? !!a.eliminated : false;
       const pts   = a ? (a.totalPoints || 0) : (pick.points || 0);
-      return `<div class="item-row ${elim ? 'eliminated' : ''}">
-        <span class="kind-tag ${pick.kind}">${pick.kind === 'team' ? 'T' : 'P'}</span>
-        ${flagFor(pick.kind, a)}
-        <span class="item-name">${escape(name)} <span class="pts">${pts} pts</span></span>
+      const histLine = pick.kind === 'team' ? teamHistoryBlurb(teamHistory[pick.assetId]) : '';
+      const histHtml = histLine ? `<div class="muted" style="font-size:10px; margin-top:2px; padding-left:46px">${escape(histLine)}</div>` : '';
+      return `<div class="item-row ${elim ? 'eliminated' : ''}" style="flex-wrap:wrap">
+        <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:200px">
+          <span class="kind-tag ${pick.kind}">${pick.kind === 'team' ? 'T' : 'P'}</span>
+          ${flagFor(pick.kind, a)}
+          <span class="item-name">${escape(name)} <span class="pts">${pts} pts</span></span>
+        </div>
         <span class="item-price">$${cur}</span>
         <button data-sell-id="${escape(pick.assetId)}" data-sell-kind="${pick.kind}">Sell</button>
+        ${histHtml}
       </div>`;
     }).join('');
     portfolioList.querySelectorAll('[data-sell-id]').forEach(b => {
@@ -326,12 +348,17 @@
       const price = a.currentPrice ?? a.basePrice;
       const elim  = !!a.eliminated;
       const pts   = a.totalPoints || 0;
-      return `<div class="item-row ${elim ? 'eliminated' : ''}">
-        <span class="kind-tag ${a.kind}">${a.kind === 'team' ? 'T' : 'P'}</span>
-        ${flagFor(a.kind, a)}
-        <span class="item-name">${escape(a.name)} <span class="pts">${pts} pts</span></span>
+      const histLine = a.kind === 'team' ? teamHistoryBlurb(teamHistory[a.id]) : '';
+      const histHtml = histLine ? `<div class="muted" style="font-size:10px; margin-top:2px; padding-left:46px">${escape(histLine)}</div>` : '';
+      return `<div class="item-row ${elim ? 'eliminated' : ''}" style="flex-wrap:wrap">
+        <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:200px">
+          <span class="kind-tag ${a.kind}">${a.kind === 'team' ? 'T' : 'P'}</span>
+          ${flagFor(a.kind, a)}
+          <span class="item-name">${escape(a.name)} <span class="pts">${pts} pts</span></span>
+        </div>
         <span class="item-price">$${price}</span>
         <button data-buy-id="${escape(a.id)}" data-buy-kind="${a.kind}" ${elim ? 'disabled' : ''}>Buy</button>
+        ${histHtml}
       </div>`;
     }).join('');
     marketList.querySelectorAll('[data-buy-id]').forEach(b => {

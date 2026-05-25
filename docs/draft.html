@@ -225,8 +225,22 @@
   let roster = JSON.parse(localStorage.getItem("fwc_draft_roster") || "[]");
   let currentTab = "teams";
   let teamIdToFdId = {};   // slug → fdId, for flag URL lookup
+  let teamHistory = {};    // slug → history blob
 
   const flagUrl = (fdId) => `https://crests.football-data.org/${fdId}.svg`;
+
+  function teamHistoryBlurb(h) {
+    if (!h) return '';
+    const parts = [];
+    if (h.tag)                       parts.push(h.tag);
+    else if (h.titles > 0)           parts.push(`${h.titles}× Champion`);
+    else if (h.runnerUps > 0)        parts.push(`Runner-up ${h.runnerUpYears.length === 1 ? '(' + h.runnerUpYears[0] + ')' : '(' + h.runnerUps + '×)'}`);
+    else if (h.bestFinish && h.bestFinish !== '—') parts.push(h.bestFinish);
+    else if (h.tournaments === 0)    parts.push('WC debut');
+    parts.push(`${h.tournaments} WC${h.tournaments === 1 ? '' : 's'}`);
+    if (h.fifaRank) parts.push(`#${h.fifaRank} FIFA`);
+    return parts.join(' · ');
+  }
 
   // ---- DOM refs ----------------------------------------------------------
   const userLine    = document.getElementById('userLine');
@@ -262,8 +276,13 @@
       const res2 = await fetch('./data/seed_players.json');
       players = await res2.json();
     } catch (e) {
-      // Player data may not exist yet — that's fine, draft can be teams-only
       players = [];
+    }
+    try {
+      const res3 = await fetch('./data/team_history.json');
+      teamHistory = await res3.json();
+    } catch (e) {
+      teamHistory = {};
     }
   }
 
@@ -373,9 +392,16 @@
       const fdId = kind === 'team' ? a.fdId : teamIdToFdId[a.teamId];
       const teamLabel = kind === 'player' && a.teamName ? ` <span class="muted" style="font-size:11px">${escape(a.teamName)}</span>` : '';
       const flagImg = fdId ? `<img class="flag" src="${flagUrl(fdId)}" alt="" onerror="this.style.display='none'">` : '';
+      // History blurb (teams only — players show their team name already)
+      const histBlurb = kind === 'team'
+        ? teamHistoryBlurb(teamHistory[a.id])
+        : '';
+      const histLine = histBlurb
+        ? `<div class="muted" style="font-size:11px; margin-top:2px; padding-left:32px">${escape(histBlurb)}</div>`
+        : '';
       return `<tr class="${owned ? 'in-roster' : ''}">
         <td class="rank-cell">${i + 1}</td>
-        <td class="team-cell">${flagImg}${escape(a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}${teamLabel}</td>
+        <td class="team-cell">${flagImg}${escape(a.name)}${a.position ? ` <span class="muted" style="font-size:11px">${escape(a.position)}</span>` : ''}${teamLabel}${histLine}</td>
         <td><span class="tier-badge tier-${a.tier}">T${a.tier}</span></td>
         <td class="num">$${a.basePrice}</td>
         <td><button class="add-btn ${owned ? 'in-roster' : ''}" data-kind="${kind}" data-id="${escape(a.id)}" ${owned ? '' : (canAdd ? '' : 'disabled')}>
