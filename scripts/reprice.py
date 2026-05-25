@@ -4,13 +4,15 @@ Runs after each round transition (group → R32 → R16 → QF → SF → F). Fo
 every surviving asset, warm-starts the Monte Carlo from the current
 bracket state, runs N trials, and computes:
 
-  marketValue = mean(future_points_owning_this_asset) / TARGET_ROI
-  buyPrice    = ceil(marketValue * 1.10)         # 10% premium over fair
-  sellPrice   = floor(marketValue * 0.90)        # 10% discount
+  marketValue = round(mean(future_pts) / TARGET_ROI)  # whole dollars
+  buyPrice    = round(marketValue * 1.10)             # 10% premium, rounded
+  sellPrice   = round(marketValue * 0.90)             # 10% discount, rounded
+  # …with a forced minimum \$1 spread on either side so the market always
+  # has a real bid-ask gap even at low MVs.
 
 Eliminated assets settle at:
   marketValue = 0
-  sellPrice   = floor(last_marketValue * 0.25)   # 25% liquidation refund
+  sellPrice   = round(last_marketValue * 0.25)        # 25% liquidation
   buyPrice    = N/A (cannot buy eliminated assets)
 
 This is the *pricing engine* only — Firestore I/O and UI wiring come in
@@ -37,6 +39,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from simulate_2026 import (
     WEIGHTS, BONUS_BY_ROUND, ADVANCEMENT_ORDER,
@@ -53,6 +56,27 @@ ELIM_REFUND_RATE = 0.25   # 25% liquidation on eliminated picks
                           # an asset's value has already been realized as
                           # points before it's eliminated — refund is a small
                           # consolation, not a recovery.)
+
+
+def round_half_up(x: float) -> int:
+    """Round to nearest integer, halves go UP. (Python's default round()
+    uses banker's rounding which surprises non-engineers — e.g. 2.5→2.
+    For a fantasy game UI, we want 2.5→3 always.)"""
+    return math.floor(x + 0.5)
+
+
+def derive_market_prices(market_value: int) -> tuple[int, int]:
+    """Compute (buyPrice, sellPrice) from a rounded marketValue.
+    Both are rounded to whole dollars from MV ± 10% vig, with a forced
+    minimum $1 spread either side so the market never has a zero gap."""
+    buy  = max(market_value + 1, round_half_up(market_value * VIG_BUY))
+    sell = max(1, min(market_value - 1, round_half_up(market_value * VIG_SELL)))
+    return buy, sell
+
+
+def liquidation_price(last_market_value: int) -> int:
+    """Refund paid out when an asset is eliminated. Rounded to whole dollar."""
+    return max(0, round_half_up(last_market_value * ELIM_REFUND_RATE))
 
 
 def simulate_remaining(advancers, start_round, players_by_team):
@@ -173,14 +197,15 @@ def reprice(advancers, start_round, players_by_team, runs=1000, seed=42):
 
     for t in advancers:
         mean_fp = team_acc[t["id"]] / runs
-        mv = mean_fp / TARGET_ROI
+        market_value = max(1, round_half_up(mean_fp / TARGET_ROI))
+        buy, sell = derive_market_prices(market_value)
         prices[t["id"]] = {
             "kind": "team",
             "name": t["name"],
             "meanFuturePoints": round(mean_fp, 2),
-            "marketValue":  max(1, round(mv)),
-            "buyPrice":     max(1, math.ceil(mv * VIG_BUY)),
-            "sellPrice":    max(1, math.floor(mv * VIG_SELL)),
+            "marketValue": market_value,
+            "buyPrice":    buy,
+            "sellPrice":   sell,
         }
 
     for tid, ps in players_by_team.items():
@@ -188,15 +213,16 @@ def reprice(advancers, start_round, players_by_team, runs=1000, seed=42):
             continue
         for p in ps:
             mean_fp = player_acc[p["id"]] / runs
-            mv = mean_fp / TARGET_ROI
+            market_value = max(1, round_half_up(mean_fp / TARGET_ROI))
+            buy, sell = derive_market_prices(market_value)
             prices[p["id"]] = {
                 "kind": "player",
                 "name": p["name"],
                 "team": tid,
                 "meanFuturePoints": round(mean_fp, 2),
-                "marketValue":  max(1, round(mv)),
-                "buyPrice":     max(1, math.ceil(mv * VIG_BUY)),
-                "sellPrice":    max(1, math.floor(mv * VIG_SELL)),
+                "marketValue": market_value,
+                "buyPrice":    buy,
+                "sellPrice":   sell,
             }
 
     return prices
@@ -250,7 +276,7 @@ def write_prices_to_firestore(db, prices, advancers, all_teams):
         else:
             # Eliminated team — liquidation refund
             last_mv = t.get("marketValue") or t.get("currentPrice") or t.get("basePrice", 0)
-            liquidation = max(0, math.floor(last_mv * ELIM_REFUND_RATE))
+            liquidation = liquidation_price(last_mv)
             teams_batch.set(tdoc.reference, {
                 "marketValue":  0,
                 "buyPrice":     None,
@@ -280,7 +306,7 @@ def write_prices_to_firestore(db, prices, advancers, all_teams):
             n_p_alive += 1
         else:
             last_mv = p.get("marketValue") or p.get("currentPrice") or p.get("basePrice", 0)
-            liquidation = max(0, math.floor(last_mv * ELIM_REFUND_RATE))
+            liquidation = liquidation_price(last_mv)
             players_batch.set(pdoc.reference, {
                 "marketValue":  0,
                 "buyPrice":     None,

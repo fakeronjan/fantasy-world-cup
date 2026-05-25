@@ -190,9 +190,12 @@
           <li><span class="key paid">Paid</span> what you spent when you drafted or bought this pick. Locked in.</li>
           <li><span class="key earn">Earned</span> points this asset has scored — yours forever.</li>
           <li><span class="key mv">MV</span> the asset's current "fair" market value (E[remaining points] ÷ 2).</li>
-          <li><span class="key sell">Sell</span> what the market pays you to sell (MV − 10% vig).</li>
-          <li><span class="key buy">Buy</span> what the market charges to acquire (MV + 10% vig).</li>
+          <li><span class="key sell">Sell</span> what the market pays you to sell (MV − 10% vig, rounded to nearest $).</li>
+          <li><span class="key buy">Buy</span> what the market charges to acquire (MV + 10% vig, rounded to nearest $).</li>
         </ul>
+        <p style="margin-top:8px"><strong>Rounding:</strong> all prices are whole dollars. We round to nearest
+           (halves go up), with a forced minimum $1 spread either side of MV — so even at low MVs there's
+           always at least a $2 round-trip cost. Example: MV $6 → Buy $7, Sell $5.</p>
         <p><strong>Why "Paid" can be much higher than "MV":</strong> Initial draft prices
            cover the <em>whole tournament's</em> expected points. Mid-tournament prices
            cover only what's <em>left</em>. So Spain's MV after groups will look small —
