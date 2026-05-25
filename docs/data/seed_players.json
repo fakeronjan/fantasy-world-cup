@@ -42,15 +42,26 @@
     "club": "Inter Miami CF"
   },
   {
-    "id": "45681-argentina",
-    "fdId": 45681,
-    "name": "Alexis Mac Allister",
+    "id": "98571-argentina",
+    "fdId": 98571,
+    "name": "Julián Álvarez",
     "teamId": "argentina",
     "teamName": "Argentina",
-    "position": "MID",
-    "tier": 2,
-    "basePrice": 4,
-    "club": "Liverpool"
+    "position": "FWD",
+    "tier": 1,
+    "basePrice": 6,
+    "club": "Atleti"
+  },
+  {
+    "id": "3220-argentina",
+    "fdId": 3220,
+    "name": "Lautaro Martínez",
+    "teamId": "argentina",
+    "teamName": "Argentina",
+    "position": "FWD",
+    "tier": 1,
+    "basePrice": 6,
+    "club": "Inter"
   },
   {
     "id": "3141-argentina",
@@ -75,17 +86,6 @@
     "club": "Chelsea"
   },
   {
-    "id": "98571-argentina",
-    "fdId": 98571,
-    "name": "Julián Álvarez",
-    "teamId": "argentina",
-    "teamName": "Argentina",
-    "position": "FWD",
-    "tier": 2,
-    "basePrice": 5,
-    "club": "Atleti"
-  },
-  {
     "id": "3214-argentina",
     "fdId": 3214,
     "name": "Leandro Paredes",
@@ -95,6 +95,28 @@
     "tier": 3,
     "basePrice": 5,
     "club": "AS Roma"
+  },
+  {
+    "id": "45681-argentina",
+    "fdId": 45681,
+    "name": "Alexis Mac Allister",
+    "teamId": "argentina",
+    "teamName": "Argentina",
+    "position": "MID",
+    "tier": 2,
+    "basePrice": 4,
+    "club": "Liverpool"
+  },
+  {
+    "id": "6-argentina",
+    "fdId": 6,
+    "name": "Géronimo Rulli",
+    "teamId": "argentina",
+    "teamName": "Argentina",
+    "position": "GK",
+    "tier": 4,
+    "basePrice": 4,
+    "club": "Marseille"
   },
   {
     "id": "3212-argentina",
@@ -137,17 +159,6 @@
     "position": "MID",
     "tier": 3,
     "basePrice": 4
-  },
-  {
-    "id": "6-argentina",
-    "fdId": 6,
-    "name": "Géronimo Rulli",
-    "teamId": "argentina",
-    "teamName": "Argentina",
-    "position": "GK",
-    "tier": 4,
-    "basePrice": 4,
-    "club": "Marseille"
   },
   {
     "id": "46554-argentina",
@@ -312,6 +323,17 @@
     "club": "Napoli"
   },
   {
+    "id": "8984-belgium",
+    "fdId": 8984,
+    "name": "Leandro Trossard",
+    "teamId": "belgium",
+    "teamName": "Belgium",
+    "position": "FWD",
+    "tier": 3,
+    "basePrice": 5,
+    "club": "Arsenal"
+  },
+  {
     "id": "3662-belgium",
     "fdId": 3662,
     "name": "Romelu Lukaku",
@@ -330,41 +352,8 @@
     "teamName": "Belgium",
     "position": "GK",
     "tier": 2,
-    "basePrice": 4,
-    "club": "Real Madrid"
-  },
-  {
-    "id": "3656-belgium",
-    "fdId": 3656,
-    "name": "Axel Witsel",
-    "teamId": "belgium",
-    "teamName": "Belgium",
-    "position": "DEF",
-    "tier": 3,
-    "basePrice": 4,
-    "club": "Girona"
-  },
-  {
-    "id": "8984-belgium",
-    "fdId": 8984,
-    "name": "Leandro Trossard",
-    "teamId": "belgium",
-    "teamName": "Belgium",
-    "position": "FWD",
-    "tier": 3,
     "basePrice": 5,
-    "club": "Arsenal"
-  },
-  {
-    "id": "3658-belgium",
-    "fdId": 3658,
-    "name": "Youri Tielemans",
-    "teamId": "belgium",
-    "teamName": "Belgium",
-    "position": "MID",
-    "tier": 3,
-    "basePrice": 4,
-    "club": "Aston Villa"
+    "club": "Real Madrid"
   },
   {
     "id": "114024-belgium",
@@ -378,6 +367,17 @@
     "club": "Aston Villa"
   },
   {
+    "id": "3656-belgium",
+    "fdId": 3656,
+    "name": "Axel Witsel",
+    "teamId": "belgium",
+    "teamName": "Belgium",
+    "position": "DEF",
+    "tier": 3,
+    "basePrice": 4,
+    "club": "Girona"
+  },
+  {
     "id": "129947-belgium",
     "fdId": 129947,
     "name": "Charles De Ketelaere",
@@ -387,6 +387,17 @@
     "tier": 4,
     "basePrice": 4,
     "club": "Atalanta"
+  },
+  {
+    "id": "3658-belgium",
+    "fdId": 3658,
+    "name": "Youri Tielemans",
+    "teamId": "belgium",
+    "teamName": "Belgium",
+    "position": "MID",
+    "tier": 3,
+    "basePrice": 4,
+    "club": "Aston Villa"
   },
   {
     "id": "17645-bosnia",
@@ -442,28 +453,6 @@
     "club": "Liverpool"
   },
   {
-    "id": "3231-brazil",
-    "fdId": 3231,
-    "name": "Casemiro",
-    "teamId": "brazil",
-    "teamName": "Brazil",
-    "position": "MID",
-    "tier": 2,
-    "basePrice": 4,
-    "club": "Man United"
-  },
-  {
-    "id": "37428-brazil",
-    "fdId": 37428,
-    "name": "Raphinha",
-    "teamId": "brazil",
-    "teamName": "Brazil",
-    "position": "FWD",
-    "tier": 2,
-    "basePrice": 5,
-    "club": "Barça"
-  },
-  {
     "id": "1684-brazil",
     "fdId": 1684,
     "name": "Bruno Guimarães",
@@ -495,6 +484,28 @@
     "tier": 3,
     "basePrice": 5,
     "club": "Olympique Lyon"
+  },
+  {
+    "id": "37428-brazil",
+    "fdId": 37428,
+    "name": "Raphinha",
+    "teamId": "brazil",
+    "teamName": "Brazil",
+    "position": "FWD",
+    "tier": 2,
+    "basePrice": 5,
+    "club": "Barça"
+  },
+  {
+    "id": "3231-brazil",
+    "fdId": 3231,
+    "name": "Casemiro",
+    "teamId": "brazil",
+    "teamName": "Brazil",
+    "position": "MID",
+    "tier": 2,
+    "basePrice": 4,
+    "club": "Man United"
   },
   {
     "id": "23128-brazil",
@@ -603,6 +614,16 @@
     "basePrice": 3
   },
   {
+    "id": "202797-colombia",
+    "fdId": 202797,
+    "name": "Carlos Andrés Gómez",
+    "teamId": "colombia",
+    "teamName": "Colombia",
+    "position": "FWD",
+    "tier": 4,
+    "basePrice": 5
+  },
+  {
     "id": "365-colombia",
     "fdId": 365,
     "name": "James Rodríguez",
@@ -622,16 +643,6 @@
     "tier": 2,
     "basePrice": 4,
     "club": "Bayern"
-  },
-  {
-    "id": "202797-colombia",
-    "fdId": 202797,
-    "name": "Carlos Andrés Gómez",
-    "teamId": "colombia",
-    "teamName": "Colombia",
-    "position": "FWD",
-    "tier": 4,
-    "basePrice": 5
   },
   {
     "id": "106838-congo-dr",
@@ -665,17 +676,6 @@
     "basePrice": 3
   },
   {
-    "id": "43-croatia",
-    "fdId": 43,
-    "name": "Luka Modrić",
-    "teamId": "croatia",
-    "teamName": "Croatia",
-    "position": "MID",
-    "tier": 2,
-    "basePrice": 5,
-    "club": "Milan"
-  },
-  {
     "id": "318-croatia",
     "fdId": 318,
     "name": "Andrej Kramarić",
@@ -687,6 +687,17 @@
     "club": "Hoffenheim"
   },
   {
+    "id": "43-croatia",
+    "fdId": 43,
+    "name": "Luka Modrić",
+    "teamId": "croatia",
+    "teamName": "Croatia",
+    "position": "MID",
+    "tier": 2,
+    "basePrice": 5,
+    "club": "Milan"
+  },
+  {
     "id": "3548-croatia",
     "fdId": 3548,
     "name": "Dominik Livaković",
@@ -695,6 +706,17 @@
     "position": "GK",
     "tier": 3,
     "basePrice": 4
+  },
+  {
+    "id": "2004-croatia",
+    "fdId": 2004,
+    "name": "Ivan Perišić",
+    "teamId": "croatia",
+    "teamName": "Croatia",
+    "position": "FWD",
+    "tier": 4,
+    "basePrice": 4,
+    "club": "PSV"
   },
   {
     "id": "122266-croatia",
@@ -717,17 +739,6 @@
     "tier": 3,
     "basePrice": 3,
     "club": "Man City"
-  },
-  {
-    "id": "2004-croatia",
-    "fdId": 2004,
-    "name": "Ivan Perišić",
-    "teamId": "croatia",
-    "teamName": "Croatia",
-    "position": "FWD",
-    "tier": 4,
-    "basePrice": 4,
-    "club": "PSV"
   },
   {
     "id": "7437-curacao",
@@ -794,6 +805,37 @@
     "club": "Hoffenheim"
   },
   {
+    "id": "40009-ecuador",
+    "fdId": 40009,
+    "name": "Enner Valencia",
+    "teamId": "ecuador",
+    "teamName": "Ecuador",
+    "position": "FWD",
+    "tier": 3,
+    "basePrice": 3
+  },
+  {
+    "id": "24740-ecuador",
+    "fdId": 24740,
+    "name": "Félix Torres",
+    "teamId": "ecuador",
+    "teamName": "Ecuador",
+    "position": "DEF",
+    "tier": 4,
+    "basePrice": 3,
+    "club": "Internacional"
+  },
+  {
+    "id": "24545-ecuador",
+    "fdId": 24545,
+    "name": "Hernán Galíndez",
+    "teamId": "ecuador",
+    "teamName": "Ecuador",
+    "position": "GK",
+    "tier": 4,
+    "basePrice": 3
+  },
+  {
     "id": "215510-ecuador",
     "fdId": 215510,
     "name": "Jeremy",
@@ -803,16 +845,6 @@
     "tier": 2,
     "basePrice": 3,
     "club": "Stuttgart"
-  },
-  {
-    "id": "40009-ecuador",
-    "fdId": 40009,
-    "name": "Enner Valencia",
-    "teamId": "ecuador",
-    "teamName": "Ecuador",
-    "position": "FWD",
-    "tier": 3,
-    "basePrice": 3
   },
   {
     "id": "121103-ecuador",
@@ -848,25 +880,15 @@
     "club": "Arsenal"
   },
   {
-    "id": "24740-ecuador",
-    "fdId": 24740,
-    "name": "Félix Torres",
-    "teamId": "ecuador",
-    "teamName": "Ecuador",
-    "position": "DEF",
-    "tier": 4,
-    "basePrice": 3,
-    "club": "Internacional"
-  },
-  {
-    "id": "24545-ecuador",
-    "fdId": 24545,
-    "name": "Hernán Galíndez",
-    "teamId": "ecuador",
-    "teamName": "Ecuador",
-    "position": "GK",
-    "tier": 4,
-    "basePrice": 3
+    "id": "3754-egypt",
+    "fdId": 3754,
+    "name": "Mohamed Salah",
+    "teamId": "egypt",
+    "teamName": "Egypt",
+    "position": "FWD",
+    "tier": 2,
+    "basePrice": 5,
+    "club": "Liverpool"
   },
   {
     "id": "114672-egypt",
@@ -880,17 +902,6 @@
     "club": "Nantes"
   },
   {
-    "id": "3759-egypt",
-    "fdId": 3759,
-    "name": "Trezeguet",
-    "teamId": "egypt",
-    "teamName": "Egypt",
-    "position": "MID",
-    "tier": 3,
-    "basePrice": 3,
-    "club": "Trabzonspor"
-  },
-  {
     "id": "83057-egypt",
     "fdId": 83057,
     "name": "Mohamed Hany",
@@ -900,6 +911,17 @@
     "tier": 4,
     "basePrice": 3,
     "club": "Al Ahly"
+  },
+  {
+    "id": "3759-egypt",
+    "fdId": 3759,
+    "name": "Trezeguet",
+    "teamId": "egypt",
+    "teamName": "Egypt",
+    "position": "MID",
+    "tier": 3,
+    "basePrice": 3,
+    "club": "Trabzonspor"
   },
   {
     "id": "125010-england",
@@ -913,6 +935,17 @@
     "club": "Real Madrid"
   },
   {
+    "id": "8004-england",
+    "fdId": 8004,
+    "name": "Harry Kane",
+    "teamId": "england",
+    "teamName": "England",
+    "position": "FWD",
+    "tier": 1,
+    "basePrice": 6,
+    "club": "Bayern"
+  },
+  {
     "id": "7888-england",
     "fdId": 7888,
     "name": "Phil Foden",
@@ -922,6 +955,17 @@
     "tier": 1,
     "basePrice": 6,
     "club": "Man City"
+  },
+  {
+    "id": "7848-england",
+    "fdId": 7848,
+    "name": "Anthony Gordon",
+    "teamId": "england",
+    "teamName": "England",
+    "position": "FWD",
+    "tier": 3,
+    "basePrice": 5,
+    "club": "Newcastle"
   },
   {
     "id": "99813-england",
@@ -957,28 +1001,6 @@
     "club": "Arsenal"
   },
   {
-    "id": "8004-england",
-    "fdId": 8004,
-    "name": "Harry Kane",
-    "teamId": "england",
-    "teamName": "England",
-    "position": "FWD",
-    "tier": 2,
-    "basePrice": 5,
-    "club": "Bayern"
-  },
-  {
-    "id": "7848-england",
-    "fdId": 7848,
-    "name": "Anthony Gordon",
-    "teamId": "england",
-    "teamName": "England",
-    "position": "FWD",
-    "tier": 3,
-    "basePrice": 5,
-    "club": "Newcastle"
-  },
-  {
     "id": "3313-england",
     "fdId": 3313,
     "name": "John Stones",
@@ -987,28 +1009,6 @@
     "position": "DEF",
     "tier": 3,
     "basePrice": 5,
-    "club": "Man City"
-  },
-  {
-    "id": "3309-england",
-    "fdId": 3309,
-    "name": "Jordan Pickford",
-    "teamId": "england",
-    "teamName": "England",
-    "position": "GK",
-    "tier": 3,
-    "basePrice": 3,
-    "club": "Everton"
-  },
-  {
-    "id": "118489-england",
-    "fdId": 118489,
-    "name": "Marc Guéhi",
-    "teamId": "england",
-    "teamName": "England",
-    "position": "DEF",
-    "tier": 3,
-    "basePrice": 4,
     "club": "Man City"
   },
   {
@@ -1023,6 +1023,28 @@
     "club": "Crystal Palace"
   },
   {
+    "id": "118489-england",
+    "fdId": 118489,
+    "name": "Marc Guéhi",
+    "teamId": "england",
+    "teamName": "England",
+    "position": "DEF",
+    "tier": 3,
+    "basePrice": 4,
+    "club": "Man City"
+  },
+  {
+    "id": "3309-england",
+    "fdId": 3309,
+    "name": "Jordan Pickford",
+    "teamId": "england",
+    "teamName": "England",
+    "position": "GK",
+    "tier": 3,
+    "basePrice": 3,
+    "club": "Everton"
+  },
+  {
     "id": "3374-france",
     "fdId": 3374,
     "name": "Kylian Mbappé",
@@ -1032,6 +1054,28 @@
     "tier": 1,
     "basePrice": 9,
     "club": "Real Madrid"
+  },
+  {
+    "id": "3373-france",
+    "fdId": 3373,
+    "name": "Ousmane Dembélé",
+    "teamId": "france",
+    "teamName": "France",
+    "position": "FWD",
+    "tier": 1,
+    "basePrice": 6,
+    "club": "PSG"
+  },
+  {
+    "id": "3368-france",
+    "fdId": 3368,
+    "name": "Adrien Rabiot",
+    "teamId": "france",
+    "teamName": "France",
+    "position": "MID",
+    "tier": 3,
+    "basePrice": 5,
+    "club": "Milan"
   },
   {
     "id": "8514-france",
@@ -1054,28 +1098,6 @@
     "tier": 2,
     "basePrice": 5,
     "club": "Real Madrid"
-  },
-  {
-    "id": "3373-france",
-    "fdId": 3373,
-    "name": "Ousmane Dembélé",
-    "teamId": "france",
-    "teamName": "France",
-    "position": "FWD",
-    "tier": 2,
-    "basePrice": 5,
-    "club": "PSG"
-  },
-  {
-    "id": "3368-france",
-    "fdId": 3368,
-    "name": "Adrien Rabiot",
-    "teamId": "france",
-    "teamName": "France",
-    "position": "MID",
-    "tier": 3,
-    "basePrice": 5,
-    "club": "Milan"
   },
   {
     "id": "8685-france",
@@ -1121,16 +1143,6 @@
     "club": "Tottenham"
   },
   {
-    "id": "71-france",
-    "fdId": 71,
-    "name": "Theo Hernández",
-    "teamId": "france",
-    "teamName": "France",
-    "position": "DEF",
-    "tier": 3,
-    "basePrice": 3
-  },
-  {
     "id": "177522-france",
     "fdId": 177522,
     "name": "Desire Doue",
@@ -1153,14 +1165,24 @@
     "club": "PSG"
   },
   {
+    "id": "71-france",
+    "fdId": 71,
+    "name": "Theo Hernández",
+    "teamId": "france",
+    "teamName": "France",
+    "position": "DEF",
+    "tier": 3,
+    "basePrice": 3
+  },
+  {
     "id": "19334-germany",
     "fdId": 19334,
     "name": "Florian Wirtz",
     "teamId": "germany",
     "teamName": "Germany",
     "position": "MID",
-    "tier": 2,
-    "basePrice": 5,
+    "tier": 1,
+    "basePrice": 6,
     "club": "Liverpool"
   },
   {
@@ -1170,8 +1192,8 @@
     "teamId": "germany",
     "teamName": "Germany",
     "position": "MID",
-    "tier": 2,
-    "basePrice": 5,
+    "tier": 1,
+    "basePrice": 6,
     "club": "Bayern"
   },
   {
@@ -1182,7 +1204,7 @@
     "teamName": "Germany",
     "position": "DEF",
     "tier": 2,
-    "basePrice": 4,
+    "basePrice": 5,
     "club": "Bayern"
   },
   {
@@ -1195,17 +1217,6 @@
     "tier": 2,
     "basePrice": 5,
     "club": "Arsenal"
-  },
-  {
-    "id": "3177-germany",
-    "fdId": 3177,
-    "name": "Antonio Rüdiger",
-    "teamId": "germany",
-    "teamName": "Germany",
-    "position": "DEF",
-    "tier": 3,
-    "basePrice": 4,
-    "club": "Real Madrid"
   },
   {
     "id": "3184-germany",
@@ -1241,15 +1252,15 @@
     "club": "Bayern"
   },
   {
-    "id": "9905-germany",
-    "fdId": 9905,
-    "name": "David Raum",
+    "id": "3177-germany",
+    "fdId": 3177,
+    "name": "Antonio Rüdiger",
     "teamId": "germany",
     "teamName": "Germany",
     "position": "DEF",
-    "tier": 4,
-    "basePrice": 3,
-    "club": "RB Leipzig"
+    "tier": 3,
+    "basePrice": 4,
+    "club": "Real Madrid"
   },
   {
     "id": "8273-germany",
@@ -1261,6 +1272,28 @@
     "tier": 4,
     "basePrice": 4,
     "club": "Brighton Hove"
+  },
+  {
+    "id": "9905-germany",
+    "fdId": 9905,
+    "name": "David Raum",
+    "teamId": "germany",
+    "teamName": "Germany",
+    "position": "DEF",
+    "tier": 4,
+    "basePrice": 3,
+    "club": "RB Leipzig"
+  },
+  {
+    "id": "32629-ghana",
+    "fdId": 32629,
+    "name": "Iñaki Williams",
+    "teamId": "ghana",
+    "teamName": "Ghana",
+    "position": "FWD",
+    "tier": 2,
+    "basePrice": 4,
+    "club": "Athletic"
   },
   {
     "id": "7984-ghana",
@@ -1385,6 +1418,16 @@
     "basePrice": 3
   },
   {
+    "id": "1747-ivory-coast",
+    "fdId": 1747,
+    "name": "Franck Kessié",
+    "teamId": "ivory-coast",
+    "teamName": "Ivory Coast",
+    "position": "MID",
+    "tier": 4,
+    "basePrice": 3
+  },
+  {
     "id": "8412-ivory-coast",
     "fdId": 8412,
     "name": "Nicolas Pépé",
@@ -1394,16 +1437,6 @@
     "tier": 3,
     "basePrice": 3,
     "club": "Villarreal"
-  },
-  {
-    "id": "1747-ivory-coast",
-    "fdId": 1747,
-    "name": "Franck Kessié",
-    "teamId": "ivory-coast",
-    "teamName": "Ivory Coast",
-    "position": "MID",
-    "tier": 4,
-    "basePrice": 3
   },
   {
     "id": "166249-ivory-coast",
@@ -1428,6 +1461,17 @@
     "club": "Galatasaray"
   },
   {
+    "id": "119460-japan",
+    "fdId": 119460,
+    "name": "Ayase Ueda",
+    "teamId": "japan",
+    "teamName": "Japan",
+    "position": "FWD",
+    "tier": 4,
+    "basePrice": 5,
+    "club": "Feyenoord"
+  },
+  {
     "id": "6716-japan",
     "fdId": 6716,
     "name": "Daichi Kamada",
@@ -1447,6 +1491,27 @@
     "position": "FWD",
     "tier": 3,
     "basePrice": 5
+  },
+  {
+    "id": "49080-japan",
+    "fdId": 49080,
+    "name": "Junya Ito",
+    "teamId": "japan",
+    "teamName": "Japan",
+    "position": "FWD",
+    "tier": 4,
+    "basePrice": 5
+  },
+  {
+    "id": "132707-japan",
+    "fdId": 132707,
+    "name": "Kaoru Mitoma",
+    "teamId": "japan",
+    "teamName": "Japan",
+    "position": "FWD",
+    "tier": 2,
+    "basePrice": 5,
+    "club": "Brighton Hove"
   },
   {
     "id": "48555-japan",
@@ -1469,27 +1534,6 @@
     "tier": 3,
     "basePrice": 5,
     "club": "Liverpool"
-  },
-  {
-    "id": "119460-japan",
-    "fdId": 119460,
-    "name": "Ayase Ueda",
-    "teamId": "japan",
-    "teamName": "Japan",
-    "position": "FWD",
-    "tier": 4,
-    "basePrice": 5,
-    "club": "Feyenoord"
-  },
-  {
-    "id": "49080-japan",
-    "fdId": 49080,
-    "name": "Junya Ito",
-    "teamId": "japan",
-    "teamName": "Japan",
-    "position": "FWD",
-    "tier": 4,
-    "basePrice": 5
   },
   {
     "id": "48902-japan",
@@ -1574,16 +1618,6 @@
     "club": "PSG"
   },
   {
-    "id": "3694-morocco",
-    "fdId": 3694,
-    "name": "Yassine Bounou",
-    "teamId": "morocco",
-    "teamName": "Morocco",
-    "position": "GK",
-    "tier": 3,
-    "basePrice": 3
-  },
-  {
     "id": "189873-morocco",
     "fdId": 189873,
     "name": "Bilal El Khannouss",
@@ -1606,26 +1640,14 @@
     "club": "Man United"
   },
   {
-    "id": "7459-netherlands",
-    "fdId": 7459,
-    "name": "Cody Gakpo",
-    "teamId": "netherlands",
-    "teamName": "Netherlands",
-    "position": "FWD",
-    "tier": 2,
-    "basePrice": 5,
-    "club": "Liverpool"
-  },
-  {
-    "id": "7869-netherlands",
-    "fdId": 7869,
-    "name": "Virgil van Dijk",
-    "teamId": "netherlands",
-    "teamName": "Netherlands",
-    "position": "DEF",
-    "tier": 2,
-    "basePrice": 4,
-    "club": "Liverpool"
+    "id": "3694-morocco",
+    "fdId": 3694,
+    "name": "Yassine Bounou",
+    "teamId": "morocco",
+    "teamName": "Morocco",
+    "position": "GK",
+    "tier": 3,
+    "basePrice": 3
   },
   {
     "id": "126870-netherlands",
@@ -1639,6 +1661,17 @@
     "club": "Brighton Hove"
   },
   {
+    "id": "7459-netherlands",
+    "fdId": 7459,
+    "name": "Cody Gakpo",
+    "teamId": "netherlands",
+    "teamName": "Netherlands",
+    "position": "FWD",
+    "tier": 2,
+    "basePrice": 5,
+    "club": "Liverpool"
+  },
+  {
     "id": "7417-netherlands",
     "fdId": 7417,
     "name": "Denzel Dumfries",
@@ -1648,6 +1681,17 @@
     "tier": 3,
     "basePrice": 5,
     "club": "Inter"
+  },
+  {
+    "id": "7457-netherlands",
+    "fdId": 7457,
+    "name": "Donyell Malen",
+    "teamId": "netherlands",
+    "teamName": "Netherlands",
+    "position": "FWD",
+    "tier": 4,
+    "basePrice": 5,
+    "club": "Roma"
   },
   {
     "id": "7696-netherlands",
@@ -1661,15 +1705,15 @@
     "club": "Man City"
   },
   {
-    "id": "7457-netherlands",
-    "fdId": 7457,
-    "name": "Donyell Malen",
+    "id": "7869-netherlands",
+    "fdId": 7869,
+    "name": "Virgil van Dijk",
     "teamId": "netherlands",
     "teamName": "Netherlands",
-    "position": "FWD",
-    "tier": 4,
+    "position": "DEF",
+    "tier": 2,
     "basePrice": 5,
-    "club": "Roma"
+    "club": "Liverpool"
   },
   {
     "id": "8057-new-zealand",
@@ -1726,17 +1770,6 @@
     "club": "Atleti"
   },
   {
-    "id": "169295-norway",
-    "fdId": 169295,
-    "name": "Antonio Nusa",
-    "teamId": "norway",
-    "teamName": "Norway",
-    "position": "MID",
-    "tier": 3,
-    "basePrice": 5,
-    "club": "RB Leipzig"
-  },
-  {
     "id": "157796-norway",
     "fdId": 157796,
     "name": "Andreas Schjelderup",
@@ -1746,6 +1779,17 @@
     "tier": 4,
     "basePrice": 5,
     "club": "SL Benfica"
+  },
+  {
+    "id": "169295-norway",
+    "fdId": 169295,
+    "name": "Antonio Nusa",
+    "teamId": "norway",
+    "teamName": "Norway",
+    "position": "MID",
+    "tier": 3,
+    "basePrice": 5,
+    "club": "RB Leipzig"
   },
   {
     "id": "177303-norway",
@@ -1791,16 +1835,6 @@
     "club": "Sevilla FC"
   },
   {
-    "id": "8919-panama",
-    "fdId": 8919,
-    "name": "José Luis Rodríguez",
-    "teamId": "panama",
-    "teamName": "Panama",
-    "position": "FWD",
-    "tier": 2,
-    "basePrice": 3
-  },
-  {
     "id": "76711-panama",
     "fdId": 76711,
     "name": "Andrés Andrade",
@@ -1808,6 +1842,16 @@
     "teamName": "Panama",
     "position": "DEF",
     "tier": 4,
+    "basePrice": 3
+  },
+  {
+    "id": "8919-panama",
+    "fdId": 8919,
+    "name": "José Luis Rodríguez",
+    "teamId": "panama",
+    "teamName": "Panama",
+    "position": "FWD",
+    "tier": 2,
     "basePrice": 3
   },
   {
@@ -1852,6 +1896,17 @@
     "basePrice": 3
   },
   {
+    "id": "3257-portugal",
+    "fdId": 3257,
+    "name": "Bruno Fernandes",
+    "teamId": "portugal",
+    "teamName": "Portugal",
+    "position": "MID",
+    "tier": 1,
+    "basePrice": 6,
+    "club": "Man United"
+  },
+  {
     "id": "44-portugal",
     "fdId": 44,
     "name": "Cristiano Ronaldo",
@@ -1874,15 +1929,15 @@
     "club": "Man City"
   },
   {
-    "id": "3257-portugal",
-    "fdId": 3257,
-    "name": "Bruno Fernandes",
+    "id": "101431-portugal",
+    "fdId": 101431,
+    "name": "Gonçalo Ramos",
     "teamId": "portugal",
     "teamName": "Portugal",
-    "position": "MID",
-    "tier": 2,
+    "position": "FWD",
+    "tier": 3,
     "basePrice": 5,
-    "club": "Man United"
+    "club": "PSG"
   },
   {
     "id": "15892-portugal",
@@ -1907,25 +1962,14 @@
     "club": "Man City"
   },
   {
-    "id": "37362-portugal",
-    "fdId": 37362,
-    "name": "Diogo Costa",
+    "id": "190877-portugal",
+    "fdId": 190877,
+    "name": "Joao Neves",
     "teamId": "portugal",
     "teamName": "Portugal",
-    "position": "GK",
-    "tier": 3,
-    "basePrice": 3,
-    "club": "Porto"
-  },
-  {
-    "id": "101431-portugal",
-    "fdId": 101431,
-    "name": "Gonçalo Ramos",
-    "teamId": "portugal",
-    "teamName": "Portugal",
-    "position": "FWD",
-    "tier": 3,
-    "basePrice": 5,
+    "position": "MID",
+    "tier": 4,
+    "basePrice": 4,
     "club": "PSG"
   },
   {
@@ -1940,26 +1984,15 @@
     "club": "Barça"
   },
   {
-    "id": "178722-portugal",
-    "fdId": 178722,
-    "name": "Vitinha",
+    "id": "37362-portugal",
+    "fdId": 37362,
+    "name": "Diogo Costa",
     "teamId": "portugal",
     "teamName": "Portugal",
-    "position": "MID",
+    "position": "GK",
     "tier": 3,
     "basePrice": 3,
-    "club": "PSG"
-  },
-  {
-    "id": "190877-portugal",
-    "fdId": 190877,
-    "name": "Joao Neves",
-    "teamId": "portugal",
-    "teamName": "Portugal",
-    "position": "MID",
-    "tier": 4,
-    "basePrice": 4,
-    "club": "PSG"
+    "club": "Porto"
   },
   {
     "id": "15899-portugal",
@@ -1990,6 +2023,17 @@
     "teamName": "Portugal",
     "position": "DEF",
     "tier": 4,
+    "basePrice": 3,
+    "club": "PSG"
+  },
+  {
+    "id": "178722-portugal",
+    "fdId": 178722,
+    "name": "Vitinha",
+    "teamId": "portugal",
+    "teamName": "Portugal",
+    "position": "MID",
+    "tier": 3,
     "basePrice": 3,
     "club": "PSG"
   },
@@ -2119,16 +2163,6 @@
     "club": "Napoli"
   },
   {
-    "id": "805-senegal",
-    "fdId": 805,
-    "name": "Edouard Mendy",
-    "teamId": "senegal",
-    "teamName": "Senegal",
-    "position": "GK",
-    "tier": 3,
-    "basePrice": 3
-  },
-  {
     "id": "3638-senegal",
     "fdId": 3638,
     "name": "Ismaïla Sarr",
@@ -2138,16 +2172,6 @@
     "tier": 3,
     "basePrice": 5,
     "club": "Crystal Palace"
-  },
-  {
-    "id": "2086-senegal",
-    "fdId": 2086,
-    "name": "Kalidou Koulibaly",
-    "teamId": "senegal",
-    "teamName": "Senegal",
-    "position": "DEF",
-    "tier": 3,
-    "basePrice": 3
   },
   {
     "id": "8887-senegal",
@@ -2170,6 +2194,26 @@
     "tier": 4,
     "basePrice": 4,
     "club": "Bayern"
+  },
+  {
+    "id": "805-senegal",
+    "fdId": 805,
+    "name": "Edouard Mendy",
+    "teamId": "senegal",
+    "teamName": "Senegal",
+    "position": "GK",
+    "tier": 3,
+    "basePrice": 3
+  },
+  {
+    "id": "2086-senegal",
+    "fdId": 2086,
+    "name": "Kalidou Koulibaly",
+    "teamId": "senegal",
+    "teamName": "Senegal",
+    "position": "DEF",
+    "tier": 3,
+    "basePrice": 3
   },
   {
     "id": "33994-south-africa",
@@ -2241,18 +2285,7 @@
     "teamName": "Spain",
     "position": "FWD",
     "tier": 1,
-    "basePrice": 6,
-    "club": "Barça"
-  },
-  {
-    "id": "133860-spain",
-    "fdId": 133860,
-    "name": "Pedri",
-    "teamId": "spain",
-    "teamName": "Spain",
-    "position": "MID",
-    "tier": 2,
-    "basePrice": 5,
+    "basePrice": 7,
     "club": "Barça"
   },
   {
@@ -2262,8 +2295,8 @@
     "teamId": "spain",
     "teamName": "Spain",
     "position": "MID",
-    "tier": 2,
-    "basePrice": 5,
+    "tier": 1,
+    "basePrice": 7,
     "club": "Man City"
   },
   {
@@ -2276,17 +2309,6 @@
     "tier": 3,
     "basePrice": 5,
     "club": "Athletic"
-  },
-  {
-    "id": "23132-spain",
-    "fdId": 23132,
-    "name": "Dani Olmo",
-    "teamId": "spain",
-    "teamName": "Spain",
-    "position": "MID",
-    "tier": 3,
-    "basePrice": 3,
-    "club": "Barça"
   },
   {
     "id": "33154-spain",
@@ -2309,6 +2331,28 @@
     "tier": 3,
     "basePrice": 5,
     "club": "Real Sociedad"
+  },
+  {
+    "id": "157135-spain",
+    "fdId": 157135,
+    "name": "Nico Williams",
+    "teamId": "spain",
+    "teamName": "Spain",
+    "position": "FWD",
+    "tier": 2,
+    "basePrice": 5,
+    "club": "Athletic"
+  },
+  {
+    "id": "133860-spain",
+    "fdId": 133860,
+    "name": "Pedri",
+    "teamId": "spain",
+    "teamName": "Spain",
+    "position": "MID",
+    "tier": 2,
+    "basePrice": 5,
+    "club": "Barça"
   },
   {
     "id": "32570-spain",
@@ -2344,6 +2388,17 @@
     "club": "Barça"
   },
   {
+    "id": "23132-spain",
+    "fdId": 23132,
+    "name": "Dani Olmo",
+    "teamId": "spain",
+    "teamName": "Spain",
+    "position": "MID",
+    "tier": 3,
+    "basePrice": 3,
+    "club": "Barça"
+  },
+  {
     "id": "6486-sweden",
     "fdId": 6486,
     "name": "Alexander Isak",
@@ -2353,17 +2408,6 @@
     "tier": 3,
     "basePrice": 5,
     "club": "Liverpool"
-  },
-  {
-    "id": "8279-sweden",
-    "fdId": 8279,
-    "name": "Viktor Gyökeres",
-    "teamId": "sweden",
-    "teamName": "Sweden",
-    "position": "FWD",
-    "tier": 3,
-    "basePrice": 4,
-    "club": "Arsenal"
   },
   {
     "id": "166376-sweden",
@@ -2377,15 +2421,15 @@
     "club": "Newcastle"
   },
   {
-    "id": "1745-switzerland",
-    "fdId": 1745,
-    "name": "Ricardo Rodriguez",
-    "teamId": "switzerland",
-    "teamName": "Switzerland",
-    "position": "DEF",
-    "tier": 2,
+    "id": "8279-sweden",
+    "fdId": 8279,
+    "name": "Viktor Gyökeres",
+    "teamId": "sweden",
+    "teamName": "Sweden",
+    "position": "FWD",
+    "tier": 3,
     "basePrice": 4,
-    "club": "Real Betis"
+    "club": "Arsenal"
   },
   {
     "id": "3483-switzerland",
@@ -2408,6 +2452,17 @@
     "tier": 3,
     "basePrice": 4,
     "club": "Sunderland"
+  },
+  {
+    "id": "1745-switzerland",
+    "fdId": 1745,
+    "name": "Ricardo Rodriguez",
+    "teamId": "switzerland",
+    "teamName": "Switzerland",
+    "position": "DEF",
+    "tier": 2,
+    "basePrice": 4,
+    "club": "Real Betis"
   },
   {
     "id": "143-switzerland",
@@ -2594,16 +2649,6 @@
     "club": "M'gladbach"
   },
   {
-    "id": "76936-united-states",
-    "fdId": 76936,
-    "name": "Matt Turner",
-    "teamId": "united-states",
-    "teamName": "United States",
-    "position": "GK",
-    "tier": 4,
-    "basePrice": 3
-  },
-  {
     "id": "119731-united-states",
     "fdId": 119731,
     "name": "Ricardo Pepi",
@@ -2615,6 +2660,16 @@
     "club": "PSV"
   },
   {
+    "id": "76936-united-states",
+    "fdId": 76936,
+    "name": "Matt Turner",
+    "teamId": "united-states",
+    "teamName": "United States",
+    "position": "GK",
+    "tier": 4,
+    "basePrice": 3
+  },
+  {
     "id": "28618-uruguay",
     "fdId": 28618,
     "name": "Brian Rodríguez",
@@ -2623,16 +2678,6 @@
     "position": "FWD",
     "tier": 2,
     "basePrice": 5
-  },
-  {
-    "id": "28612-uruguay",
-    "fdId": 28612,
-    "name": "Darwin Núñez",
-    "teamId": "uruguay",
-    "teamName": "Uruguay",
-    "position": "FWD",
-    "tier": 2,
-    "basePrice": 4
   },
   {
     "id": "130957-uruguay",
@@ -2646,6 +2691,16 @@
     "club": "Palmeiras"
   },
   {
+    "id": "28612-uruguay",
+    "fdId": 28612,
+    "name": "Darwin Núñez",
+    "teamId": "uruguay",
+    "teamName": "Uruguay",
+    "position": "FWD",
+    "tier": 2,
+    "basePrice": 4
+  },
+  {
     "id": "96-uruguay",
     "fdId": 96,
     "name": "Federico Valverde",
@@ -2655,16 +2710,6 @@
     "tier": 2,
     "basePrice": 4,
     "club": "Real Madrid"
-  },
-  {
-    "id": "189823-uruguay",
-    "fdId": 189823,
-    "name": "José Luis Rodríguez",
-    "teamId": "uruguay",
-    "teamName": "Uruguay",
-    "position": "DEF",
-    "tier": 2,
-    "basePrice": 3
   },
   {
     "id": "11206-uruguay",
@@ -2677,6 +2722,16 @@
     "basePrice": 4
   },
   {
+    "id": "189823-uruguay",
+    "fdId": 189823,
+    "name": "José Luis Rodríguez",
+    "teamId": "uruguay",
+    "teamName": "Uruguay",
+    "position": "DEF",
+    "tier": 2,
+    "basePrice": 3
+  },
+  {
     "id": "115-uruguay",
     "fdId": 115,
     "name": "José Maria Giménez",
@@ -2685,6 +2740,28 @@
     "position": "DEF",
     "tier": 3,
     "basePrice": 3
+  },
+  {
+    "id": "28549-uruguay",
+    "fdId": 28549,
+    "name": "Manuel Ugarte",
+    "teamId": "uruguay",
+    "teamName": "Uruguay",
+    "position": "MID",
+    "tier": 4,
+    "basePrice": 3,
+    "club": "Man United"
+  },
+  {
+    "id": "32754-uruguay",
+    "fdId": 32754,
+    "name": "Mathías Olivera",
+    "teamId": "uruguay",
+    "teamName": "Uruguay",
+    "position": "DEF",
+    "tier": 4,
+    "basePrice": 3,
+    "club": "Napoli"
   },
   {
     "id": "28770-uruguay",
@@ -2718,28 +2795,6 @@
     "tier": 3,
     "basePrice": 3,
     "club": "Internacional"
-  },
-  {
-    "id": "28549-uruguay",
-    "fdId": 28549,
-    "name": "Manuel Ugarte",
-    "teamId": "uruguay",
-    "teamName": "Uruguay",
-    "position": "MID",
-    "tier": 4,
-    "basePrice": 3,
-    "club": "Man United"
-  },
-  {
-    "id": "32754-uruguay",
-    "fdId": 32754,
-    "name": "Mathías Olivera",
-    "teamId": "uruguay",
-    "teamName": "Uruguay",
-    "position": "DEF",
-    "tier": 4,
-    "basePrice": 3,
-    "club": "Napoli"
   },
   {
     "id": "243911-uzbekistan",

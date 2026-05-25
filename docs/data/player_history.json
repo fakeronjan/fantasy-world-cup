@@ -2825,5 +2825,67 @@
     "runnerUps": 0,
     "runnerUpYears": [],
     "_source": "historical-goals"
+  },
+  "3220-argentina": {
+    "wcsPlayed": 2,
+    "wcYears": [
+      2018,
+      2022
+    ],
+    "goals": 1,
+    "titles": 1,
+    "titleYears": [
+      2022
+    ],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "3754-egypt": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2018
+    ],
+    "goals": 2,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "157135-spain": {
+    "wcsPlayed": 0,
+    "wcYears": [],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "debutant": true,
+    "_source": "manual"
+  },
+  "32629-ghana": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
+  },
+  "132707-japan": {
+    "wcsPlayed": 1,
+    "wcYears": [
+      2022
+    ],
+    "goals": 0,
+    "titles": 0,
+    "titleYears": [],
+    "runnerUps": 0,
+    "runnerUpYears": [],
+    "_source": "manual"
   }
 }
