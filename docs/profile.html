@@ -159,6 +159,22 @@
     </div>
 
     <div class="profile-card">
+      <h2>Email notifications</h2>
+      <p class="hint">Get a daily digest of how your picks are doing, plus a recap email after each round finishes. Off by default - opt in below.</p>
+      <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px">
+        <input type="checkbox" id="emailOptIn" style="width:18px; height:18px; cursor:pointer">
+        <span>Email me daily during the tournament + after each round</span>
+      </label>
+      <p class="hint" style="margin-top:8px">
+        Emails go to your Google account email. Toggle off any time to stop them.
+      </p>
+      <div class="save-row">
+        <button class="btn" id="saveEmailBtn">Save preference</button>
+        <span class="status-msg" id="emailStatus"></span>
+      </div>
+    </div>
+
+    <div class="profile-card">
       <h2>Groups</h2>
       <p class="hint">League sub-groups you belong to. Comma-separated, max 5. Members of the same group see each other on the leaderboard. Leave blank to be in the global view.</p>
       <input type="text" id="groupsInput" placeholder="boys-2026, work-crew">
@@ -190,6 +206,9 @@
   const saveFlagBtn     = document.getElementById('saveFlagBtn');
   const clearFlagBtn    = document.getElementById('clearFlagBtn');
   const flagStatus      = document.getElementById('flagStatus');
+  const emailOptIn      = document.getElementById('emailOptIn');
+  const saveEmailBtn    = document.getElementById('saveEmailBtn');
+  const emailStatus     = document.getElementById('emailStatus');
   const groupsInput     = document.getElementById('groupsInput');
   const groupChipsLine  = document.getElementById('groupChipsLine');
   const saveGroupsBtn   = document.getElementById('saveGroupsBtn');
@@ -318,6 +337,8 @@
     if (selectedName) flagSearch.value = selectedName;
     updateFlagDisplay();
 
+    emailOptIn.checked = !!currentUserDoc.emailNotificationsEnabled;
+
     const groups = Array.isArray(currentUserDoc.groupIds)
       ? currentUserDoc.groupIds
       : (currentUserDoc.groupId ? [currentUserDoc.groupId] : []);
@@ -363,6 +384,13 @@
     saveField(saveFlagBtn, flagStatus,
       { countryFlag: flag },
       flag ? `Flag set: ${flag} ${selectedName ? '(' + selectedName + ')' : ''}` : 'Flag cleared');
+  });
+
+  saveEmailBtn.addEventListener('click', () => {
+    const enabled = emailOptIn.checked;
+    saveField(saveEmailBtn, emailStatus,
+      { emailNotificationsEnabled: enabled },
+      enabled ? 'You\'ll get a daily digest + round recaps' : 'Emails turned off');
   });
 
   saveGroupsBtn.addEventListener('click', () => {

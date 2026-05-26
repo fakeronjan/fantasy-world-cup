@@ -1,0 +1,73 @@
+name: email-daily-digest
+
+# Sends a daily digest email to every user with emailNotificationsEnabled=true.
+# Runs once per day at 23:00 UTC (after the day's matches finish).
+#
+# For round-recap emails (after group/R32/R16/QF/SF/F end), trigger this
+# workflow manually via workflow_dispatch with the round name.
+#
+# Required GitHub Secrets:
+#   - RESEND_API_KEY    : the Resend API key (https://resend.com)
+#   - FIREBASE_SA_BASE64: same as the ingest workflow
+
+on:
+  # Schedule disabled pre-kickoff (2026-05-26). Nothing useful to email
+  # until matches start on 2026-06-11. Re-enable around 2026-06-10 by
+  # uncommenting the schedule block.
+  #
+  # schedule:
+  #   - cron: "0 23 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Mode: daily (digest) or round (round-recap)"
+        required: true
+        default: daily
+        type: choice
+        options:
+          - daily
+          - round
+      round_name:
+        description: "Round name (only used for mode=round, e.g. 'Round of 32')"
+        required: false
+        default: "Round of 32"
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Decode Firebase service account
+        run: |
+          mkdir -p /tmp/fwc
+          echo "${{ secrets.FIREBASE_SA_BASE64 }}" | base64 -d > /tmp/fwc/sa.json
+          chmod 600 /tmp/fwc/sa.json
+
+      - name: Send emails (scheduled = daily)
+        if: github.event_name == 'schedule'
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/fwc/sa.json
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: python scripts/send_emails.py --mode daily
+
+      - name: Send emails (manual)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/fwc/sa.json
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: python scripts/send_emails.py --mode "${{ inputs.mode }}" --round-name "${{ inputs.round_name }}"
+
+      - name: Clean up credentials
+        if: always()
+        run: rm -f /tmp/fwc/sa.json
