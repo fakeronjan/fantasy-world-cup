@@ -106,6 +106,7 @@
   <a href="./roster.html">My Roster</a>
   <a href="./leaderboard.html" class="active">Leaderboard</a>
   <a href="./transfer.html" id="transferLink">Transfer</a>
+  <a href="./profile.html">Profile</a>
   <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
 </nav>
 
@@ -317,10 +318,12 @@
       const spent = u.totalSpent ?? 0;
       const pts   = u.totalPoints ?? 0;
       const name  = window.fwc.nameFor(u);
+      const flag  = window.fwc.flagFor(u);
+      const flagSpan = flag ? `<span style="font-size:16px; margin-right:6px; font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">${flag}</span>` : '';
       const podiumClass = rank <= 3 ? `podium-${rank}` : '';
       return `<tr class="${isMe ? 'lb-row-me' : ''}">
         <td class="rank-cell ${podiumClass}">${rank}</td>
-        <td>${escape(name)}${isMe ? ' <span class="accent-text" style="font-size:11px">(you)</span>' : ''}</td>
+        <td>${flagSpan}${escape(name)}${isMe ? ' <span class="accent-text" style="font-size:11px">(you)</span>' : ''}</td>
         <td class="num">${picks}</td>
         <td class="num">$${spent}</td>
         <td class="num"><strong>${pts}</strong></td>
@@ -420,7 +423,7 @@
           pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
           lastVal = v; lastX = x; lastY = y;
         }
-        const name = window.fwc.nameFor(u);
+        const name = (window.fwc.flagFor(u) ? window.fwc.flagFor(u) + ' ' : '') + window.fwc.nameFor(u);
         const isMe = currentUser && u.uid === currentUser.uid;
         const strokeWidth = isMe ? 3 : 2;
         lines += `<polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="${strokeWidth}" stroke-linejoin="round" opacity="0.92"/>`;

@@ -183,6 +183,7 @@
   <a href="./roster.html">My Roster</a>
   <a href="./leaderboard.html">Leaderboard</a>
   <a href="./transfer.html" id="transferLink">Transfer</a>
+  <a href="./profile.html">Profile</a>
   <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
 </nav>
 
@@ -266,21 +267,6 @@
     </div>
   </div>
 
-  <!-- Profile / nickname editor - only visible when signed in -->
-  <section class="card" id="profileCard" style="display:none">
-    <h2 style="margin-bottom:6px">Your league nickname</h2>
-    <p class="muted" style="font-size:12px;margin-bottom:10px">
-      How you'll show up on the leaderboard. Defaults to your Google name  - 
-      change it to anything you want.
-    </p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <input type="text" id="nicknameInput" maxlength="30"
-             style="flex:1;min-width:200px;padding:8px 12px;font-size:14px"
-             placeholder="Loading…">
-      <button class="btn" id="saveNicknameBtn">Save nickname</button>
-      <span id="nicknameStatus" class="muted" style="font-size:11px"></span>
-    </div>
-  </section>
 
   <!-- Setup-needed callout - only shows while Firebase config is still placeholder -->
   <section class="card" id="setupNotice" style="display:none">
@@ -305,10 +291,6 @@
   const siteNav         = document.getElementById('siteNav');
   const adminLink       = document.getElementById('adminLink');
   const ctaRow          = document.getElementById('ctaRow');
-  const profileCard     = document.getElementById('profileCard');
-  const nicknameInput   = document.getElementById('nicknameInput');
-  const saveNicknameBtn = document.getElementById('saveNicknameBtn');
-  const nicknameStatus  = document.getElementById('nicknameStatus');
 
   await new Promise(r => requestAnimationFrame(r));
 
@@ -343,58 +325,17 @@
         <button id="signOutBtn">Sign out</button>`;
       document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
 
-      // Populate nickname editor
-      profileCard.style.display = 'block';
-      nicknameInput.value = currentUserDoc.leagueNickname || '';
-      nicknameInput.placeholder = user.displayName || 'Enter a nickname';
-
       ctaRow.innerHTML = `
         <a href="./draft.html" class="btn btn-accent">Draft your roster</a>
         <a href="./roster.html" class="btn">My roster</a>
         <a href="./leaderboard.html" class="btn">Leaderboard</a>
+        <a href="./profile.html" class="btn">Profile</a>
       `;
     } else {
       userLine.textContent = '';
       siteNav.style.display = 'none';
-      profileCard.style.display = 'none';
       ctaRow.innerHTML = `<button class="btn btn-accent" id="signInBtn">Sign in with Google to play</button>`;
       document.getElementById('signInBtn').addEventListener('click', () => window.fwc.signInWithGoogle());
-    }
-  });
-
-  saveNicknameBtn.addEventListener('click', async () => {
-    if (!currentUser) return;
-    const newNick = nicknameInput.value.trim();
-    if (newNick.length > 30) {
-      nicknameStatus.textContent = 'Too long (30 chars max)';
-      return;
-    }
-    saveNicknameBtn.disabled = true;
-    nicknameStatus.textContent = 'Saving…';
-    try {
-      const ref = window.fwc.doc(window.fwc.db, 'users', currentUser.uid);
-      await window.fwc.setDoc(ref, {
-        leagueNickname: newNick,           // empty string = use Google name
-        displayName: currentUser.displayName,  // mirror in case Google updates
-        email: currentUser.email,
-      }, { merge: true });
-      currentUserDoc.leagueNickname = newNick;
-      nicknameStatus.textContent = newNick ? `Saved as "${newNick}"` : 'Cleared - using Google name';
-
-      // Update header to reflect new name
-      const shownName = window.fwc.nameFor({
-        ...currentUserDoc,
-        displayName: currentUser.displayName,
-        email: currentUser.email,
-      });
-      userLine.innerHTML = `Signed in as <strong>${escape(shownName)}</strong>
-        <button id="signOutBtn">Sign out</button>`;
-      document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
-    } catch (e) {
-      console.error(e);
-      nicknameStatus.textContent = `Failed: ${e.message}`;
-    } finally {
-      saveNicknameBtn.disabled = false;
     }
   });
 

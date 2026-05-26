@@ -199,10 +199,16 @@ function nameFor(userDoc) {
   return `Player ${(userDoc.uid || '').slice(0, 6)}`;
 }
 
+// Country flag emoji a user picked to rep. Empty string if none.
+function flagFor(userDoc) {
+  if (!userDoc) return '';
+  return (userDoc.countryFlag || '').trim();
+}
+
 // Expose to non-module scripts on the page if needed.
 window.fwc = {
   auth, db,
-  signInWithGoogle, signOut, onAuth, isAdmin, nameFor,
+  signInWithGoogle, signOut, onAuth, isAdmin, nameFor, flagFor,
   getGameState, renderStateBanner,
   configIsPlaceholder,
   // Re-export Firestore helpers commonly used on pages, so individual pages

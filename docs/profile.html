@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile · Fantasy World Cup 2026</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .profile-card {
+    background: var(--bg-card);
+    border-radius: 6px;
+    padding: 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+  }
+  .profile-card h2 {
+    font-size: 16px;
+    color: var(--bg-header);
+    margin-bottom: 6px;
+    letter-spacing: 0.4px;
+  }
+  .profile-card .hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .profile-card input[type="text"] {
+    width: 100%;
+    max-width: 480px;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-card);
+    font-family: inherit;
+  }
+  .profile-card input[type="text"]:focus {
+    outline: none;
+    border-color: var(--bg-header);
+  }
+
+  /* Emoji quick-pick grid */
+  .flag-current {
+    display: inline-block;
+    font-size: 34px;
+    line-height: 1;
+    margin-right: 14px;
+    vertical-align: middle;
+  }
+  .flag-row {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .flag-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 4px;
+    margin-top: 10px;
+    max-width: 600px;
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid var(--border-row);
+    border-radius: 4px;
+    padding: 8px;
+    background: #fafafa;
+  }
+  .flag-cell {
+    font-size: 24px;
+    text-align: center;
+    padding: 6px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.1s;
+    line-height: 1;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  }
+  .flag-cell:hover { background: #fff; box-shadow: 0 0 0 1px var(--bg-header); }
+  .flag-cell.selected { background: var(--bg-header); }
+
+  .save-row {
+    display: flex; gap: 12px; align-items: center;
+    margin-top: 8px;
+  }
+  .status-msg {
+    font-size: 12px; color: var(--text-muted);
+  }
+  .status-msg.success { color: #166534; }
+  .status-msg.warn    { color: #991b1b; }
+
+  .group-chip {
+    display: inline-block;
+    background: #e0e7ff; color: #3730a3;
+    padding: 2px 9px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+    margin-right: 5px;
+  }
+  .group-chips-line { margin-top: 6px; min-height: 22px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>PROFILE</h1>
+  <p class="subtitle">Your league identity</p>
+  <p class="user-line" id="userLine"></p>
+</header>
+
+<nav class="site-nav" id="siteNav" style="display:none">
+  <a href="./index.html">Home</a>
+  <a href="./draft.html">Draft</a>
+  <a href="./roster.html">My Roster</a>
+  <a href="./leaderboard.html">Leaderboard</a>
+  <a href="./transfer.html" id="transferLink">Transfer</a>
+  <a href="./profile.html" class="active">Profile</a>
+  <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+</nav>
+
+<main>
+  <div id="stateBanner"></div>
+
+  <section class="card signin-card" id="signinCard" style="display:none">
+    <h2>Sign in to edit your profile</h2>
+    <button class="btn" id="signInBtn">Sign in with Google</button>
+  </section>
+
+  <div id="profileView" style="display:none">
+
+    <div class="profile-card">
+      <h2>League nickname</h2>
+      <p class="hint">How you'll show up on the leaderboard. Leave blank to use your Google account name.</p>
+      <input type="text" id="nicknameInput" maxlength="30" placeholder="(your Google name)">
+      <div class="save-row">
+        <button class="btn" id="saveNicknameBtn">Save nickname</button>
+        <span class="status-msg" id="nicknameStatus"></span>
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <h2>Country flag</h2>
+      <p class="hint">A flag to rep next to your name on the leaderboard. Pick from the World Cup teams below, or paste any flag emoji into the box.</p>
+      <div class="flag-row">
+        <span class="flag-current" id="flagCurrent">⚽</span>
+        <input type="text" id="flagInput" maxlength="14" placeholder="(no flag)"
+               style="max-width:120px; font-size:18px; text-align:center">
+      </div>
+      <div class="flag-grid" id="flagGrid">
+        <div class="muted" style="grid-column: 1 / -1; padding:12px; text-align:center">Loading teams…</div>
+      </div>
+      <div class="save-row">
+        <button class="btn" id="saveFlagBtn">Save flag</button>
+        <span class="status-msg" id="flagStatus"></span>
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <h2>Groups</h2>
+      <p class="hint">League sub-groups you belong to. Comma-separated, max 5. Members of the same group see each other on the leaderboard. Leave blank to be in the global view.</p>
+      <input type="text" id="groupsInput" placeholder="boys-2026, work-crew">
+      <div class="group-chips-line" id="groupChipsLine"></div>
+      <div class="save-row">
+        <button class="btn" id="saveGroupsBtn">Save groups</button>
+        <span class="status-msg" id="groupsStatus"></span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import "./shared.js";
+
+  const userLine        = document.getElementById('userLine');
+  const signinCard      = document.getElementById('signinCard');
+  const profileView     = document.getElementById('profileView');
+  const siteNav         = document.getElementById('siteNav');
+  const adminLink       = document.getElementById('adminLink');
+  const signInBtn       = document.getElementById('signInBtn');
+  const nicknameInput   = document.getElementById('nicknameInput');
+  const saveNicknameBtn = document.getElementById('saveNicknameBtn');
+  const nicknameStatus  = document.getElementById('nicknameStatus');
+  const flagInput       = document.getElementById('flagInput');
+  const flagCurrent     = document.getElementById('flagCurrent');
+  const flagGrid        = document.getElementById('flagGrid');
+  const saveFlagBtn     = document.getElementById('saveFlagBtn');
+  const flagStatus      = document.getElementById('flagStatus');
+  const groupsInput     = document.getElementById('groupsInput');
+  const groupChipsLine  = document.getElementById('groupChipsLine');
+  const saveGroupsBtn   = document.getElementById('saveGroupsBtn');
+  const groupsStatus    = document.getElementById('groupsStatus');
+
+  await new Promise(r => requestAnimationFrame(r));
+  signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
+
+  let currentUser = null;
+  let currentUserDoc = null;
+  let teamFlags = [];
+
+  // Load the WC team flags for the quick-pick grid
+  fetch('./data/seed_teams.json')
+    .then(r => r.json())
+    .then(teams => {
+      teamFlags = teams
+        .filter(t => t.emoji)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      renderFlagGrid();
+    })
+    .catch(() => {
+      flagGrid.innerHTML = '<div class="muted" style="grid-column: 1 / -1; padding:12px; text-align:center">Couldn\'t load flag list.</div>';
+    });
+
+  function renderFlagGrid() {
+    const current = flagInput.value.trim();
+    flagGrid.innerHTML = teamFlags.map(t =>
+      `<div class="flag-cell ${t.emoji === current ? 'selected' : ''}"
+            data-emoji="${escapeAttr(t.emoji)}"
+            title="${escapeAttr(t.name)}">${t.emoji}</div>`
+    ).join('');
+    flagGrid.querySelectorAll('[data-emoji]').forEach(cell => {
+      cell.addEventListener('click', () => {
+        flagInput.value = cell.dataset.emoji;
+        flagCurrent.textContent = cell.dataset.emoji || '⚽';
+        renderFlagGrid();
+      });
+    });
+  }
+
+  flagInput.addEventListener('input', () => {
+    flagCurrent.textContent = flagInput.value.trim() || '⚽';
+    renderFlagGrid();
+  });
+
+  function renderGroupChips() {
+    const raw = groupsInput.value.split(',').map(g => g.trim()).filter(Boolean);
+    const deduped = [...new Set(raw)].slice(0, 5);
+    groupChipsLine.innerHTML = deduped.length
+      ? deduped.map(g => `<span class="group-chip">${escape(g)}</span>`).join('')
+      : '<span class="muted" style="font-size:11px">(none - you\'ll appear in the global leaderboard)</span>';
+  }
+  groupsInput.addEventListener('input', renderGroupChips);
+
+  window.fwc.onAuth(async (user) => {
+    currentUser = user;
+    if (!user) {
+      signinCard.style.display = 'block';
+      profileView.style.display = 'none';
+      siteNav.style.display = 'none';
+      return;
+    }
+    userLine.innerHTML = `Signed in as <strong>${escape(user.displayName || user.email)}</strong>
+      <button id="signOutBtn">Sign out</button>`;
+    document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
+    siteNav.style.display = 'flex';
+    if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+    signinCard.style.display = 'none';
+    profileView.style.display = 'block';
+
+    // Load Firestore doc
+    try {
+      const ref = window.fwc.doc(window.fwc.db, 'users', user.uid);
+      const snap = await window.fwc.getDoc(ref);
+      currentUserDoc = snap.exists() ? { uid: user.uid, ...snap.data() } : { uid: user.uid };
+    } catch {
+      currentUserDoc = { uid: user.uid };
+    }
+
+    // Populate fields
+    nicknameInput.value = currentUserDoc.leagueNickname || '';
+    nicknameInput.placeholder = user.displayName || 'Enter a nickname';
+
+    flagInput.value = currentUserDoc.countryFlag || '';
+    flagCurrent.textContent = currentUserDoc.countryFlag || '⚽';
+
+    const groups = Array.isArray(currentUserDoc.groupIds)
+      ? currentUserDoc.groupIds
+      : (currentUserDoc.groupId ? [currentUserDoc.groupId] : []);
+    groupsInput.value = groups.join(', ');
+    renderGroupChips();
+    renderFlagGrid();
+  });
+
+  // ---- save handlers ---------------------------------------------------
+  async function saveField(button, statusEl, fields, successMsg) {
+    if (!currentUser) return;
+    button.disabled = true;
+    statusEl.textContent = 'Saving…';
+    statusEl.className = 'status-msg';
+    try {
+      const ref = window.fwc.doc(window.fwc.db, 'users', currentUser.uid);
+      // Always include displayName + email so user doc has the basics
+      const payload = {
+        ...fields,
+        displayName: currentUser.displayName,
+        email: currentUser.email,
+      };
+      await window.fwc.setDoc(ref, payload, { merge: true });
+      Object.assign(currentUserDoc, fields);
+      statusEl.textContent = successMsg;
+      statusEl.className = 'status-msg success';
+    } catch (e) {
+      statusEl.textContent = `Failed: ${e.message}`;
+      statusEl.className = 'status-msg warn';
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  saveNicknameBtn.addEventListener('click', () => {
+    const nick = nicknameInput.value.trim().slice(0, 30);
+    saveField(saveNicknameBtn, nicknameStatus,
+      { leagueNickname: nick },
+      nick ? `Saved as "${nick}"` : 'Cleared - using Google name');
+  });
+
+  saveFlagBtn.addEventListener('click', () => {
+    const flag = flagInput.value.trim().slice(0, 14);
+    saveField(saveFlagBtn, flagStatus,
+      { countryFlag: flag },
+      flag ? `Flag set: ${flag}` : 'Flag cleared');
+  });
+
+  saveGroupsBtn.addEventListener('click', () => {
+    const raw = groupsInput.value.split(',').map(g => g.trim()).filter(Boolean);
+    const deduped = [...new Set(raw)].slice(0, 5).map(g => g.slice(0, 40));
+    // Also clear legacy groupId so it doesn't conflict with the array
+    saveField(saveGroupsBtn, groupsStatus,
+      { groupIds: deduped, groupId: '' },
+      deduped.length ? `Groups saved: ${deduped.join(', ')}` : 'Groups cleared');
+  });
+
+  function escape(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+  }
+  function escapeAttr(s) { return escape(s); }
+</script>
+
+</body>
+</html>
