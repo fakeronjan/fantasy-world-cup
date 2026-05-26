@@ -255,6 +255,10 @@ def send_via_resend(api_key: str, to_email: str, subject: str, html: str, plain:
         headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type":  "application/json",
+            # Resend sits behind Cloudflare which blocks Python's default
+            # 'Python-urllib/X.Y' UA with error 1010. Pretend to be a normal
+            # HTTP client.
+            "User-Agent":    "fantasy-world-cup/1.0 (https://github.com/fakeronjan/fantasy-world-cup)",
         },
         method="POST",
     )
