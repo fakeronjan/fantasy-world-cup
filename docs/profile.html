@@ -40,43 +40,44 @@
     border-color: var(--bg-header);
   }
 
-  /* Emoji quick-pick grid */
+  /* Flag picker: search box + dropdown */
   .flag-current {
     display: inline-block;
     font-size: 34px;
     line-height: 1;
     margin-right: 14px;
     vertical-align: middle;
-  }
-  .flag-row {
-    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-    margin-top: 6px;
-  }
-  .flag-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-    gap: 4px;
-    margin-top: 10px;
-    max-width: 600px;
-    max-height: 260px;
-    overflow-y: auto;
-    border: 1px solid var(--border-row);
-    border-radius: 4px;
-    padding: 8px;
-    background: #fafafa;
-  }
-  .flag-cell {
-    font-size: 24px;
-    text-align: center;
-    padding: 6px 0;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.1s;
-    line-height: 1;
     font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
   }
-  .flag-cell:hover { background: #fff; box-shadow: 0 0 0 1px var(--bg-header); }
-  .flag-cell.selected { background: var(--bg-header); }
+  .flag-current-label {
+    font-size: 13px; color: var(--text-muted);
+    vertical-align: middle;
+  }
+  .flag-picker { position: relative; max-width: 480px; margin-top: 8px; }
+  .flag-results {
+    position: absolute; top: 100%; left: 0; right: 0;
+    z-index: 10;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    max-height: 260px; overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: none;
+  }
+  .flag-results.open { display: block; }
+  .flag-result {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 12px; font-size: 14px; cursor: pointer;
+    line-height: 1.3;
+  }
+  .flag-result:hover, .flag-result.active { background: #fef0f7; }
+  .flag-result .flag {
+    font-size: 20px; line-height: 1; min-width: 28px;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  }
+  .flag-result .name { flex: 1; }
+  .flag-result .iso { font-size: 10px; color: var(--text-muted); font-variant: tabular-nums; }
+  .flag-results-empty { padding: 12px; font-size: 13px; color: var(--text-muted); text-align: center; }
 
   .save-row {
     display: flex; gap: 12px; align-items: center;
@@ -138,17 +139,21 @@
 
     <div class="profile-card">
       <h2>Country flag</h2>
-      <p class="hint">A flag to rep next to your name on the leaderboard. Pick from the World Cup teams below, or paste any flag emoji into the box.</p>
-      <div class="flag-row">
+      <p class="hint">A flag to rep next to your name on the leaderboard. Search for any country by name.</p>
+      <div style="margin-bottom:8px">
         <span class="flag-current" id="flagCurrent">⚽</span>
-        <input type="text" id="flagInput" maxlength="14" placeholder="(no flag)"
-               style="max-width:120px; font-size:18px; text-align:center">
+        <span class="flag-current-label" id="flagCurrentLabel">(no flag selected)</span>
       </div>
-      <div class="flag-grid" id="flagGrid">
-        <div class="muted" style="grid-column: 1 / -1; padding:12px; text-align:center">Loading teams…</div>
+      <div class="flag-picker">
+        <input type="search" id="flagSearch" placeholder="Search country (e.g. Spain, Brazil, Japan)..."
+               style="width:100%; padding:8px 12px; font-size:14px;
+                      border:1px solid var(--border); border-radius:4px; background:var(--bg-card)" autocomplete="off">
+        <div class="flag-results" id="flagResults"></div>
       </div>
       <div class="save-row">
         <button class="btn" id="saveFlagBtn">Save flag</button>
+        <button class="btn" id="clearFlagBtn"
+                style="background:none; border:1px solid var(--border); color:var(--text-muted)">Clear</button>
         <span class="status-msg" id="flagStatus"></span>
       </div>
     </div>
@@ -178,10 +183,12 @@
   const nicknameInput   = document.getElementById('nicknameInput');
   const saveNicknameBtn = document.getElementById('saveNicknameBtn');
   const nicknameStatus  = document.getElementById('nicknameStatus');
-  const flagInput       = document.getElementById('flagInput');
+  const flagSearch      = document.getElementById('flagSearch');
+  const flagResults     = document.getElementById('flagResults');
   const flagCurrent     = document.getElementById('flagCurrent');
-  const flagGrid        = document.getElementById('flagGrid');
+  const flagCurrentLabel = document.getElementById('flagCurrentLabel');
   const saveFlagBtn     = document.getElementById('saveFlagBtn');
+  const clearFlagBtn    = document.getElementById('clearFlagBtn');
   const flagStatus      = document.getElementById('flagStatus');
   const groupsInput     = document.getElementById('groupsInput');
   const groupChipsLine  = document.getElementById('groupChipsLine');
@@ -193,40 +200,77 @@
 
   let currentUser = null;
   let currentUserDoc = null;
-  let teamFlags = [];
+  let countries = [];          // [{name, iso, emoji}]
+  let selectedFlag = '';       // emoji string of the currently-chosen flag
+  let selectedName = '';       // country name (for the label under the current flag)
 
-  // Load the WC team flags for the quick-pick grid
-  fetch('./data/seed_teams.json')
+  // Load the country list (~260 entries with name + iso + emoji)
+  fetch('./data/countries.json')
     .then(r => r.json())
-    .then(teams => {
-      teamFlags = teams
-        .filter(t => t.emoji)
-        .sort((a, b) => a.name.localeCompare(b.name));
-      renderFlagGrid();
-    })
+    .then(list => { countries = list; })
     .catch(() => {
-      flagGrid.innerHTML = '<div class="muted" style="grid-column: 1 / -1; padding:12px; text-align:center">Couldn\'t load flag list.</div>';
+      flagResults.innerHTML = '<div class="flag-results-empty">Couldn\'t load country list.</div>';
+      flagResults.classList.add('open');
     });
 
-  function renderFlagGrid() {
-    const current = flagInput.value.trim();
-    flagGrid.innerHTML = teamFlags.map(t =>
-      `<div class="flag-cell ${t.emoji === current ? 'selected' : ''}"
-            data-emoji="${escapeAttr(t.emoji)}"
-            title="${escapeAttr(t.name)}">${t.emoji}</div>`
-    ).join('');
-    flagGrid.querySelectorAll('[data-emoji]').forEach(cell => {
-      cell.addEventListener('click', () => {
-        flagInput.value = cell.dataset.emoji;
-        flagCurrent.textContent = cell.dataset.emoji || '⚽';
-        renderFlagGrid();
-      });
-    });
+  function updateFlagDisplay() {
+    flagCurrent.textContent = selectedFlag || '⚽';
+    if (selectedFlag) {
+      flagCurrentLabel.textContent = selectedName || '(custom flag)';
+    } else {
+      flagCurrentLabel.textContent = '(no flag selected)';
+    }
   }
 
-  flagInput.addEventListener('input', () => {
-    flagCurrent.textContent = flagInput.value.trim() || '⚽';
-    renderFlagGrid();
+  function renderFlagResults(q) {
+    q = q.trim().toLowerCase();
+    if (!q) {
+      flagResults.classList.remove('open');
+      return;
+    }
+    const matches = countries
+      .filter(c => c.name.toLowerCase().includes(q) || c.iso.toLowerCase() === q)
+      .slice(0, 30);
+    if (!matches.length) {
+      flagResults.innerHTML = '<div class="flag-results-empty">No country matches "' + escape(q) + '"</div>';
+    } else {
+      flagResults.innerHTML = matches.map(c =>
+        `<div class="flag-result" data-emoji="${escapeAttr(c.emoji)}" data-name="${escapeAttr(c.name)}">
+          <span class="flag">${c.emoji}</span>
+          <span class="name">${escape(c.name)}</span>
+          <span class="iso">${escape(c.iso)}</span>
+        </div>`
+      ).join('');
+      flagResults.querySelectorAll('[data-emoji]').forEach(row => {
+        row.addEventListener('click', () => {
+          selectedFlag = row.dataset.emoji;
+          selectedName = row.dataset.name;
+          flagSearch.value = row.dataset.name;
+          updateFlagDisplay();
+          flagResults.classList.remove('open');
+        });
+      });
+    }
+    flagResults.classList.add('open');
+  }
+
+  flagSearch.addEventListener('input', () => renderFlagResults(flagSearch.value));
+  flagSearch.addEventListener('focus', () => {
+    if (flagSearch.value.trim()) renderFlagResults(flagSearch.value);
+  });
+  // Click outside to close
+  document.addEventListener('click', (e) => {
+    if (!flagResults.contains(e.target) && e.target !== flagSearch) {
+      flagResults.classList.remove('open');
+    }
+  });
+
+  clearFlagBtn.addEventListener('click', () => {
+    selectedFlag = '';
+    selectedName = '';
+    flagSearch.value = '';
+    updateFlagDisplay();
+    flagResults.classList.remove('open');
   });
 
   function renderGroupChips() {
@@ -267,15 +311,18 @@
     nicknameInput.value = currentUserDoc.leagueNickname || '';
     nicknameInput.placeholder = user.displayName || 'Enter a nickname';
 
-    flagInput.value = currentUserDoc.countryFlag || '';
-    flagCurrent.textContent = currentUserDoc.countryFlag || '⚽';
+    selectedFlag = currentUserDoc.countryFlag || '';
+    // Try to find the name from the country list (matches on emoji)
+    const known = countries.find(c => c.emoji === selectedFlag);
+    selectedName = known ? known.name : '';
+    if (selectedName) flagSearch.value = selectedName;
+    updateFlagDisplay();
 
     const groups = Array.isArray(currentUserDoc.groupIds)
       ? currentUserDoc.groupIds
       : (currentUserDoc.groupId ? [currentUserDoc.groupId] : []);
     groupsInput.value = groups.join(', ');
     renderGroupChips();
-    renderFlagGrid();
   });
 
   // ---- save handlers ---------------------------------------------------
@@ -312,10 +359,10 @@
   });
 
   saveFlagBtn.addEventListener('click', () => {
-    const flag = flagInput.value.trim().slice(0, 14);
+    const flag = (selectedFlag || '').slice(0, 14);
     saveField(saveFlagBtn, flagStatus,
       { countryFlag: flag },
-      flag ? `Flag set: ${flag}` : 'Flag cleared');
+      flag ? `Flag set: ${flag} ${selectedName ? '(' + selectedName + ')' : ''}` : 'Flag cleared');
   });
 
   saveGroupsBtn.addEventListener('click', () => {
