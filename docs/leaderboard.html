@@ -118,6 +118,10 @@
   </section>
 
   <div id="lbView" style="display:none">
+    <!-- Group tabs - only shown when viewer is in 1+ groups -->
+    <div id="lbTabs" style="display:none; margin-bottom:12px; border-bottom:2px solid var(--border-row);
+         overflow-x:auto; white-space:nowrap"></div>
+
     <div class="chart-card" id="chartCard" style="display:none">
       <div class="chart-title">POINT TRAJECTORIES</div>
       <div class="chart-sub" id="chartSub">Cumulative fantasy points by match day</div>
@@ -175,12 +179,28 @@
   const chartSvg    = document.getElementById('lbChart');
   const chartEmpty  = document.getElementById('chartEmpty');
   const chartLegend = document.getElementById('lbLegend');
+  const lbTabs      = document.getElementById('lbTabs');
 
   await new Promise(r => requestAnimationFrame(r));
   signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
 
   let currentUser = null;
+  let currentUserDoc = null;     // signed-in user's Firestore doc (for their groupIds)
   let refreshTimer = null;
+  let allRows = [];              // all users from last fetch (raw)
+  let selectedTab = '_all';      // tab id: '_all' or a group name
+
+  // groupIds is the new multi-group array. Fall back to legacy groupId
+  // (single string) for users not yet migrated.
+  function userGroups(u) {
+    if (Array.isArray(u.groupIds)) return u.groupIds.filter(g => g && g.trim());
+    const legacy = (u.groupId || '').trim();
+    return legacy ? [legacy] : [];
+  }
+
+  function viewerGroups() {
+    return userGroups(currentUserDoc || {});
+  }
 
   window.fwc.onAuth(async (user) => {
     currentUser = user;
@@ -205,19 +225,27 @@
 
   async function loadLeaderboard() {
     try {
-      const { collection, getDocs, query, orderBy } = await import(
+      const { collection, getDocs, query, orderBy, doc, getDoc } = await import(
         "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
       );
+
+      // Refresh the viewer's own user doc each load so group changes
+      // take effect without a hard reload.
+      try {
+        const meSnap = await getDoc(doc(window.fwc.db, 'users', currentUser.uid));
+        currentUserDoc = meSnap.exists() ? { uid: currentUser.uid, ...meSnap.data() } : { uid: currentUser.uid };
+      } catch { /* keep prior value */ }
+
       const q = query(
         collection(window.fwc.db, 'users'),
         orderBy('totalPoints', 'desc'),
       );
       const snap = await getDocs(q);
-      const rows = [];
-      snap.forEach(doc => rows.push({ uid: doc.id, ...doc.data() }));
+      allRows = [];
+      snap.forEach(d => allRows.push({ uid: d.id, ...d.data() }));
 
-      renderTable(rows);
-      renderChart(rows);
+      renderTabs();
+      renderFiltered();
 
       lastUpdated.textContent = `Updated ${new Date().toLocaleTimeString()}`;
     } catch (e) {
@@ -225,6 +253,54 @@
         Couldn't load leaderboard: ${escape(e.message)}
       </td></tr>`;
     }
+  }
+
+  function renderTabs() {
+    const groups = viewerGroups();
+    const isAdmin = window.fwc.isAdmin(currentUser);
+    // Build the list of available tabs.
+    // - If viewer has groups: one tab per group, plus an "All" tab for admins
+    // - If viewer has no groups: hide tabs entirely (acts as global view)
+    if (!groups.length && !isAdmin) {
+      lbTabs.style.display = 'none';
+      selectedTab = '_all';
+      return;
+    }
+    const tabIds = [...groups];
+    if (isAdmin) tabIds.push('_all');
+    if (!tabIds.includes(selectedTab)) selectedTab = tabIds[0];
+
+    lbTabs.style.display = 'block';
+    lbTabs.innerHTML = tabIds.map(id => {
+      const label = id === '_all' ? 'All (admin)' : id;
+      const active = id === selectedTab;
+      return `<button data-tab="${escape(id)}" style="
+        background:none; border:none; padding:10px 16px; font-size:13px;
+        font-weight:600; letter-spacing:0.4px; cursor:pointer;
+        color:${active ? 'var(--accent)' : 'var(--text-muted)'};
+        border-bottom:3px solid ${active ? 'var(--accent)' : 'transparent'};
+        margin-bottom:-2px;
+      ">${escape(label)}</button>`;
+    }).join('');
+
+    lbTabs.querySelectorAll('[data-tab]').forEach(b => {
+      b.addEventListener('click', () => {
+        selectedTab = b.dataset.tab;
+        renderTabs();
+        renderFiltered();
+      });
+    });
+  }
+
+  function filterRowsForTab(rows) {
+    if (selectedTab === '_all') return rows;
+    return rows.filter(u => userGroups(u).includes(selectedTab));
+  }
+
+  function renderFiltered() {
+    const filtered = filterRowsForTab(allRows);
+    renderTable(filtered);
+    renderChart(filtered);
   }
 
   function renderTable(rows) {

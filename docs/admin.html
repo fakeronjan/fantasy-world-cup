@@ -393,11 +393,18 @@
     }
   }
 
+  // groupIds is the new multi-group array. Falls back to legacy single
+  // groupId if a doc hasn't been migrated yet.
+  function userGroups(u) {
+    if (Array.isArray(u.groupIds)) return u.groupIds.filter(g => g && g.trim()).map(g => g.trim());
+    const legacy = (u.groupId || '').trim();
+    return legacy ? [legacy] : [];
+  }
+
   function knownGroups() {
     const set = new Set();
     for (const u of allUsers) {
-      const g = (u.groupId || '').trim();
-      if (g) set.add(g);
+      for (const g of userGroups(u)) set.add(g);
     }
     return [...set].sort();
   }
@@ -407,9 +414,12 @@
     const counts = {};
     let ungrouped = 0;
     for (const u of allUsers) {
-      const g = (u.groupId || '').trim();
-      if (g) counts[g] = (counts[g] || 0) + 1;
-      else ungrouped++;
+      const gs = userGroups(u);
+      if (gs.length) {
+        for (const g of gs) counts[g] = (counts[g] || 0) + 1;
+      } else {
+        ungrouped++;
+      }
     }
     groupsCount.textContent = `${groups.length} group${groups.length === 1 ? '' : 's'}`;
     if (!groups.length && !ungrouped) {
@@ -438,31 +448,31 @@
       const pts = u.totalPoints ?? 0;
       const budget = u.currentBudget ?? '?';
       const email = u.email || '';
-      const group = u.groupId || '';
-      const groupBadge = group
-        ? `<span class="kind-tag" style="background:#e0e7ff;color:#3730a3">${escape(group)}</span>`
-        : '';
-      // Build datalist suggestions from existing group names so admin
-      // doesn't have to retype "college-buddies" 12 times.
+      const groups = userGroups(u);
+      const groupBadges = groups.map(g =>
+        `<span class="kind-tag" style="background:#e0e7ff;color:#3730a3">${escape(g)}</span>`
+      ).join(' ');
+      // Build datalist suggestions from existing group names.
       const dataListId = `groups-${escape(u.uid)}`;
       const dataListOpts = existingGroups.map(g => `<option value="${escape(g)}">`).join('');
+      const groupsValue = groups.join(', ');
       return `<li class="user-row" data-uid="${escape(u.uid)}">
         <div class="user-header" data-toggle="${escape(u.uid)}">
           <span class="caret">▸</span>
           <span class="name">${escape(name)}</span>
-          ${groupBadge}
+          ${groupBadges}
           <span class="meta">${picks} picks · $${budget} left · ${pts} pts</span>
         </div>
         <div class="user-detail" id="detail-${escape(u.uid)}">
           <div class="muted" style="font-size:11px; margin-bottom:6px">
             ${escape(email)} · UID ${escape(u.uid.slice(0, 12))}…
           </div>
-          <div style="display:flex; gap:6px; align-items:center; margin-bottom:8px; font-size:12px">
-            <label style="color:var(--text-muted)">Group:</label>
-            <input type="text" list="${dataListId}" value="${escape(group)}"
-                   placeholder="(none)" maxlength="40"
+          <div style="display:flex; gap:6px; align-items:center; margin-bottom:8px; font-size:12px; flex-wrap:wrap">
+            <label style="color:var(--text-muted)">Groups (comma-separated, max 5):</label>
+            <input type="text" list="${dataListId}" value="${escape(groupsValue)}"
+                   placeholder="boys-2026, work-crew"
                    data-group-input="${escape(u.uid)}"
-                   style="flex:1; min-width:120px; max-width:240px; padding:4px 8px; font-size:12px">
+                   style="flex:1; min-width:160px; max-width:340px; padding:4px 8px; font-size:12px">
             <datalist id="${dataListId}">${dataListOpts}</datalist>
             <button class="btn" style="padding:3px 10px; font-size:11px" data-set-group="${escape(u.uid)}">Set</button>
           </div>
@@ -498,18 +508,24 @@
     });
   }
 
-  async function setGroup(uid, newGroup) {
+  async function setGroup(uid, rawValue) {
     const user = allUsers.find(u => u.uid === uid);
     if (!user) return;
-    const cleaned = (newGroup || '').trim().slice(0, 40);
+    // Parse comma-separated input, trim, dedupe, cap at 5, each max 40 chars
+    const raw = (rawValue || '').split(',').map(g => g.trim()).filter(Boolean);
+    const deduped = [...new Set(raw)].slice(0, 5).map(g => g.slice(0, 40));
     try {
       const ref = window.fwc.doc(window.fwc.db, 'users', uid);
-      await window.fwc.setDoc(ref, { groupId: cleaned }, { merge: true });
-      user.groupId = cleaned;
+      // Also clear the legacy groupId field so it doesn't conflict
+      await window.fwc.setDoc(ref, { groupIds: deduped, groupId: '' }, { merge: true });
+      user.groupIds = deduped;
+      user.groupId = '';
       renderUserList();
       renderGroupsList();
       document.querySelector(`[data-uid="${uid}"]`)?.classList.add('open');
-      showToast(cleaned ? `Group set to "${cleaned}"` : 'Group cleared');
+      showToast(deduped.length
+        ? `Groups set: ${deduped.join(', ')}`
+        : 'Groups cleared');
     } catch (e) {
       showToast(`Failed: ${e.message}`, true);
     }
