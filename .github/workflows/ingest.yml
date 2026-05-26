@@ -15,13 +15,8 @@ name: ingest-live-results
 #     Then paste into the secret.
 
 on:
-  # Schedule disabled pre-kickoff (2026-05-25). Nothing meaningful to
-  # ingest until matches start on 2026-06-11, and the every-15-min cron
-  # was burning the Firestore Spark daily-read quota.
-  # Re-enable around 2026-06-10 by uncommenting the schedule block below.
-  #
-  # schedule:
-  #   - cron: "*/15 * * * *"
+  schedule:
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 jobs:
