@@ -11,12 +11,8 @@ name: email-daily-digest
 #   - FIREBASE_SA_BASE64: same as the ingest workflow
 
 on:
-  # Schedule disabled pre-kickoff (2026-05-26). Nothing useful to email
-  # until matches start on 2026-06-11. Re-enable around 2026-06-10 by
-  # uncommenting the schedule block.
-  #
-  # schedule:
-  #   - cron: "0 23 * * *"
+  schedule:
+    - cron: "0 23 * * *"
   workflow_dispatch:
     inputs:
       mode:
