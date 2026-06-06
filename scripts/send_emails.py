@@ -38,10 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _fwc_lib import firestore_client
 
 RESEND_URL = "https://api.resend.com/emails"
-# For v1, send from Resend's default sandbox sender. To use a custom
-# domain, change this to e.g. "Fantasy WC <noreply@your-domain.com>"
-# after adding + verifying the domain in the Resend dashboard.
-SENDER = "Fantasy WC <onboarding@resend.dev>"
+SENDER = "Fantasy WC <noreply@mail.fakeronjan.com>"
 
 SITE_URL = "https://fakeronjan.github.io/fantasy-world-cup/"
 PROFILE_URL = SITE_URL + "profile.html"
