@@ -93,6 +93,14 @@
     font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
     color: var(--text-muted); margin: 4px 0 10px;
   }
+  .show-all-btn {
+    display: block; width: 100%;
+    margin-top: 8px; padding: 7px;
+    background: none; border: none; border-top: 1px solid var(--border-row);
+    color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+    cursor: pointer;
+  }
+  .show-all-btn:hover { color: var(--bg-header); }
 </style>
 </head>
 <body>
@@ -136,21 +144,7 @@
 
     <!-- the actual stats -->
     <div id="statsBody" style="display:none">
-      <div class="section-label">Most drafted · who the league believes in</div>
-      <div class="stats-grid">
-        <div class="stats-card">
-          <h2>🌎 Most-drafted countries</h2>
-          <div class="card-sub" id="ownTeamsSub">Share of rosters holding each team</div>
-          <div id="ownTeamsList"></div>
-        </div>
-        <div class="stats-card">
-          <h2>⭐ Most-drafted players</h2>
-          <div class="card-sub" id="ownPlayersSub">Top 20 by share of rosters</div>
-          <div id="ownPlayersList"></div>
-        </div>
-      </div>
-
-      <div class="section-label" style="margin-top:18px">Top scorers · fantasy points so far</div>
+      <div class="section-label">Top scorers · fantasy points so far</div>
       <div class="stats-grid">
         <div class="stats-card">
           <h2>🥅 Top-scoring countries</h2>
@@ -163,6 +157,20 @@
           <div id="topPlayersList"></div>
         </div>
       </div>
+
+      <div class="section-label" style="margin-top:18px">Most drafted · who the league believes in</div>
+      <div class="stats-grid">
+        <div class="stats-card">
+          <h2>🌎 Most-drafted countries</h2>
+          <div class="card-sub" id="ownTeamsSub">Share of rosters holding each team</div>
+          <div id="ownTeamsList"></div>
+        </div>
+        <div class="stats-card">
+          <h2>⭐ Most-drafted players</h2>
+          <div class="card-sub" id="ownPlayersSub">Share of rosters holding each player</div>
+          <div id="ownPlayersList"></div>
+        </div>
+      </div>
       <p class="last-updated" id="lastUpdated"></p>
     </div>
   </div>
@@ -171,7 +179,8 @@
 <script type="module">
   import "./shared.js";
 
-  const OWN_PLAYERS_SHOWN = 20;   // most-drafted players
+  const OWN_PLAYERS_SHOWN = 20;   // most-drafted players (full list cap)
+  const OWN_COLLAPSE      = 5;    // most-drafted rows shown before "Show all"
   const TOP_TEAMS_SHOWN   = 12;   // top-scoring countries
   const TOP_PLAYERS_SHOWN = 20;   // top-scoring players
 
@@ -298,8 +307,8 @@
       const byOwn = (a, b) => b.n - a.n || b.pts - a.pts || a.name.localeCompare(b.name);
       const ownedTeams   = teamRows.filter(r => r.n > 0).sort(byOwn);
       const ownedPlayers = playerRows.filter(r => r.n > 0).sort(byOwn).slice(0, OWN_PLAYERS_SHOWN);
-      renderRows(ownTeamsList,   ownedTeams,   { mode: 'own', denom: nDrafters, kind: 'team' });
-      renderRows(ownPlayersList, ownedPlayers, { mode: 'own', denom: nDrafters, kind: 'player' });
+      renderRows(ownTeamsList,   ownedTeams,   { mode: 'own', denom: nDrafters, kind: 'team',   collapseTo: OWN_COLLAPSE });
+      renderRows(ownPlayersList, ownedPlayers, { mode: 'own', denom: nDrafters, kind: 'player', collapseTo: OWN_COLLAPSE });
 
       // --- Top scorers (sort by points, then ownership) ---
       const byPts = (a, b) => b.pts - a.pts || b.n - a.n || a.name.localeCompare(b.name);
@@ -316,7 +325,7 @@
 
   // mode 'own' -> bar = ownership %, headline = %, sub = points.
   // mode 'pts' -> bar = points vs leader, headline = points, sub = ownership.
-  function renderRows(host, rows, { mode, denom, kind }) {
+  function renderRows(host, rows, { mode, denom, kind, collapseTo }) {
     if (!rows.length) {
       host.innerHTML = `<div class="list-empty">No picks yet.</div>`;
       return;
@@ -327,7 +336,7 @@
       return;
     }
     const ptLabel = (n) => `${n} pt${n === 1 ? '' : 's'}`;
-    host.innerHTML = rows.map((r, i) => {
+    const rowHtml = (r, i) => {
       const pct = denom ? Math.round((r.n / denom) * 100) : 0;
       const barPct = mode === 'own' ? pct : (maxPts ? Math.round((r.pts / maxPts) * 100) : 0);
       const top = mode === 'own' ? `${pct}%` : ptLabel(r.pts);
@@ -347,7 +356,26 @@
           <div class="sub2">${sub2}</div>
         </div>
       </div>`;
-    }).join('');
+    };
+    const all = rows.map(rowHtml);
+
+    // Collapse long lists behind a "Show all" toggle so they don't crowd
+    // out the sections below.
+    if (collapseTo && rows.length > collapseTo) {
+      const shown = all.slice(0, collapseTo).join('');
+      const rest  = all.slice(collapseTo).join('');
+      host.innerHTML = `${shown}<div class="more-rows" style="display:none">${rest}</div>
+        <button type="button" class="show-all-btn">Show all ${rows.length} ▾</button>`;
+      const btn  = host.querySelector('.show-all-btn');
+      const more = host.querySelector('.more-rows');
+      btn.addEventListener('click', () => {
+        const open = more.style.display !== 'none';
+        more.style.display = open ? 'none' : 'block';
+        btn.innerHTML = open ? `Show all ${rows.length} ▾` : `Show less ▴`;
+      });
+    } else {
+      host.innerHTML = all.join('');
+    }
   }
 
   function escape(s) {
