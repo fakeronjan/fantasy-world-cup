@@ -340,6 +340,7 @@
   let teams = [];     // loaded from data/seed_teams.json
   let players = [];   // loaded from data/seed_players.json when available
   let roster = JSON.parse(localStorage.getItem("fwc_draft_roster") || "[]");
+  let draftLocked = false; // true once the tournament has kicked off (drafts closed)
   let currentTab = "teams";
   let teamIdToEmoji = {};  // slug → flag emoji
   let teamHistory = {};    // slug → history blob
@@ -490,6 +491,15 @@
 
   window.fwc.onAuth(async (user) => {
     currentUser = user;
+
+    // Drafting is only allowed pre-kickoff. Once the tournament starts the
+    // server rejects roster writes anyway; lock the UI too so nobody can
+    // Reset/edit and hit a confusing permissions error. (Transfers happen on
+    // the Transfer page, not here.)
+    const gs = await window.fwc.getGameState();
+    draftLocked = !(gs.state === 'pre-kickoff' || gs.state === 'config-missing');
+    window.fwc.renderStateBanner(document.getElementById('stateBanner'), gs);
+
     if (user) {
       userLine.innerHTML = `Signed in as <strong>${user.displayName || user.email}</strong>
         <button id="signOutBtn">Sign out</button>`;
@@ -528,6 +538,7 @@
   }
 
   function addToRoster(kind, id) {
+    if (draftLocked) { showToast('Drafts are closed - the tournament has started', true); return; }
     if (isInRoster(kind, id)) return;
     if (roster.length >= ROSTER_CAP) {
       showToast(`Max ${ROSTER_CAP} picks`, true);
@@ -547,6 +558,7 @@
   }
 
   function removeFromRoster(kind, id) {
+    if (draftLocked) return;
     roster = roster.filter(r => !(r.kind === kind && r.id === id));
     persist();
     render();
@@ -601,7 +613,7 @@
       const kind = currentTab === 'teams' ? 'team' : 'player';
       const remainsBudget = rosterSpent() + a.basePrice <= BUDGET;
       const room = roster.length < ROSTER_CAP;
-      const canAdd = !owned && remainsBudget && room;
+      const canAdd = !owned && remainsBudget && room && !draftLocked;
       // Flag emoji: for team rows from the team itself, for player rows from their team
       const emoji = kind === 'team' ? a.emoji : teamIdToEmoji[a.teamId];
       // Subtitle for player rows: "Club · Country" if we know the club,
@@ -666,9 +678,10 @@
       `).join('');
     }
 
-    const saveDisabled = !(currentUser && !window.fwc.configIsPlaceholder && roster.length > 0);
+    const saveDisabled = draftLocked || !(currentUser && !window.fwc.configIsPlaceholder && roster.length > 0);
     saveBtn.disabled = saveDisabled;
     saveBtnMobile.disabled = saveDisabled;
+    resetBtn.disabled = draftLocked || !roster.length;
 
     // keep the sticky mobile bar in sync
     msbBudget.textContent = `$${left} left`;
@@ -751,13 +764,14 @@
     removeFromRoster(btn.dataset.kind, btn.dataset.id);
   });
   resetBtn.addEventListener('click', () => {
+    if (draftLocked) return;
     if (!roster.length) return;
     if (confirm('Clear all picks?')) {
       roster = []; persist(); render();
     }
   });
   async function saveRoster() {
-    if (!currentUser || window.fwc.configIsPlaceholder) return;
+    if (draftLocked || !currentUser || window.fwc.configIsPlaceholder) return;
     const saveButtons = [saveBtn, saveBtnMobile];
     saveButtons.forEach(b => { b.disabled = true; b.textContent = 'Saving…'; });
     try {
