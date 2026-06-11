@@ -111,6 +111,22 @@
     font-size: 11px; color: var(--accent); font-weight: 600;
     margin: 0 0 8px;
   }
+
+  /* expand caret - hidden on desktop (rosters always shown there) */
+  .lb-expand-caret {
+    display: none;
+    font-size: 10px; color: var(--text-muted);
+    margin-left: 6px;
+    transition: transform 0.15s; transform-origin: center;
+  }
+  /* On mobile, collapse each roster behind a tap to keep the ranking scannable. */
+  @media (max-width: 700px) {
+    .lb-roster { display: none; }
+    .lb-expand-caret { display: inline-block; }
+    tr.lb-expanded .lb-roster { display: flex; }
+    tr.lb-expanded .lb-expand-caret { transform: rotate(90deg); }
+    tr:has(.lb-roster) { cursor: pointer; }
+  }
 </style>
 </head>
 <body>
@@ -213,6 +229,14 @@
 
   await new Promise(r => requestAnimationFrame(r));
   signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
+
+  // Tap a row to expand/collapse its roster (mobile only; on desktop the
+  // roster is always shown so this is a no-op visually).
+  lbBody.addEventListener('click', (e) => {
+    const tr = e.target.closest('tr');
+    if (!tr || !tr.querySelector('.lb-roster')) return;
+    tr.classList.toggle('lb-expanded');
+  });
 
   let currentUser = null;
   let currentUserDoc = null;     // signed-in user's Firestore doc (for their groupIds)
@@ -390,9 +414,10 @@
       const flagSpan = flag ? `<span style="font-size:16px; margin-right:6px; font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">${flag}</span>` : '';
       const podiumClass = rank <= 3 ? `podium-${rank}` : '';
       const rosterLine = rostersVisible ? rosterLineHtml(u.roster || []) : '';
+      const caret = rosterLine ? ' <span class="lb-expand-caret">&#9656;</span>' : '';
       return `<tr class="${isMe ? 'lb-row-me' : ''}">
         <td class="rank-cell ${podiumClass}">${rank}</td>
-        <td>${flagSpan}${escape(name)}${isMe ? ' <span class="accent-text" style="font-size:11px">(you)</span>' : ''}${rosterLine}</td>
+        <td>${flagSpan}${escape(name)}${isMe ? ' <span class="accent-text" style="font-size:11px">(you)</span>' : ''}${caret}${rosterLine}</td>
         <td class="num">${picks}</td>
         <td class="num">$${spent}</td>
         <td class="num"><strong>${pts}</strong></td>
