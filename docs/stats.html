@@ -159,9 +159,17 @@
       </div>
 
       <div class="section-label" style="margin-top:18px">Best value · most points per dollar paid</div>
-      <div class="stats-card">
-        <div class="card-sub">Teams + players ranked by fantasy points earned per $ of draft price</div>
-        <div id="valueList"></div>
+      <div class="stats-grid">
+        <div class="stats-card">
+          <h2>🌎 Best-value countries</h2>
+          <div class="card-sub">Fantasy points earned per $ of draft price</div>
+          <div id="valueTeamsList"></div>
+        </div>
+        <div class="stats-card">
+          <h2>⭐ Best-value players</h2>
+          <div class="card-sub">Fantasy points earned per $ of draft price</div>
+          <div id="valuePlayersList"></div>
+        </div>
       </div>
 
       <div class="section-label" style="margin-top:18px">Most drafted · who the league believes in</div>
@@ -194,7 +202,6 @@
   const COLLAPSE_TO       = 5;    // rows shown before a "Show all" toggle (scorers + drafted)
   const TOP_TEAMS_SHOWN   = 12;   // top-scoring countries
   const TOP_PLAYERS_SHOWN = 20;   // top-scoring players
-  const VALUE_SHOWN       = 15;   // best value picks (teams + players combined)
   const BUYS_CAP          = 3;    // voluntary buys per manager (mirror transfer.html)
 
   const userLine    = document.getElementById('userLine');
@@ -210,7 +217,8 @@
   const ownPlayersList = document.getElementById('ownPlayersList');
   const topTeamsList   = document.getElementById('topTeamsList');
   const topPlayersList = document.getElementById('topPlayersList');
-  const valueList      = document.getElementById('valueList');
+  const valueTeamsList   = document.getElementById('valueTeamsList');
+  const valuePlayersList = document.getElementById('valuePlayersList');
   const transferList   = document.getElementById('transferList');
   const ownTeamsSub    = document.getElementById('ownTeamsSub');
   const ownPlayersSub  = document.getElementById('ownPlayersSub');
@@ -363,13 +371,16 @@
       renderRows(topTeamsList,   topTeams,   { mode: 'pts', denom: nDrafters, kind: 'team',   collapseTo: COLLAPSE_TO });
       renderRows(topPlayersList, topPlayers, { mode: 'pts', denom: nDrafters, kind: 'player', collapseTo: COLLAPSE_TO });
 
-      // --- Best value (points per $ of draft price), teams + players combined ---
-      const valueRows = [...teamRows, ...playerRows]
+      // --- Best value (points per $ of draft price), countries + players split ---
+      const byValue = (a, b) => b.value - a.value || b.pts - a.pts || a.name.localeCompare(b.name);
+      const withValue = (rows) => rows
         .filter(r => r.pts > 0 && r.price > 0)
-        .map(r => ({ ...r, value: r.pts / r.price, kind: r.sub ? 'player' : 'team' }))
-        .sort((a, b) => b.value - a.value || b.pts - a.pts || a.name.localeCompare(b.name))
-        .slice(0, VALUE_SHOWN);
-      renderRows(valueList, valueRows, { mode: 'value', denom: nDrafters });
+        .map(r => ({ ...r, value: r.pts / r.price }))
+        .sort(byValue);
+      const valueTeams   = withValue(teamRows).slice(0, TOP_TEAMS_SHOWN);
+      const valuePlayers = withValue(playerRows).slice(0, TOP_PLAYERS_SHOWN);
+      renderRows(valueTeamsList,   valueTeams,   { mode: 'value', denom: nDrafters, kind: 'team',   collapseTo: COLLAPSE_TO });
+      renderRows(valuePlayersList, valuePlayers, { mode: 'value', denom: nDrafters, kind: 'player', collapseTo: COLLAPSE_TO });
 
       // --- Transfer activity (buys used; empty until windows open ~late June) ---
       renderTransferActivity(users);
