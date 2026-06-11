@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stats · Fantasy World Cup 2026</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  @media (max-width: 760px) {
+    .stats-grid { grid-template-columns: 1fr; }
+  }
+
+  .stats-card {
+    background: var(--bg-card);
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    padding: 16px;
+  }
+  .stats-card h2 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--bg-header);
+    margin-bottom: 2px;
+  }
+  .stats-card .card-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  /* one ownership row = rank, flag+name, bar, count/pct */
+  .own-row {
+    display: grid;
+    grid-template-columns: 22px 1fr 64px;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border-row);
+  }
+  .own-row:last-child { border-bottom: none; }
+  .own-rank {
+    font-size: 12px; font-weight: 700; color: var(--text-muted);
+    text-align: right; font-variant-numeric: tabular-nums;
+  }
+  .own-main { min-width: 0; }
+  .own-name {
+    font-size: 13px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .own-name .flag { font-size: 15px; margin-right: 6px;
+    font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif; }
+  .own-name .sub { color: var(--text-muted); font-weight: 400; font-size: 11px; margin-left: 4px; }
+  .own-bar {
+    margin-top: 4px; height: 6px; border-radius: 3px;
+    background: #eee; overflow: hidden;
+  }
+  .own-bar > span { display: block; height: 100%; border-radius: 3px; }
+  .own-meta {
+    text-align: right; font-size: 12px; font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+  }
+  .own-meta strong { color: var(--bg-header); font-size: 13px; }
+
+  .bar-team   > span { background: var(--bg-header); }
+  .bar-player > span { background: var(--accent); }
+
+  .empty-state, .locked-state {
+    text-align: center; padding: 56px 24px; color: var(--text-muted);
+  }
+  .locked-state .big {
+    font-size: 17px; color: var(--bg-header); font-weight: 700;
+    margin-bottom: 6px; letter-spacing: 0.5px;
+  }
+  .last-updated {
+    font-size: 11px; color: var(--text-muted);
+    text-align: right; margin-top: 12px;
+  }
+  .admin-note {
+    font-size: 11px; color: var(--accent); font-weight: 600;
+    text-align: center; margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>STATS</h1>
+  <p class="subtitle">Draft ownership across the league · who the league believes in</p>
+  <p class="user-line" id="userLine"></p>
+</header>
+
+<nav class="site-nav" id="siteNav" style="display:none">
+  <a href="./index.html">Home</a>
+  <a href="./profile.html">Profile</a>
+  <a href="./draft.html">Draft</a>
+  <a href="./roster.html">My Roster</a>
+  <a href="./leaderboard.html">Leaderboard</a>
+  <a href="./stats.html" class="active">Stats</a>
+  <a href="./transfer.html" id="transferLink">Transfer</a>
+  <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+</nav>
+
+<main>
+  <div id="stateBanner"></div>
+
+  <section class="card signin-card" id="signinCard" style="display:none">
+    <h2>Sign in to view stats</h2>
+    <p>You need to sign in with Google.</p>
+    <button class="btn" id="signInBtn">Sign in with Google</button>
+  </section>
+
+  <div id="statsView" style="display:none">
+    <div id="adminNote" class="admin-note" style="display:none">
+      Admin preview · ownership goes live for everyone at kickoff
+    </div>
+
+    <!-- pre-kickoff lock -->
+    <div id="lockedCard" class="stats-card locked-state" style="display:none">
+      <div class="big">📊 Ownership reveals at kickoff</div>
+      <div id="lockedSub">Hidden until the first match so late drafters can't copy the popular picks.</div>
+    </div>
+
+    <!-- the actual stats -->
+    <div id="statsBody" style="display:none">
+      <div class="stats-grid">
+        <div class="stats-card">
+          <h2>🌎 Most-drafted countries</h2>
+          <div class="card-sub" id="teamsSub">Share of rosters holding each team</div>
+          <div id="teamsList"></div>
+        </div>
+        <div class="stats-card">
+          <h2>⭐ Most-drafted players</h2>
+          <div class="card-sub" id="playersSub">Top 20 by share of rosters</div>
+          <div id="playersList"></div>
+        </div>
+      </div>
+      <p class="last-updated" id="lastUpdated"></p>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import "./shared.js";
+
+  const PLAYERS_SHOWN = 20;
+
+  const userLine   = document.getElementById('userLine');
+  const signinCard = document.getElementById('signinCard');
+  const statsView  = document.getElementById('statsView');
+  const siteNav    = document.getElementById('siteNav');
+  const adminLink  = document.getElementById('adminLink');
+  const adminNote  = document.getElementById('adminNote');
+  const signInBtn  = document.getElementById('signInBtn');
+  const lockedCard = document.getElementById('lockedCard');
+  const statsBody  = document.getElementById('statsBody');
+  const teamsList  = document.getElementById('teamsList');
+  const playersList = document.getElementById('playersList');
+  const teamsSub   = document.getElementById('teamsSub');
+  const playersSub = document.getElementById('playersSub');
+  const lastUpdated = document.getElementById('lastUpdated');
+
+  await new Promise(r => requestAnimationFrame(r));
+  signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
+
+  let teams = [];     // [{id, name, emoji, ...}]
+  let players = [];    // [{id, name, teamId, position, ...}]
+  let teamById = {};
+  let playerById = {};
+  let teamEmoji = {};  // teamId -> flag emoji
+
+  async function loadCatalog() {
+    if (teams.length) return; // once
+    const [tRes, pRes] = await Promise.all([
+      fetch('./data/seed_teams.json'),
+      fetch('./data/seed_players.json'),
+    ]);
+    teams = await tRes.json();
+    players = await pRes.json();
+    teamById = Object.fromEntries(teams.map(t => [t.id, t]));
+    playerById = Object.fromEntries(players.map(p => [p.id, p]));
+    teamEmoji = Object.fromEntries(teams.map(t => [t.id, t.emoji || '']));
+  }
+
+  window.fwc.onAuth(async (user) => {
+    if (!user) {
+      signinCard.style.display = 'block';
+      statsView.style.display = 'none';
+      siteNav.style.display = 'none';
+      return;
+    }
+    userLine.innerHTML = `Signed in as <strong>${escape(user.displayName || user.email)}</strong>
+      <button id="signOutBtn">Sign out</button>`;
+    document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
+    siteNav.style.display = 'flex';
+    signinCard.style.display = 'none';
+    statsView.style.display = 'block';
+    if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+
+    const gs = await window.fwc.getGameState();
+    window.fwc.renderStateBanner(document.getElementById('stateBanner'), gs);
+
+    const isPre = gs.state === 'pre-kickoff';
+    const isAdmin = window.fwc.isAdmin(user);
+
+    // Gate: ownership is hidden until kickoff. Admins get a preview so they
+    // can verify the page before the tournament starts.
+    if (isPre && !isAdmin) {
+      lockedCard.style.display = 'block';
+      statsBody.style.display = 'none';
+      adminNote.style.display = 'none';
+      return;
+    }
+    adminNote.style.display = (isPre && isAdmin) ? 'block' : 'none';
+    lockedCard.style.display = 'none';
+    statsBody.style.display = 'block';
+
+    await loadStats();
+  });
+
+  async function loadStats() {
+    try {
+      const { collection, getDocs } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      await loadCatalog();
+
+      const snap = await getDocs(collection(window.fwc.db, 'users'));
+      const rosters = [];
+      snap.forEach(d => {
+        const roster = (d.data().roster || []).filter(p => p && (p.currentlyHeld !== false));
+        if (roster.length) rosters.push(roster);
+      });
+      const nDrafters = rosters.length;
+
+      const teamCount = {};
+      const playerCount = {};
+      for (const roster of rosters) {
+        for (const pick of roster) {
+          if (pick.kind === 'team')   teamCount[pick.assetId]   = (teamCount[pick.assetId]   || 0) + 1;
+          if (pick.kind === 'player') playerCount[pick.assetId] = (playerCount[pick.assetId] || 0) + 1;
+        }
+      }
+
+      teamsSub.textContent   = `Share of ${nDrafters} rosters holding each team`;
+      playersSub.textContent = `Top ${PLAYERS_SHOWN} by share of ${nDrafters} rosters`;
+
+      const teamRows = Object.entries(teamCount)
+        .map(([id, n]) => ({
+          name: teamById[id]?.name || id,
+          flag: teamEmoji[id] || '',
+          n,
+        }))
+        .sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
+
+      const playerRows = Object.entries(playerCount)
+        .map(([id, n]) => ({
+          name: playerById[id]?.name || id,
+          flag: teamEmoji[playerById[id]?.teamId] || '',
+          sub: playerById[id]?.position || '',
+          n,
+        }))
+        .sort((a, b) => b.n - a.n || a.name.localeCompare(b.name))
+        .slice(0, PLAYERS_SHOWN);
+
+      renderRows(teamsList, teamRows, nDrafters, 'team');
+      renderRows(playersList, playerRows, nDrafters, 'player');
+
+      lastUpdated.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+    } catch (e) {
+      statsBody.innerHTML = `<div class="stats-card empty-state">Couldn't load stats: ${escape(e.message)}</div>`;
+    }
+  }
+
+  function renderRows(host, rows, denom, kind) {
+    if (!rows.length) {
+      host.innerHTML = `<div class="empty-state" style="padding:32px">No picks yet.</div>`;
+      return;
+    }
+    host.innerHTML = rows.map((r, i) => {
+      const pct = denom ? Math.round((r.n / denom) * 100) : 0;
+      const flag = r.flag ? `<span class="flag">${r.flag}</span>` : '';
+      const sub = r.sub ? `<span class="sub">${escape(r.sub)}</span>` : '';
+      return `<div class="own-row">
+        <div class="own-rank">${i + 1}</div>
+        <div class="own-main">
+          <div class="own-name">${flag}${escape(r.name)}${sub}</div>
+          <div class="own-bar bar-${kind}"><span style="width:${pct}%"></span></div>
+        </div>
+        <div class="own-meta"><strong>${r.n}</strong>/${denom} · ${pct}%</div>
+      </div>`;
+    }).join('');
+  }
+
+  function escape(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+  }
+</script>
+</body>
+</html>
