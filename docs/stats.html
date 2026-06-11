@@ -225,8 +225,26 @@
   let teamEmoji = {};
   let catalogReady = false;
 
-  async function loadCatalog() {
+  async function loadCatalog(syncedAt) {
     if (catalogReady) return;
+    // The team/player docs (incl. totalPoints) only change when the ingest
+    // cron runs. Cache them in localStorage keyed by the last-sync timestamp
+    // so repeat views between syncs skip re-reading ~312 docs. Cache miss or
+    // no timestamp -> read fresh from Firestore and re-cache.
+    const CACHE_KEY = 'fwc_stats_catalog';
+    if (syncedAt) {
+      try {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+        if (cached && cached.ts === syncedAt
+            && Array.isArray(cached.teams) && Array.isArray(cached.players)) {
+          teams = cached.teams;
+          players = cached.players;
+          teamEmoji = Object.fromEntries(teams.map(t => [t.id, t.emoji || '']));
+          catalogReady = true;
+          return;
+        }
+      } catch { /* fall through to a fresh read */ }
+    }
     const { collection, getDocs } = await import(
       "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
     );
@@ -238,6 +256,10 @@
     players = pSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     teamEmoji = Object.fromEntries(teams.map(t => [t.id, t.emoji || '']));
     catalogReady = true;
+    if (syncedAt) {
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: syncedAt, teams, players })); }
+      catch { /* storage full/unavailable - skip caching */ }
+    }
   }
 
   window.fwc.onAuth(async (user) => {
@@ -280,7 +302,15 @@
       const { collection, getDocs, doc, getDoc } = await import(
         "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
       );
-      await loadCatalog();
+
+      // Read the sync timestamp first - it keys the catalog cache + the label.
+      let syncedAt = null;
+      try {
+        const snapDoc = await getDoc(doc(window.fwc.db, 'leaderboard', 'snapshot'));
+        syncedAt = snapDoc.exists() ? (snapDoc.data().updatedAt || null) : null;
+      } catch { /* ignore */ }
+
+      await loadCatalog(syncedAt);
 
       // Ownership: count held picks across all rosters.
       const snap = await getDocs(collection(window.fwc.db, 'users'));
@@ -344,14 +374,10 @@
       // --- Transfer activity (buys used; empty until windows open ~late June) ---
       renderTransferActivity(users);
 
-      // Real last-sync time (when ingest last ran), not page-load time.
-      try {
-        const snapDoc = await getDoc(doc(window.fwc.db, 'leaderboard', 'snapshot'));
-        const ts = snapDoc.exists() ? snapDoc.data().updatedAt : null;
-        lastUpdated.textContent = ts
-          ? `Scores last synced ${new Date(ts).toLocaleString()}`
-          : 'No match results synced yet';
-      } catch { lastUpdated.textContent = ''; }
+      // Real last-sync time (read once at the top of this function).
+      lastUpdated.textContent = syncedAt
+        ? `Scores last synced ${new Date(syncedAt).toLocaleString()}`
+        : 'No match results synced yet';
     } catch (e) {
       statsBody.innerHTML = `<div class="stats-card empty-state">Couldn't load stats: ${escape(e.message)}</div>`;
     }

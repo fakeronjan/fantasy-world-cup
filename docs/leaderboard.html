@@ -314,14 +314,32 @@
     if (!refreshTimer) refreshTimer = setInterval(loadLeaderboard, REFRESH_MS);
   });
 
+  let lastSyncedAt = null; // updatedAt of the snapshot we last rendered from
+
   async function loadLeaderboard() {
     try {
       const { collection, getDocs, query, orderBy, doc, getDoc } = await import(
         "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
       );
 
-      // Refresh the viewer's own user doc each load so group changes
-      // take effect without a hard reload.
+      // 1 read: the snapshot's updatedAt tells us when scores last changed
+      // (i.e. when the ingest cron last ran). Use it as the "last synced"
+      // label AND as a change-detector, so each 5-min poll doesn't re-scan
+      // the whole users collection when nothing has changed.
+      let syncedAt = null;
+      try {
+        const snapDoc = await getDoc(doc(window.fwc.db, 'leaderboard', 'snapshot'));
+        syncedAt = snapDoc.exists() ? (snapDoc.data().updatedAt || null) : null;
+        lastUpdated.textContent = syncedAt
+          ? `Scores last synced ${new Date(syncedAt).toLocaleString()}`
+          : 'No match results synced yet';
+      } catch { /* keep prior label */ }
+
+      // Nothing changed since our last render -> skip the expensive full scan.
+      // Always scan on first load, or if we couldn't read the snapshot ts.
+      if (allRows.length && syncedAt && syncedAt === lastSyncedAt) return;
+
+      // Refresh the viewer's own user doc so group changes take effect.
       try {
         const meSnap = await getDoc(doc(window.fwc.db, 'users', currentUser.uid));
         currentUserDoc = meSnap.exists() ? { uid: currentUser.uid, ...meSnap.data() } : { uid: currentUser.uid };
@@ -339,19 +357,10 @@
         (b.totalPoints ?? 0) - (a.totalPoints ?? 0)
         || (b.tieBreakerScore ?? 0) - (a.tieBreakerScore ?? 0)
       );
+      lastSyncedAt = syncedAt;
 
       renderTabs();
       renderFiltered();
-
-      // Show when results were actually last ingested (not when the page
-      // last polled). updatedAt is written by the ingest run.
-      try {
-        const snapDoc = await getDoc(doc(window.fwc.db, 'leaderboard', 'snapshot'));
-        const ts = snapDoc.exists() ? snapDoc.data().updatedAt : null;
-        lastUpdated.textContent = ts
-          ? `Scores last synced ${new Date(ts).toLocaleString()}`
-          : 'No match results synced yet';
-      } catch { lastUpdated.textContent = ''; }
     } catch (e) {
       lbBody.innerHTML = `<tr><td colspan="5" class="empty-state">
         Couldn't load leaderboard: ${escape(e.message)}
