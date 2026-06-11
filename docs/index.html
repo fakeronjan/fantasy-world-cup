@@ -48,6 +48,40 @@
     margin-top: 12px;
   }
 
+  /* "Game closed" treatment for the signed-out hero after kickoff */
+  .btn:disabled, .btn[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+    pointer-events: none;
+  }
+  .closed-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+  .closed-banner {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    background: rgba(255, 110, 180, 0.10);
+    padding: 8px 16px;
+    border-radius: 999px;
+  }
+  .closed-signin {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+  .closed-signin:hover { color: var(--accent); }
+
   /* --- 4-step "how it works" grid --- */
   .steps-grid {
     display: grid;
@@ -335,7 +369,22 @@
     } else {
       userLine.textContent = '';
       siteNav.style.display = 'none';
-      ctaRow.innerHTML = `<button class="btn btn-accent" id="signInBtn">Sign in with Google to play</button>`;
+
+      // Sign-ups close at kickoff. Before then: normal "sign in to play".
+      // After: gray out the join button + show the game is closed, but keep
+      // a working sign-in link so existing players aren't locked out.
+      const gs = await window.fwc.getGameState();
+      const signupsOpen = gs.state === 'pre-kickoff' || gs.state === 'config-missing';
+      if (signupsOpen) {
+        ctaRow.innerHTML = `<button class="btn btn-accent" id="signInBtn">Sign in with Google to play</button>`;
+      } else {
+        ctaRow.innerHTML = `
+          <div class="closed-cta">
+            <span class="closed-banner">🔒 Sign-ups closed · the tournament has kicked off</span>
+            <button class="btn btn-accent" disabled>Join the game</button>
+            <button class="closed-signin" id="signInBtn">Already in the league? Sign in</button>
+          </div>`;
+      }
       document.getElementById('signInBtn').addEventListener('click', () => window.fwc.signInWithGoogle());
     }
   });
