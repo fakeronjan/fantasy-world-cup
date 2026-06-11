@@ -16,7 +16,39 @@
   @media (max-width: 900px) {
     .draft-layout { grid-template-columns: 1fr; }
     .draft-sidebar { position: static !important; }
+    /* On mobile the roster panel stacks below the long asset list, so the
+       Save button is hard to reach. Surface an always-visible sticky bar. */
+    .mobile-save-bar { display: flex; }
+    /* keep the last table rows clear of the fixed bar */
+    body { padding-bottom: 76px; }
+    /* the in-panel Save is redundant once the sticky bar is up; keep Reset */
+    .save-row #saveBtn { display: none; }
   }
+
+  /* Sticky bottom action bar - mobile only (hidden on desktop) */
+  .mobile-save-bar {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 50;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-row);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.12);
+    padding: 10px 14px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+  .mobile-save-bar .msb-summary {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--bg-header);
+    font-variant-numeric: tabular-nums;
+  }
+  .mobile-save-bar .msb-summary .warn { color: var(--accent); }
+  .mobile-save-bar .msb-sep { color: var(--text-muted); margin: 0 6px; font-weight: 400; }
+  .mobile-save-bar .btn { white-space: nowrap; min-width: 130px; justify-content: center; }
 
   .draft-sidebar {
     position: sticky;
@@ -283,6 +315,16 @@
   </div>
 </main>
 
+<!-- Mobile-only sticky save bar (always reachable without scrolling) -->
+<div class="mobile-save-bar" id="mobileSaveBar">
+  <div class="msb-summary">
+    <span id="msbBudget">$60 left</span>
+    <span class="msb-sep">·</span>
+    <span id="msbPicks">0 / 12</span>
+  </div>
+  <button class="btn btn-accent" id="saveBtnMobile">Save Roster</button>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -399,6 +441,9 @@
   const rosterEmpty = document.getElementById('rosterEmpty');
   const resetBtn    = document.getElementById('resetBtn');
   const saveBtn     = document.getElementById('saveBtn');
+  const saveBtnMobile = document.getElementById('saveBtnMobile');
+  const msbBudget   = document.getElementById('msbBudget');
+  const msbPicks    = document.getElementById('msbPicks');
   const saveHint    = document.getElementById('saveHint');
   const toast       = document.getElementById('toast');
 
@@ -620,7 +665,14 @@
       `).join('');
     }
 
-    saveBtn.disabled = !(currentUser && !window.fwc.configIsPlaceholder && roster.length > 0);
+    const saveDisabled = !(currentUser && !window.fwc.configIsPlaceholder && roster.length > 0);
+    saveBtn.disabled = saveDisabled;
+    saveBtnMobile.disabled = saveDisabled;
+
+    // keep the sticky mobile bar in sync
+    msbBudget.textContent = `$${left} left`;
+    msbBudget.classList.toggle('warn', left < 0);
+    msbPicks.textContent = `${roster.length} / ${ROSTER_CAP}`;
   }
 
   function updateSaveHint() {
@@ -703,9 +755,10 @@
       roster = []; persist(); render();
     }
   });
-  saveBtn.addEventListener('click', async () => {
+  async function saveRoster() {
     if (!currentUser || window.fwc.configIsPlaceholder) return;
-    saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+    const saveButtons = [saveBtn, saveBtnMobile];
+    saveButtons.forEach(b => { b.disabled = true; b.textContent = 'Saving…'; });
     try {
       const now = new Date().toISOString();
       const userRef = window.fwc.doc(window.fwc.db, 'users', currentUser.uid);
@@ -752,9 +805,12 @@
       console.error(e);
       showToast(`Save failed: ${e.message}`, true);
     } finally {
-      saveBtn.disabled = false; saveBtn.textContent = 'Save Roster';
+      saveButtons.forEach(b => { b.textContent = 'Save Roster'; });
+      renderRosterPanel(); // re-sync disabled state to current roster
     }
-  });
+  }
+  saveBtn.addEventListener('click', saveRoster);
+  saveBtnMobile.addEventListener('click', saveRoster);
 
   // ---- helpers -----------------------------------------------------------
   function escape(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
