@@ -615,10 +615,10 @@
     totalSpent.textContent = `$${spent}`;
     budgetLeft.textContent = `$${60 - spent}`;
 
-    // Show a hint about live scoring status
+    // Show a hint about scoring cadence when nothing has scored yet.
     const hasScoring = roster.some(p => (p.points ?? 0) > 0);
     if (!hasScoring) {
-      footerNote.textContent = 'Live scoring kicks in once the tournament starts and the ingest pipeline is wired up. Until then, all picks show 0 pts.';
+      footerNote.textContent = 'Scores sync as match results come in (typically every few hours during the tournament), not in real time.';
     } else {
       footerNote.textContent = '';
     }

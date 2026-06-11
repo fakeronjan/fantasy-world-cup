@@ -277,7 +277,7 @@
 
   async function loadStats() {
     try {
-      const { collection, getDocs } = await import(
+      const { collection, getDocs, doc, getDoc } = await import(
         "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
       );
       await loadCatalog();
@@ -344,7 +344,14 @@
       // --- Transfer activity (buys used; empty until windows open ~late June) ---
       renderTransferActivity(users);
 
-      lastUpdated.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+      // Real last-sync time (when ingest last ran), not page-load time.
+      try {
+        const snapDoc = await getDoc(doc(window.fwc.db, 'leaderboard', 'snapshot'));
+        const ts = snapDoc.exists() ? snapDoc.data().updatedAt : null;
+        lastUpdated.textContent = ts
+          ? `Scores last synced ${new Date(ts).toLocaleString()}`
+          : 'No match results synced yet';
+      } catch { lastUpdated.textContent = ''; }
     } catch (e) {
       statsBody.innerHTML = `<div class="stats-card empty-state">Couldn't load stats: ${escape(e.message)}</div>`;
     }

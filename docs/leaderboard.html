@@ -133,7 +133,7 @@
 
 <header class="site-header">
   <h1>LEADERBOARD</h1>
-  <p class="subtitle">Live rankings across the league · Auto-refreshes every 30s</p>
+  <p class="subtitle">League standings · scores sync as match results come in (typically every few hours)</p>
   <p class="user-line" id="userLine"></p>
 </header>
 
@@ -340,7 +340,15 @@
       renderTabs();
       renderFiltered();
 
-      lastUpdated.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+      // Show when results were actually last ingested (not when the page
+      // last polled). updatedAt is written by the ingest run.
+      try {
+        const snapDoc = await getDoc(doc(window.fwc.db, 'leaderboard', 'snapshot'));
+        const ts = snapDoc.exists() ? snapDoc.data().updatedAt : null;
+        lastUpdated.textContent = ts
+          ? `Scores last synced ${new Date(ts).toLocaleString()}`
+          : 'No match results synced yet';
+      } catch { lastUpdated.textContent = ''; }
     } catch (e) {
       lbBody.innerHTML = `<tr><td colspan="5" class="empty-state">
         Couldn't load leaderboard: ${escape(e.message)}
