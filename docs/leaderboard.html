@@ -90,6 +90,27 @@
   @media (max-width: 600px) {
     svg.chart { height: 260px; }
   }
+
+  /* small-font roster line under each leaderboard name */
+  .lb-roster {
+    margin-top: 5px;
+    display: flex; flex-wrap: wrap; gap: 3px 8px;
+    font-size: 11px; line-height: 1.45;
+  }
+  .lb-roster .rp {
+    display: inline-flex; align-items: center; gap: 3px;
+    white-space: nowrap;
+  }
+  .lb-roster .rp.team   { color: var(--bg-header); font-weight: 600; }
+  .lb-roster .rp.player { color: var(--accent); }
+  .lb-roster .rp-flag {
+    font-size: 12px;
+    font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;
+  }
+  .roster-note {
+    font-size: 11px; color: var(--accent); font-weight: 600;
+    margin: 0 0 8px;
+  }
 </style>
 </head>
 <body>
@@ -136,6 +157,10 @@
       </div>
       <div class="legend" id="lbLegend"></div>
     </div>
+
+    <p id="rosterNote" class="roster-note" style="display:none">
+      Admin preview · rosters reveal for everyone at kickoff
+    </p>
 
     <table class="data">
       <thead>
@@ -194,6 +219,29 @@
   let refreshTimer = null;
   let allRows = [];              // all users from last fetch (raw)
   let selectedTab = null;        // tab id: '_all' or a group name (defaults on first render)
+  let rostersVisible = false;    // reveal each player's roster (post-kickoff, or admin preview)
+  let teamById = {}, playerById = {}, teamEmoji = {};
+  let catalogReady = false;
+
+  // Load the team/player catalog once, to resolve roster assetIds to
+  // names + flags for the per-row roster line.
+  async function loadCatalog() {
+    if (catalogReady) return;
+    try {
+      const [tRes, pRes] = await Promise.all([
+        fetch('./data/seed_teams.json'),
+        fetch('./data/seed_players.json'),
+      ]);
+      const teams = await tRes.json();
+      const players = await pRes.json();
+      teamById = Object.fromEntries(teams.map(t => [t.id, t]));
+      playerById = Object.fromEntries(players.map(p => [p.id, p]));
+      teamEmoji = Object.fromEntries(teams.map(t => [t.id, t.emoji || '']));
+      catalogReady = true;
+    } catch (e) {
+      console.error('catalog load failed', e);
+    }
+  }
 
   // groupIds is the new multi-group array. Fall back to legacy groupId
   // (single string) for users not yet migrated.
@@ -223,6 +271,17 @@
     signinCard.style.display = 'none';
     lbView.style.display = 'block';
     if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+
+    // Rosters are hidden until kickoff so picks stay secret during drafting.
+    // Admins get a preview. (Recomputed once on load; a refresh reveals them
+    // at kickoff.)
+    const gs = await window.fwc.getGameState();
+    window.fwc.renderStateBanner(document.getElementById('stateBanner'), gs);
+    const isAdmin = window.fwc.isAdmin(user);
+    rostersVisible = (gs.state !== 'pre-kickoff') || isAdmin;
+    document.getElementById('rosterNote').style.display =
+      (gs.state === 'pre-kickoff' && isAdmin) ? 'block' : 'none';
+    if (rostersVisible) await loadCatalog();
 
     await loadLeaderboard();
     if (!refreshTimer) refreshTimer = setInterval(loadLeaderboard, REFRESH_MS);
@@ -330,14 +389,37 @@
       const flag  = window.fwc.flagFor(u);
       const flagSpan = flag ? `<span style="font-size:16px; margin-right:6px; font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">${flag}</span>` : '';
       const podiumClass = rank <= 3 ? `podium-${rank}` : '';
+      const rosterLine = rostersVisible ? rosterLineHtml(u.roster || []) : '';
       return `<tr class="${isMe ? 'lb-row-me' : ''}">
         <td class="rank-cell ${podiumClass}">${rank}</td>
-        <td>${flagSpan}${escape(name)}${isMe ? ' <span class="accent-text" style="font-size:11px">(you)</span>' : ''}</td>
+        <td>${flagSpan}${escape(name)}${isMe ? ' <span class="accent-text" style="font-size:11px">(you)</span>' : ''}${rosterLine}</td>
         <td class="num">${picks}</td>
         <td class="num">$${spent}</td>
         <td class="num"><strong>${pts}</strong></td>
       </tr>`;
     }).join('');
+  }
+
+  // Compact roster line: teams first (country name), then players (short name),
+  // each with their country flag. Teal for teams, pink for players.
+  function rosterLineHtml(roster) {
+    if (!catalogReady) return '';
+    const held = (roster || []).filter(p => p && p.currentlyHeld !== false);
+    if (!held.length) return '';
+    const teamsHeld   = held.filter(p => p.kind === 'team');
+    const playersHeld = held.filter(p => p.kind === 'player');
+    const chip = (kind, flag, label) =>
+      `<span class="rp ${kind}">${flag ? `<span class="rp-flag">${flag}</span>` : ''}${escape(label)}</span>`;
+    const shortName = (s) => String(s).trim().split(/\s+/).pop();
+    const chips = [
+      ...teamsHeld.map(p =>
+        chip('team', teamEmoji[p.assetId] || '', teamById[p.assetId]?.name || p.assetId)),
+      ...playersHeld.map(p => {
+        const pl = playerById[p.assetId];
+        return chip('player', teamEmoji[pl?.teamId] || '', shortName(pl?.name || p.assetId));
+      }),
+    ];
+    return `<div class="lb-roster">${chips.join('')}</div>`;
   }
 
   function renderChart(rows) {
