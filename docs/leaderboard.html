@@ -192,7 +192,7 @@
   let currentUserDoc = null;     // signed-in user's Firestore doc (for their groupIds)
   let refreshTimer = null;
   let allRows = [];              // all users from last fetch (raw)
-  let selectedTab = '_all';      // tab id: '_all' or a group name
+  let selectedTab = null;        // tab id: '_all' or a group name (defaults on first render)
 
   // groupIds is the new multi-group array. Fall back to legacy groupId
   // (single string) for users not yet migrated.
@@ -266,22 +266,22 @@
 
   function renderTabs() {
     const groups = viewerGroups();
-    const isAdmin = window.fwc.isAdmin(currentUser);
-    // Build the list of available tabs.
-    // - If viewer has groups: one tab per group, plus an "All" tab for admins
-    // - If viewer has no groups: hide tabs entirely (acts as global view)
-    if (!groups.length && !isAdmin) {
+    // Everyone gets their group tabs plus an "Overall" tab spanning all
+    // players. Group tabs come first so a group member still defaults to
+    // their own group; the Overall tab is an added view, not the default.
+    const tabIds = [...groups, '_all'];
+    // If the only available tab is the global one (viewer has no groups),
+    // there's nothing to switch between, so skip the tab bar entirely.
+    if (tabIds.length === 1) {
       lbTabs.style.display = 'none';
       selectedTab = '_all';
       return;
     }
-    const tabIds = [...groups];
-    if (isAdmin) tabIds.push('_all');
     if (!tabIds.includes(selectedTab)) selectedTab = tabIds[0];
 
     lbTabs.style.display = 'block';
     lbTabs.innerHTML = tabIds.map(id => {
-      const label = id === '_all' ? 'All (admin)' : id;
+      const label = id === '_all' ? 'Overall' : id;
       const active = id === selectedTab;
       return `<button data-tab="${escape(id)}" style="
         background:none; border:none; padding:10px 16px; font-size:13px;
