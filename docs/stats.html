@@ -191,7 +191,7 @@
   import "./shared.js";
 
   const OWN_PLAYERS_SHOWN = 20;   // most-drafted players (full list cap)
-  const OWN_COLLAPSE      = 5;    // most-drafted rows shown before "Show all"
+  const COLLAPSE_TO       = 5;    // rows shown before a "Show all" toggle (scorers + drafted)
   const TOP_TEAMS_SHOWN   = 12;   // top-scoring countries
   const TOP_PLAYERS_SHOWN = 20;   // top-scoring players
   const VALUE_SHOWN       = 15;   // best value picks (teams + players combined)
@@ -353,15 +353,15 @@
       const byOwn = (a, b) => b.n - a.n || b.pts - a.pts || a.name.localeCompare(b.name);
       const ownedTeams   = teamRows.filter(r => r.n > 0).sort(byOwn);
       const ownedPlayers = playerRows.filter(r => r.n > 0).sort(byOwn).slice(0, OWN_PLAYERS_SHOWN);
-      renderRows(ownTeamsList,   ownedTeams,   { mode: 'own', denom: nDrafters, kind: 'team',   collapseTo: OWN_COLLAPSE });
-      renderRows(ownPlayersList, ownedPlayers, { mode: 'own', denom: nDrafters, kind: 'player', collapseTo: OWN_COLLAPSE });
+      renderRows(ownTeamsList,   ownedTeams,   { mode: 'own', denom: nDrafters, kind: 'team',   collapseTo: COLLAPSE_TO });
+      renderRows(ownPlayersList, ownedPlayers, { mode: 'own', denom: nDrafters, kind: 'player', collapseTo: COLLAPSE_TO });
 
       // --- Top scorers (sort by points, then ownership) ---
       const byPts = (a, b) => b.pts - a.pts || b.n - a.n || a.name.localeCompare(b.name);
       const topTeams   = [...teamRows].sort(byPts).slice(0, TOP_TEAMS_SHOWN);
       const topPlayers = [...playerRows].sort(byPts).slice(0, TOP_PLAYERS_SHOWN);
-      renderRows(topTeamsList,   topTeams,   { mode: 'pts', denom: nDrafters, kind: 'team' });
-      renderRows(topPlayersList, topPlayers, { mode: 'pts', denom: nDrafters, kind: 'player' });
+      renderRows(topTeamsList,   topTeams,   { mode: 'pts', denom: nDrafters, kind: 'team',   collapseTo: COLLAPSE_TO });
+      renderRows(topPlayersList, topPlayers, { mode: 'pts', denom: nDrafters, kind: 'player', collapseTo: COLLAPSE_TO });
 
       // --- Best value (points per $ of draft price), teams + players combined ---
       const valueRows = [...teamRows, ...playerRows]
