@@ -202,7 +202,10 @@
 <script type="module">
   import "./shared.js";
 
-  const REFRESH_MS = 30_000;
+  // Scores only change when the ingest cron runs (every few hours), so a
+  // 30s poll was pure waste and a Firestore-read sink (each poll scans the
+  // whole users collection). 5 min keeps it fresh-enough at 1/10th the reads.
+  const REFRESH_MS = 300_000;
 
   // Palette mirrors the tennis Power Rankings - distinct, color-blind-friendly,
   // keeps the FWC teal + pink at the top of the rotation.
