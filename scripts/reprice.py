@@ -12,8 +12,10 @@ bracket state, runs N trials, and computes:
 
 Eliminated assets settle at:
   marketValue = 0
-  sellPrice   = round(last_marketValue * 0.25)        # 25% liquidation
   buyPrice    = N/A (cannot buy eliminated assets)
+  Auto-sell refund = 25% of each holder's PURCHASE PRICE, applied per-pick in
+  auto_sell_eliminated_picks(). (The per-asset sellPrice still written below is
+  a legacy display field and no longer drives the refund amount.)
 
 This is the *pricing engine* only - Firestore I/O and UI wiring come in
 the next pass. Run --dry-run to see prices for a hypothetical state.
@@ -51,11 +53,11 @@ from simulate_2026 import (
 TARGET_ROI       = 2.0    # target points per dollar (cap-anchored)
 VIG_BUY          = 1.10   # buy at 10% premium
 VIG_SELL         = 0.90   # sell at 10% discount
-ELIM_REFUND_RATE = 0.25   # 25% liquidation on eliminated picks
-                          # (Lower than it intuitively sounds because most of
-                          # an asset's value has already been realized as
-                          # points before it's eliminated - refund is a small
-                          # consolation, not a recovery.)
+ELIM_REFUND_RATE = 0.25   # eliminated picks refund 25% of PURCHASE PRICE
+                          # (what each holder paid), not market value. Chosen
+                          # for clarity + per-user fairness: "get 25% of what
+                          # you paid back." Applied per-pick in
+                          # auto_sell_eliminated_picks().
 
 
 def round_half_up(x: float) -> int:
@@ -252,12 +254,12 @@ def live_advancers(db, start_round):
 
 def write_prices_to_firestore(db, prices, advancers, all_teams, round_label):
     """Persist marketValue/buyPrice/sellPrice to each team + player doc.
-    Eliminated assets get marketValue=0 + sellPrice = liquidationValue.
+    Eliminated assets get marketValue=0 + a legacy display sellPrice.
 
-    liquidationValue is captured ONCE per asset on first detection of
-    elimination - subsequent reruns leave it alone. This guarantees that
-    auto-sell refunds users the same amount no matter how many times we
-    reprice after an elimination event.
+    NOTE: the actual auto-sell refund is now per-pick (25% of each holder's
+    purchasePrice, in auto_sell_eliminated_picks), NOT this per-asset value.
+    The per-asset liquidationValue/sellPrice is kept only as a display field;
+    it's captured once on first elimination and left alone on reruns.
 
     Also appends to priceHistory[] on each asset (one entry per round) so
     the roster page can show each held pick's price arc over time.
@@ -400,24 +402,29 @@ def snapshot_user_values(db, round_label):
 
 def auto_sell_eliminated_picks(db):
     """For every user, remove picks that reference an eliminated asset and
-    credit currentBudget with the asset's liquidationValue. Records each
-    auto-sell as a transaction row so users can see what happened.
+    credit currentBudget with ELIM_REFUND_RATE of what THAT holder paid for
+    the pick (its purchasePrice). Records each auto-sell as a transaction row
+    so users can see what happened.
+
+    Refund is per-pick on purchase price (not the asset's market value), so two
+    holders of the same eliminated team get back a fraction of their own cost.
 
     Idempotent: a pick is only auto-sold once because removing it from the
     roster means there's nothing to process on the next run."""
     from datetime import datetime, timezone
 
-    # Build lookup of all eliminated assets and their liquidation values
-    elim_teams = {}
+    # Sets of eliminated asset IDs. The refund no longer depends on a per-asset
+    # value, so we only need to know WHICH assets are out.
+    elim_teams = set()
     for tdoc in db.collection("teams").stream():
         t = tdoc.to_dict() or {}
         if t.get("eliminated") or t.get("marketValue") == 0:
-            elim_teams[tdoc.id] = t.get("liquidationValue", 0)
-    elim_players = {}
+            elim_teams.add(tdoc.id)
+    elim_players = set()
     for pdoc in db.collection("players").stream():
         p = pdoc.to_dict() or {}
         if p.get("eliminated") or p.get("marketValue") == 0:
-            elim_players[pdoc.id] = p.get("liquidationValue", 0)
+            elim_players.add(pdoc.id)
 
     n_users_affected = 0
     n_picks_sold = 0
@@ -433,8 +440,8 @@ def auto_sell_eliminated_picks(db):
         eliminated_picks = []
         surviving_picks = []
         for pick in roster:
-            elim_map = elim_teams if pick["kind"] == "team" else elim_players
-            if pick["assetId"] in elim_map:
+            elim_set = elim_teams if pick["kind"] == "team" else elim_players
+            if pick["assetId"] in elim_set:
                 eliminated_picks.append(pick)
             else:
                 surviving_picks.append(pick)
@@ -442,17 +449,17 @@ def auto_sell_eliminated_picks(db):
         if not eliminated_picks:
             continue
 
-        # Compute total refund
+        # Refund = ELIM_REFUND_RATE of each pick's own purchase price.
         sells_record = []
         total_refund = 0
         for pick in eliminated_picks:
-            elim_map = elim_teams if pick["kind"] == "team" else elim_players
-            refund = elim_map[pick["assetId"]] or 0
+            paid = pick.get("purchasePrice", 0) or 0
+            refund = round_half_up(paid * ELIM_REFUND_RATE)
             total_refund += refund
             sells_record.append({
                 "kind":      pick["kind"],
                 "assetId":   pick["assetId"],
-                "paidPrice": pick.get("purchasePrice", 0),
+                "paidPrice": paid,
                 "soldAt":    refund,
                 "reason":    "auto-sell-elimination",
             })
