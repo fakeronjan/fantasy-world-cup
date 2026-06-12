@@ -27,7 +27,7 @@ from __future__ import annotations
 import sys
 import time
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -63,6 +63,16 @@ NEXT_ROUND = {
 
 # Transfer window auto-closes this many seconds before next round's first match
 WINDOW_CLOSE_LEAD_SECONDS = 3600  # 1 hour
+
+# Calendar dates (pointsByDate buckets, matchday labels) are computed in Hawaii
+# time (UTC-10, no DST). Every WC 2026 match is in North America, so no real
+# game crosses midnight Hawaii - this keeps a late-night-Eastern game (which is
+# early-morning UTC) on its intended matchday instead of rolling to the next day.
+HAWAII_TZ = timezone(timedelta(hours=-10))
+
+def hawaii_date(dt: datetime) -> str:
+    """YYYY-MM-DD calendar date of a tz-aware datetime, in Hawaii time."""
+    return dt.astimezone(HAWAII_TZ).strftime("%Y-%m-%d")
 
 
 # ---------------------------------------------------------------------------
@@ -451,8 +461,9 @@ def recompute_users(db) -> list[dict]:
             else:
                 tiebreaker += int(ast.get("goals", 0)) + int(ast.get("assists", 0))
         # Snapshot today's cumulative total into pointsByDate so the
-        # leaderboard chart can draw a real trajectory over time.
-        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        # leaderboard chart can draw a real trajectory over time. Keyed by
+        # Hawaii date so late-night-Eastern games stay on their matchday.
+        today = hawaii_date(datetime.now(timezone.utc))
         points_by_date = dict(u.get("pointsByDate") or {})
         points_by_date[today] = int(total)
         batch.set(

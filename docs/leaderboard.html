@@ -168,6 +168,8 @@
   .rc-scorers { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
   .rc-meta { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 1px; }
   .rc-empty { font-size: 12px; color: var(--text-muted); padding: 8px 0; }
+  .rc-date { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--accent); margin: 12px 0 2px; }
+  .rc-date:first-child { margin-top: 4px; }
   .roster-note {
     font-size: 11px; color: var(--accent); font-weight: 600;
     margin: 0 0 8px;
@@ -384,7 +386,25 @@
       await loadCatalog(); // for flags
       matches.sort((a, b) =>
         String(b.kickoff || b.utcDate || '').localeCompare(String(a.kickoff || a.utcDate || '')));
-      rcBody.innerHTML = matches.slice(0, 12).map(renderResultMatch).join('');
+      // Group by Hawaii matchday (UTC-10, no DST) so late-night-Eastern games
+      // land on their intended date instead of rolling to the next day.
+      const groups = new Map();
+      for (const m of matches.slice(0, 16)) {
+        const ts = m.kickoff || m.utcDate;
+        if (!ts) continue;
+        const d = new Date(ts);
+        const key = new Date(d.getTime() - 10 * 3600 * 1000).toISOString().slice(0, 10);
+        const label = d.toLocaleDateString('en-US', {
+          timeZone: 'Pacific/Honolulu', weekday: 'short', month: 'short', day: 'numeric',
+        });
+        if (!groups.has(key)) groups.set(key, { label, matches: [] });
+        groups.get(key).matches.push(m);
+      }
+      const keys = [...groups.keys()].sort().reverse();
+      rcBody.innerHTML = keys.map(k => {
+        const g = groups.get(k);
+        return `<div class="rc-date">${escape(g.label)}</div>` + g.matches.map(renderResultMatch).join('');
+      }).join('') || '<div class="rc-empty">No matches have finished yet.</div>';
       rcLoaded = true;
     } catch (e) {
       rcBody.innerHTML = `<div class="rc-empty">Couldn't load results: ${escape(e.message)}</div>`;
