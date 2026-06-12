@@ -413,18 +413,18 @@ def auto_sell_eliminated_picks(db):
     roster means there's nothing to process on the next run."""
     from datetime import datetime, timezone
 
-    # Sets of eliminated asset IDs. The refund no longer depends on a per-asset
-    # value, so we only need to know WHICH assets are out.
-    elim_teams = set()
+    # Eliminated asset id -> its doc (we need totalPoints/goals/assists to bank
+    # the forward points the holder earned while they held the pick).
+    elim_teams = {}
     for tdoc in db.collection("teams").stream():
         t = tdoc.to_dict() or {}
         if t.get("eliminated") or t.get("marketValue") == 0:
-            elim_teams.add(tdoc.id)
-    elim_players = set()
+            elim_teams[tdoc.id] = t
+    elim_players = {}
     for pdoc in db.collection("players").stream():
         p = pdoc.to_dict() or {}
         if p.get("eliminated") or p.get("marketValue") == 0:
-            elim_players.add(pdoc.id)
+            elim_players[pdoc.id] = p
 
     n_users_affected = 0
     n_picks_sold = 0
@@ -440,8 +440,8 @@ def auto_sell_eliminated_picks(db):
         eliminated_picks = []
         surviving_picks = []
         for pick in roster:
-            elim_set = elim_teams if pick["kind"] == "team" else elim_players
-            if pick["assetId"] in elim_set:
+            elim_map = elim_teams if pick["kind"] == "team" else elim_players
+            if pick["assetId"] in elim_map:
                 eliminated_picks.append(pick)
             else:
                 surviving_picks.append(pick)
@@ -450,12 +450,22 @@ def auto_sell_eliminated_picks(db):
             continue
 
         # Refund = ELIM_REFUND_RATE of each pick's own purchase price.
+        # Also BANK the forward points/tiebreaker the holder earned while they
+        # held the pick (so eliminations keep, not forfeit, what they scored).
         sells_record = []
         total_refund = 0
+        banked_pts = 0
+        banked_tb = 0
         for pick in eliminated_picks:
             paid = pick.get("purchasePrice", 0) or 0
             refund = round_half_up(paid * ELIM_REFUND_RATE)
             total_refund += refund
+            asset = (elim_teams if pick["kind"] == "team" else elim_players)[pick["assetId"]]
+            asset_pts = int(asset.get("totalPoints", 0))
+            asset_tb = (int(asset.get("goalsFor", 0)) if pick["kind"] == "team"
+                        else int(asset.get("goals", 0)) + int(asset.get("assists", 0)))
+            banked_pts += max(0, asset_pts - int(pick.get("pointsAtPurchase", 0) or 0))
+            banked_tb  += max(0, asset_tb  - int(pick.get("tbAtPurchase", 0) or 0))
             sells_record.append({
                 "kind":      pick["kind"],
                 "assetId":   pick["assetId"],
@@ -466,8 +476,10 @@ def auto_sell_eliminated_picks(db):
 
         new_budget = (u.get("currentBudget") or 0) + total_refund
         udoc.reference.set({
-            "roster":        surviving_picks,
-            "currentBudget": new_budget,
+            "roster":           surviving_picks,
+            "currentBudget":    new_budget,
+            "bankedPoints":     int(u.get("bankedPoints", 0) or 0) + banked_pts,
+            "bankedTiebreaker": int(u.get("bankedTiebreaker", 0) or 0) + banked_tb,
         }, merge=True)
 
         tx_ref = db.collection("transactions").document()

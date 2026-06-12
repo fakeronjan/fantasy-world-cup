@@ -296,6 +296,7 @@
   let originalBudgetLeft = BUDGET;  // user's saved currentBudget at window open
   let buysUsedTotal = 0;  // total voluntary buys committed across whole tournament
   const BUYS_TOTAL_CAP = 3;  // hard cap across all windows combined
+  let bankedPoints = 0, bankedTiebreaker = 0;  // forward points banked from prior sells
 
   const flagFor = (kind, asset) => {
     if (!asset) return '';
@@ -386,6 +387,8 @@
     // Sells self-punish via vig, so they're unlimited.
     // Single total cap across the whole tournament (no per-window reset).
     buysUsedTotal = data.buysUsedTotal || 0;
+    bankedPoints = data.bankedPoints || 0;
+    bankedTiebreaker = data.bankedTiebreaker || 0;
 
     render();
   }
@@ -599,6 +602,10 @@
       assetId, kind,
       purchasePrice: price,
       purchasedAt: new Date().toISOString(),
+      // Forward-only scoring: snapshot the asset's points/tiebreaker NOW so the
+      // buyer only earns what it scores AFTER purchase.
+      pointsAtPurchase: a.totalPoints || 0,
+      tbAtPurchase: kind === 'team' ? (a.goalsFor || 0) : ((a.goals || 0) + (a.assists || 0)),
       currentlyHeld: true,
     });
     render();
@@ -639,10 +646,24 @@
       // Single global buy counter (no per-window reset)
       const newBuysUsed = buysUsedTotal + buys.length;
 
+      // Forward-only scoring: bank the points/tiebreaker each SOLD pick earned
+      // while held (asset.totalPoints now minus its pointsAtPurchase). The
+      // seller keeps those; post-sale points go to the buyer instead.
+      let bankPtsDelta = 0, bankTbDelta = 0;
+      for (const p of sells) {
+        const a = getAsset(p.kind, p.assetId) || {};
+        const assetPts = a.totalPoints || 0;
+        const assetTb = p.kind === 'team' ? (a.goalsFor || 0) : ((a.goals || 0) + (a.assists || 0));
+        bankPtsDelta += Math.max(0, assetPts - (p.pointsAtPurchase || 0));
+        bankTbDelta  += Math.max(0, assetTb  - (p.tbAtPurchase || 0));
+      }
+
       batch.set(userRef, {
         roster: cleanRoster,
         currentBudget: left,
         buysUsedTotal: newBuysUsed,
+        bankedPoints: bankedPoints + bankPtsDelta,
+        bankedTiebreaker: bankedTiebreaker + bankTbDelta,
       }, { merge: true });
 
       const txRef = doc(collection(window.fwc.db, 'transactions'));
@@ -666,6 +687,8 @@
       originalRoster = cleanRoster.map(p => ({...p}));
       originalBudgetLeft = left;
       buysUsedTotal = newBuysUsed;
+      bankedPoints += bankPtsDelta;
+      bankedTiebreaker += bankTbDelta;
       render();
     } catch (e) {
       console.error(e);
