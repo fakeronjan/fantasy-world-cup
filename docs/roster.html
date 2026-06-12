@@ -49,6 +49,17 @@
   .kind-team   { background: var(--bg-header); color: #fff; }
   .kind-player { background: var(--accent); color: #fff; }
 
+  /* Consistent "exited pick" convention: grayed + struck, retained pts shown.
+     Used for eliminated picks still in the table AND the Previous picks list. */
+  tr.eliminated { opacity: 0.5; }
+  tr.eliminated .team-cell { text-decoration: line-through; }
+  .exited-pick { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border-row); font-size: 13px; opacity: 0.6; }
+  .exited-pick:last-child { border-bottom: none; }
+  .exited-pick .ep-flag { font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif; font-size: 15px; }
+  .exited-pick .ep-name { flex: 1; text-decoration: line-through; }
+  .exited-pick .ep-pts  { color: #16a34a; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .exited-pick .ep-tag  { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 1px 6px; border-radius: 3px; background: #e5e7eb; color: #555; }
+
   .no-roster {
     text-align: center; padding: 48px 24px;
     max-width: 480px; margin: 40px auto;
@@ -163,6 +174,17 @@
     </table>
 
     <p class="muted" style="text-align:center;font-size:12px;margin-top:16px" id="footerNote"></p>
+
+    <!-- Previous picks: sold or eliminated, shown grayed/struck with retained points -->
+    <div class="card" id="exitedCard" style="margin-top:16px; display:none">
+      <div style="font-size:11px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; color:var(--bg-header); margin-bottom:4px">
+        Previous picks
+      </div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px">
+        Sold or eliminated. You keep the points they earned while you held them.
+      </div>
+      <ul id="exitedList" style="list-style:none; margin:0"></ul>
+    </div>
 
     <!-- Total roster value chart (Stage 3) -->
     <div class="card" id="valueChartCard" style="margin-top:16px; display:none">
@@ -685,6 +707,30 @@
       footerNote.textContent = 'Scores sync as match results come in (typically every few hours during the tournament), not in real time.';
     } else {
       footerNote.textContent = '';
+    }
+
+    // Previous picks (sold / eliminated): grayed + struck, retained points kept.
+    const exited = (userDoc && userDoc.exitedPicks) || [];
+    const exitedCard = document.getElementById('exitedCard');
+    const exitedList = document.getElementById('exitedList');
+    if (!exited.length) {
+      exitedCard.style.display = 'none';
+    } else {
+      exitedCard.style.display = 'block';
+      exitedList.innerHTML = [...exited]
+        .sort((a, b) => String(b.exitAt || '').localeCompare(String(a.exitAt || '')))
+        .map(e => {
+          const catalog = getCatalogAsset(e.kind, e.assetId);
+          const name = catalog ? (e.kind === 'player' ? displayName(catalog) : catalog.name) : e.assetId;
+          const emoji = catalog ? (e.kind === 'team' ? catalog.emoji : teamIdToEmoji[catalog.teamId]) : '';
+          const tag = e.exitReason === 'eliminated' ? 'out' : 'sold';
+          return `<li class="exited-pick">
+            ${emoji ? `<span class="ep-flag">${emoji}</span>` : ''}
+            <span class="ep-name">${escape(name)}</span>
+            <span class="ep-tag">${tag}</span>
+            <span class="ep-pts">${e.points ?? 0} pts kept</span>
+          </li>`;
+        }).join('');
     }
   }
 

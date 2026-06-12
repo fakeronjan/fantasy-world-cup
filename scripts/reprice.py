@@ -453,6 +453,7 @@ def auto_sell_eliminated_picks(db):
         # Also BANK the forward points/tiebreaker the holder earned while they
         # held the pick (so eliminations keep, not forfeit, what they scored).
         sells_record = []
+        exited_records = []
         total_refund = 0
         banked_pts = 0
         banked_tb = 0
@@ -464,14 +465,26 @@ def auto_sell_eliminated_picks(db):
             asset_pts = int(asset.get("totalPoints", 0))
             asset_tb = (int(asset.get("goalsFor", 0)) if pick["kind"] == "team"
                         else int(asset.get("goals", 0)) + int(asset.get("assists", 0)))
-            banked_pts += max(0, asset_pts - int(pick.get("pointsAtPurchase", 0) or 0))
-            banked_tb  += max(0, asset_tb  - int(pick.get("tbAtPurchase", 0) or 0))
+            fwd_pts = max(0, asset_pts - int(pick.get("pointsAtPurchase", 0) or 0))
+            fwd_tb  = max(0, asset_tb  - int(pick.get("tbAtPurchase", 0) or 0))
+            banked_pts += fwd_pts
+            banked_tb  += fwd_tb
             sells_record.append({
                 "kind":      pick["kind"],
                 "assetId":   pick["assetId"],
                 "paidPrice": paid,
                 "soldAt":    refund,
                 "reason":    "auto-sell-elimination",
+            })
+            # History record so the UI can show this pick grayed-out with the
+            # points it retained for the holder.
+            exited_records.append({
+                "kind":          pick["kind"],
+                "assetId":       pick["assetId"],
+                "points":        fwd_pts,
+                "purchasePrice": paid,
+                "exitReason":    "eliminated",
+                "exitAt":        now,
             })
 
         new_budget = (u.get("currentBudget") or 0) + total_refund
@@ -480,6 +493,7 @@ def auto_sell_eliminated_picks(db):
             "currentBudget":    new_budget,
             "bankedPoints":     int(u.get("bankedPoints", 0) or 0) + banked_pts,
             "bankedTiebreaker": int(u.get("bankedTiebreaker", 0) or 0) + banked_tb,
+            "exitedPicks":      (u.get("exitedPicks") or []) + exited_records,
         }, merge=True)
 
         tx_ref = db.collection("transactions").document()

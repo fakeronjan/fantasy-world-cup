@@ -115,6 +115,10 @@
     color: var(--text-muted);
   }
   .lb-roster .rp-pts.scoring { color: #16a34a; }
+  /* exited (sold/eliminated) chip: grayed + struck name, retained pts kept */
+  .lb-roster .rp.rp-exited { opacity: 0.5; text-decoration: line-through; }
+  .lb-roster .rp.rp-exited .rp-pts,
+  .lb-roster .rp.rp-exited .rp-flag { text-decoration: none; }
 
   /* rank movement arrows under the rank number */
   .rank-move { display: block; font-size: 9px; font-weight: 700; line-height: 1; margin-top: 2px; }
@@ -466,7 +470,7 @@
     const name = window.fwc.nameFor(u);
     const flag = window.fwc.flagFor(u);
     const rosterHtml = (rostersVisible && catalogReady)
-      ? rosterLineHtml(u.roster || [], null)
+      ? rosterLineHtml(u.roster || [], null, u.exitedPicks)
       : '<div class="pm-empty">Rosters reveal at kickoff.</div>';
     pmContent.innerHTML = `
       <h2>${flag ? escape(flag) + ' ' : ''}${escape(name)}</h2>
@@ -702,7 +706,7 @@
       const flag  = window.fwc.flagFor(u);
       const flagSpan = flag ? `<span style="font-size:16px; margin-right:6px; font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">${flag}</span>` : '';
       const podiumClass = rank <= 3 ? `podium-${rank}` : '';
-      const rosterLine = rostersVisible ? rosterLineHtml(u.roster || [], ownership) : '';
+      const rosterLine = rostersVisible ? rosterLineHtml(u.roster || [], ownership, u.exitedPicks) : '';
       const caret = rosterLine ? ' <span class="lb-expand-caret">&#9656;</span>' : '';
       // rank movement arrow
       let moveHtml = '';
@@ -743,44 +747,50 @@
 
   // Compact roster line: teams first (country name), then players (short name),
   // each with their country flag. Teal for teams, pink for players.
-  function rosterLineHtml(roster, ownership) {
+  function rosterLineHtml(roster, ownership, exited) {
     if (!catalogReady) return '';
     const held = (roster || []).filter(p => p && p.currentlyHeld !== false);
-    if (!held.length) return '';
+    const exitedArr = exited || [];
+    if (!held.length && !exitedArr.length) return '';
     const teamsHeld   = held.filter(p => p.kind === 'team');
     const playersHeld = held.filter(p => p.kind === 'player');
+    const shortName = (s) => String(s).trim().split(/\s+/).pop();
+    const labelFor = (kind, id) => kind === 'team'
+      ? (teamById[id]?.name || id) : shortName(playerById[id]?.name || id);
+    const flagFor = (kind, id) => kind === 'team'
+      ? (teamEmoji[id] || '') : (teamEmoji[playerById[id]?.teamId] || '');
     // A pick is a "differential" if this is the only manager holding it.
-    const isDiff = (kind, assetId) =>
-      ownership ? (ownership.get(`${kind}:${assetId}`) === 1) : false;
+    const isDiff = (kind, id) => ownership ? (ownership.get(`${kind}:${id}`) === 1) : false;
     const chip = (kind, flag, label, pts, diff) =>
       `<span class="rp ${kind}">${diff ? '<span class="rp-diff">&#9670;</span>' : ''}` +
       `${flag ? `<span class="rp-flag">${flag}</span>` : ''}${escape(label)}` +
       `<span class="rp-pts${pts > 0 ? ' scoring' : ''}">${pts}</span></span>`;
-    const shortName = (s) => String(s).trim().split(/\s+/).pop();
 
-    // Build entries per group, then sort each group by points (desc) with an
-    // alphabetical tiebreak so top scorers sit on the left.
+    // Held picks: per group, sorted by points (desc), top scorers on the left.
     const teamEntries = teamsHeld.map(p => ({
-      flag: teamEmoji[p.assetId] || '',
-      label: teamById[p.assetId]?.name || p.assetId,
-      pts: p.points ?? 0,
-      diff: isDiff('team', p.assetId),
+      flag: flagFor('team', p.assetId), label: labelFor('team', p.assetId),
+      pts: p.points ?? 0, diff: isDiff('team', p.assetId),
     }));
-    const playerEntries = playersHeld.map(p => {
-      const pl = playerById[p.assetId];
-      return {
-        flag: teamEmoji[pl?.teamId] || '',
-        label: shortName(pl?.name || p.assetId),
-        pts: p.points ?? 0,
-        diff: isDiff('player', p.assetId),
-      };
-    });
+    const playerEntries = playersHeld.map(p => ({
+      flag: flagFor('player', p.assetId), label: labelFor('player', p.assetId),
+      pts: p.points ?? 0, diff: isDiff('player', p.assetId),
+    }));
     const byPts = (a, b) => b.pts - a.pts || a.label.localeCompare(b.label);
     teamEntries.sort(byPts);
     playerEntries.sort(byPts);
+
+    // Exited (sold/eliminated) chips: grayed + struck, retained points kept.
+    const exitedChip = (e) => {
+      const pts = e.points ?? 0;
+      const flag = flagFor(e.kind, e.assetId);
+      return `<span class="rp rp-exited ${e.kind}">${flag ? `<span class="rp-flag">${flag}</span>` : ''}` +
+        `${escape(labelFor(e.kind, e.assetId))}<span class="rp-pts${pts > 0 ? ' scoring' : ''}">${pts}</span></span>`;
+    };
+
     const chips = [
       ...teamEntries.map(e => chip('team', e.flag, e.label, e.pts, e.diff)),
       ...playerEntries.map(e => chip('player', e.flag, e.label, e.pts, e.diff)),
+      ...exitedArr.map(exitedChip),
     ];
     return `<div class="lb-roster">${chips.join('')}</div>`;
   }

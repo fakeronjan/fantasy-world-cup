@@ -297,6 +297,7 @@
   let buysUsedTotal = 0;  // total voluntary buys committed across whole tournament
   const BUYS_TOTAL_CAP = 3;  // hard cap across all windows combined
   let bankedPoints = 0, bankedTiebreaker = 0;  // forward points banked from prior sells
+  let exitedPicks = [];  // history of sold/eliminated picks (for grayed-out display)
 
   const flagFor = (kind, asset) => {
     if (!asset) return '';
@@ -389,6 +390,7 @@
     buysUsedTotal = data.buysUsedTotal || 0;
     bankedPoints = data.bankedPoints || 0;
     bankedTiebreaker = data.bankedTiebreaker || 0;
+    exitedPicks = data.exitedPicks || [];
 
     render();
   }
@@ -650,12 +652,20 @@
       // while held (asset.totalPoints now minus its pointsAtPurchase). The
       // seller keeps those; post-sale points go to the buyer instead.
       let bankPtsDelta = 0, bankTbDelta = 0;
+      const nowIso = new Date().toISOString();
+      const newExited = [];
       for (const p of sells) {
         const a = getAsset(p.kind, p.assetId) || {};
         const assetPts = a.totalPoints || 0;
         const assetTb = p.kind === 'team' ? (a.goalsFor || 0) : ((a.goals || 0) + (a.assists || 0));
-        bankPtsDelta += Math.max(0, assetPts - (p.pointsAtPurchase || 0));
-        bankTbDelta  += Math.max(0, assetTb  - (p.tbAtPurchase || 0));
+        const fwdPts = Math.max(0, assetPts - (p.pointsAtPurchase || 0));
+        bankPtsDelta += fwdPts;
+        bankTbDelta  += Math.max(0, assetTb - (p.tbAtPurchase || 0));
+        // history record so the pick can be shown grayed-out with retained pts
+        newExited.push({
+          kind: p.kind, assetId: p.assetId, points: fwdPts,
+          purchasePrice: p.purchasePrice, exitReason: 'sold', exitAt: nowIso,
+        });
       }
 
       batch.set(userRef, {
@@ -664,6 +674,7 @@
         buysUsedTotal: newBuysUsed,
         bankedPoints: bankedPoints + bankPtsDelta,
         bankedTiebreaker: bankedTiebreaker + bankTbDelta,
+        exitedPicks: [...exitedPicks, ...newExited],
       }, { merge: true });
 
       const txRef = doc(collection(window.fwc.db, 'transactions'));
@@ -689,6 +700,7 @@
       buysUsedTotal = newBuysUsed;
       bankedPoints += bankPtsDelta;
       bankedTiebreaker += bankTbDelta;
+      exitedPicks = [...exitedPicks, ...newExited];
       render();
     } catch (e) {
       console.error(e);
