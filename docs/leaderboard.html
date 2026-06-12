@@ -156,6 +156,18 @@
   .pm-buy  { font-size: 12px; color: #16a34a; }
   .pm-sell { font-size: 12px; color: var(--accent); }
   .pm-empty { font-size: 12px; color: var(--text-muted); padding: 8px 0; }
+
+  /* recent results feed */
+  .results-card { background: var(--bg-card); border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 12px 16px; margin-bottom: 14px; }
+  .results-card .rc-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--bg-header); }
+  .results-card .rc-toggle { color: var(--accent); }
+  .rc-match { border-bottom: 1px solid var(--border-row); padding: 8px 0; }
+  .rc-match:last-child { border-bottom: none; }
+  .rc-line { font-size: 13px; }
+  .rc-score { font-weight: 700; font-variant-numeric: tabular-nums; margin: 0 4px; }
+  .rc-scorers { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .rc-meta { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 1px; }
+  .rc-empty { font-size: 12px; color: var(--text-muted); padding: 8px 0; }
   .roster-note {
     font-size: 11px; color: var(--accent); font-weight: 600;
     margin: 0 0 8px;
@@ -209,6 +221,14 @@
     <!-- Group tabs - only shown when viewer is in 1+ groups -->
     <div id="lbTabs" style="display:none; margin-bottom:12px; border-bottom:2px solid var(--border-row);
          overflow-x:auto; white-space:nowrap"></div>
+
+    <div class="results-card" id="resultsCard">
+      <div class="rc-head" id="rcHead">
+        <span>&#128203; Recent results</span>
+        <span class="rc-toggle" id="rcToggle">Show &#9662;</span>
+      </div>
+      <div id="rcBody" style="display:none"></div>
+    </div>
 
     <div class="chart-card" id="chartCard" style="display:none">
       <div class="chart-title">POINT TRAJECTORIES</div>
@@ -313,6 +333,83 @@
     if (e.target === participantModal) closeParticipant();
   });
   function closeParticipant() { participantModal.style.display = 'none'; }
+
+  // ---- recent results feed (lazy: only reads matches when expanded) ----
+  const rcHead = document.getElementById('rcHead');
+  const rcBody = document.getElementById('rcBody');
+  const rcToggle = document.getElementById('rcToggle');
+  let rcLoaded = false;
+  rcHead.addEventListener('click', async () => {
+    const open = rcBody.style.display !== 'none';
+    if (open) { rcBody.style.display = 'none'; rcToggle.innerHTML = 'Show &#9662;'; return; }
+    rcBody.style.display = 'block';
+    rcToggle.innerHTML = 'Hide &#9652;';
+    if (!rcLoaded) { rcBody.innerHTML = '<div class="rc-empty">Loading…</div>'; await loadResults(); }
+  });
+
+  async function loadResults() {
+    try {
+      const { collection, getDocs, query, where, doc, getDoc } = await import(
+        "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+      );
+      // cache finished matches by the sync timestamp (same pattern as stats)
+      let syncedAt = null;
+      try {
+        const s = await getDoc(doc(window.fwc.db, 'leaderboard', 'snapshot'));
+        syncedAt = s.exists() ? (s.data().updatedAt || null) : null;
+      } catch { /* ignore */ }
+      const CACHE = 'fwc_lb_results';
+      let matches = null;
+      if (syncedAt) {
+        try {
+          const c = JSON.parse(localStorage.getItem(CACHE) || 'null');
+          if (c && c.ts === syncedAt && Array.isArray(c.m)) matches = c.m;
+        } catch { /* fall through */ }
+      }
+      if (!matches) {
+        const snap = await getDocs(query(
+          collection(window.fwc.db, 'matches'),
+          where('status', '==', 'FINISHED'),
+        ));
+        matches = snap.docs.map(d => d.data());
+        if (syncedAt) {
+          try { localStorage.setItem(CACHE, JSON.stringify({ ts: syncedAt, m: matches })); }
+          catch { /* storage full - skip */ }
+        }
+      }
+      if (!matches.length) {
+        rcBody.innerHTML = '<div class="rc-empty">No matches have finished yet.</div>';
+        rcLoaded = true; return;
+      }
+      await loadCatalog(); // for flags
+      matches.sort((a, b) =>
+        String(b.kickoff || b.utcDate || '').localeCompare(String(a.kickoff || a.utcDate || '')));
+      rcBody.innerHTML = matches.slice(0, 12).map(renderResultMatch).join('');
+      rcLoaded = true;
+    } catch (e) {
+      rcBody.innerHTML = `<div class="rc-empty">Couldn't load results: ${escape(e.message)}</div>`;
+    }
+  }
+
+  function renderResultMatch(m) {
+    const f1 = teamEmoji[m.team1Id] ? teamEmoji[m.team1Id] + ' ' : '';
+    const f2 = teamEmoji[m.team2Id] ? ' ' + teamEmoji[m.team2Id] : '';
+    const scorers = (m.goals || []).map(g => {
+      if (!g.scorerName) return '';
+      const min = g.minute != null ? `${g.minute}'` : '';
+      const tag = g.type === 'OWN' ? ' OG' : g.type === 'PENALTY' ? ' pen' : '';
+      const assist = g.assistName ? ` (assist ${g.assistName})` : '';
+      return `${g.scorerName} ${min}${tag}${assist}`.trim();
+    }).filter(Boolean).join(' · ');
+    const round = m.round === 'group'
+      ? (m.group ? String(m.group).replace(/_/g, ' ') : 'Group stage')
+      : (m.round || '');
+    return `<div class="rc-match">
+      <div class="rc-line">${f1}${escape(m.team1Name || m.team1Id)}<span class="rc-score">${m.score1}&ndash;${m.score2}</span>${escape(m.team2Name || m.team2Id)}${f2}</div>
+      ${scorers ? `<div class="rc-scorers">&#9917; ${escape(scorers)}</div>` : ''}
+      <div class="rc-meta">${escape(round)}</div>
+    </div>`;
+  }
 
   function assetLabel(kind, assetId) {
     if (kind === 'team') {
