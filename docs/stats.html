@@ -399,8 +399,8 @@
 
       // --- Top scorers (sort by points, then ownership) ---
       const byPts = (a, b) => b.pts - a.pts || b.n - a.n || a.name.localeCompare(b.name);
-      const topTeams   = [...teamRows].sort(byPts).slice(0, TOP_TEAMS_SHOWN);
-      const topPlayers = [...playerRows].sort(byPts).slice(0, TOP_PLAYERS_SHOWN);
+      const topTeams   = teamRows.filter(r => r.pts > 0).sort(byPts).slice(0, TOP_TEAMS_SHOWN);
+      const topPlayers = playerRows.filter(r => r.pts > 0).sort(byPts).slice(0, TOP_PLAYERS_SHOWN);
       renderRows(topTeamsList,   topTeams,   { mode: 'pts', denom: nDrafters, kind: 'team',   collapseTo: COLLAPSE_TO });
       renderRows(topPlayersList, topPlayers, { mode: 'pts', denom: nDrafters, kind: 'player', collapseTo: COLLAPSE_TO });
 
