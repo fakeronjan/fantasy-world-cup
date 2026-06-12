@@ -107,6 +107,14 @@
     font-size: 12px;
     font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;
   }
+  /* per-pick points, superscripted after the name */
+  .lb-roster .rp-pts {
+    margin-left: 3px;
+    font-size: 9px; font-weight: 700;
+    vertical-align: super;
+    color: var(--text-muted);
+  }
+  .lb-roster .rp-pts.scoring { color: #16a34a; }
   .roster-note {
     font-size: 11px; color: var(--accent); font-weight: 600;
     margin: 0 0 8px;
@@ -453,16 +461,32 @@
     if (!held.length) return '';
     const teamsHeld   = held.filter(p => p.kind === 'team');
     const playersHeld = held.filter(p => p.kind === 'player');
-    const chip = (kind, flag, label) =>
-      `<span class="rp ${kind}">${flag ? `<span class="rp-flag">${flag}</span>` : ''}${escape(label)}</span>`;
+    const chip = (kind, flag, label, pts) =>
+      `<span class="rp ${kind}">${flag ? `<span class="rp-flag">${flag}</span>` : ''}${escape(label)}` +
+      `<span class="rp-pts${pts > 0 ? ' scoring' : ''}">${pts}</span></span>`;
     const shortName = (s) => String(s).trim().split(/\s+/).pop();
+
+    // Build {flag,label,pts} entries per group, then sort each group by points
+    // (desc) with an alphabetical tiebreak so top scorers sit on the left.
+    const teamEntries = teamsHeld.map(p => ({
+      flag: teamEmoji[p.assetId] || '',
+      label: teamById[p.assetId]?.name || p.assetId,
+      pts: p.points ?? 0,
+    }));
+    const playerEntries = playersHeld.map(p => {
+      const pl = playerById[p.assetId];
+      return {
+        flag: teamEmoji[pl?.teamId] || '',
+        label: shortName(pl?.name || p.assetId),
+        pts: p.points ?? 0,
+      };
+    });
+    const byPts = (a, b) => b.pts - a.pts || a.label.localeCompare(b.label);
+    teamEntries.sort(byPts);
+    playerEntries.sort(byPts);
     const chips = [
-      ...teamsHeld.map(p =>
-        chip('team', teamEmoji[p.assetId] || '', teamById[p.assetId]?.name || p.assetId)),
-      ...playersHeld.map(p => {
-        const pl = playerById[p.assetId];
-        return chip('player', teamEmoji[pl?.teamId] || '', shortName(pl?.name || p.assetId));
-      }),
+      ...teamEntries.map(e => chip('team', e.flag, e.label, e.pts)),
+      ...playerEntries.map(e => chip('player', e.flag, e.label, e.pts)),
     ];
     return `<div class="lb-roster">${chips.join('')}</div>`;
   }
