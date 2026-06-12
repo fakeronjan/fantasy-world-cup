@@ -53,6 +53,19 @@
     text-align: center; padding: 48px 24px;
     max-width: 480px; margin: 40px auto;
   }
+
+  /* clickable pick rows -> asset detail modal */
+  tr.asset-row { cursor: pointer; }
+  tr.asset-row:hover { background: #faf7f9; }
+
+  .am-overlay { position: fixed; inset: 0; z-index: 100; padding: 16px; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; }
+  .am-box { background: var(--bg-card); border-radius: 8px; max-width: 460px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 20px; position: relative; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+  .am-close { position: absolute; top: 8px; right: 12px; background: none; border: none; font-size: 24px; line-height: 1; cursor: pointer; color: var(--text-muted); }
+  .am-box h2 { font-size: 18px; color: var(--bg-header); margin: 0 0 6px; padding-right: 24px; }
+  .am-big { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+  .am-stats { font-size: 13px; color: var(--text-body); line-height: 1.7; }
+  .am-stats .am-elim { color: var(--accent); font-weight: 700; }
+  .am-mine { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -177,6 +190,14 @@
   </div>
 </main>
 
+<!-- Asset (country/player) detail modal -->
+<div id="assetModal" class="am-overlay" style="display:none">
+  <div class="am-box">
+    <button class="am-close" id="amClose" aria-label="Close">&times;</button>
+    <div id="amContent"></div>
+  </div>
+</div>
+
 <script type="module">
   import "./shared.js";
 
@@ -199,6 +220,7 @@
 
   let teams = [];
   let players = [];
+  let lastRoster = [];   // current held roster, for the asset detail modal
   let teamIdToEmoji = {};
   let teamHistory = {};
   let playerHistory = {};
@@ -321,6 +343,47 @@
     return kind === 'team'
       ? teams.find(t => t.id === id)
       : players.find(p => p.id === id);
+  }
+
+  // ---- asset (country/player) detail modal ----
+  const assetModal = document.getElementById('assetModal');
+  const amContent  = document.getElementById('amContent');
+  document.getElementById('amClose').addEventListener('click', () => { assetModal.style.display = 'none'; });
+  assetModal.addEventListener('click', (e) => { if (e.target === assetModal) assetModal.style.display = 'none'; });
+  rosterBody.addEventListener('click', (e) => {
+    const row = e.target.closest('tr.asset-row');
+    if (!row || !row.dataset.id) return;
+    openAsset(row.dataset.kind, row.dataset.id);
+  });
+
+  function openAsset(kind, id) {
+    const a = getCatalogAsset(kind, id);
+    if (!a) return;
+    const flag = kind === 'team' ? (a.emoji || '') : (teamIdToEmoji[a.teamId] || '');
+    const name = kind === 'player' ? displayName(a) : (a.name || id);
+    const pts = a.totalPoints || 0;
+    const price = a.currentPrice ?? a.basePrice ?? 0;
+    let lines;
+    if (kind === 'team') {
+      lines = `<div>Record: ${a.matchesWon || 0}W &middot; ${a.matchesDrawn || 0}D &middot; ${a.matchesLost || 0}L</div>
+        <div>Goals: ${a.goalsFor || 0} for / ${a.goalsAgainst || 0} against</div>
+        ${a.eliminated ? '<div class="am-elim">Eliminated</div>' : ''}`;
+    } else {
+      lines = `<div>${escape(a.position || '')}${a.teamName ? ' &middot; ' + escape(a.teamName) : ''}</div>
+        <div>Goals: ${a.goals || 0} &middot; Assists: ${a.assists || 0} &middot; Clean sheets: ${a.cleanSheets || 0}</div>
+        ${a.eliminated ? '<div class="am-elim">Eliminated</div>' : ''}`;
+    }
+    // "your pick" line: what you paid + what this pick has earned you
+    const mine = lastRoster.find(p => p.kind === kind && p.assetId === id);
+    const mineHtml = mine
+      ? `<div class="am-mine">You paid $${mine.purchasePrice} &middot; earned ${mine.points ?? 0} pts for you</div>`
+      : '';
+    amContent.innerHTML = `
+      <h2>${flag ? escape(flag) + ' ' : ''}${escape(name)}</h2>
+      <div class="am-big">${pts} pts &middot; $${price} market value</div>
+      <div class="am-stats">${lines}</div>
+      ${mineHtml}`;
+    assetModal.style.display = 'flex';
   }
 
   window.fwc.onAuth(async (user) => {
@@ -533,6 +596,7 @@
   }
 
   function renderRoster(roster, userDoc) {
+    lastRoster = roster || [];
     let totalP = 0, spent = 0;
 
     rosterBody.innerHTML = roster.map((pick, i) => {
@@ -597,7 +661,7 @@
         }
       }
 
-      return `<tr class="${eliminated ? 'eliminated' : ''}">
+      return `<tr class="asset-row ${eliminated ? 'eliminated' : ''}" data-kind="${pick.kind}" data-id="${escape(pick.assetId)}">
         <td class="rank-cell">${i + 1}</td>
         <td class="team-cell">${flagImg}${escape(name)}${sublineHtml}${topPlayersHtml}${honorsHtml}${priceArcHtml}</td>
         <td><span class="kind-badge kind-${pick.kind}">${pick.kind}</span></td>
