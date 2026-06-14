@@ -112,8 +112,14 @@
   .am-close { position: absolute; top: 8px; right: 12px; background: none; border: none; font-size: 24px; line-height: 1; cursor: pointer; color: var(--text-muted); }
   .am-box h2 { font-size: 18px; color: var(--bg-header); margin: 0 0 6px; padding-right: 24px; }
   .am-big { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
-  .am-stats { font-size: 13px; color: var(--text-body); line-height: 1.7; }
-  .am-stats .am-elim { color: var(--accent); font-weight: 700; }
+  .am-context { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+  .am-context .am-elim { color: var(--accent); font-weight: 700; }
+  .am-bd-head { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted); margin: 12px 0 4px; }
+  .am-bd { font-size: 13px; }
+  .am-bd-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border-row); }
+  .am-bd-row:last-child { border-bottom: none; }
+  .am-bd-detail { color: var(--text-muted); font-size: 11px; }
+  .am-bd-total { font-weight: 700; color: var(--bg-header); border-top: 2px solid var(--border-row); border-bottom: none; margin-top: 2px; }
   .am-own { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
 </style>
 </head>
@@ -257,6 +263,7 @@
   let catalogReady = false;
   // ownership snapshot for the asset detail modal (set in loadStats)
   let ownTeamCount = {}, ownPlayerCount = {}, ownDrafters = 0;
+  let scoringWeights = {};  // config.scoringWeights, for the points breakdown
 
   async function loadCatalog(syncedAt) {
     if (catalogReady) return;
@@ -348,6 +355,7 @@
       } catch { /* ignore */ }
 
       await loadCatalog(syncedAt);
+      scoringWeights = await window.fwc.getScoringWeights();
 
       // Ownership: count held picks across all rosters.
       const snap = await getDocs(collection(window.fwc.db, 'users'));
@@ -554,22 +562,29 @@
     const ownPct = ownDrafters ? Math.round((own / ownDrafters) * 100) : 0;
     const pts = a.totalPoints || 0;
     const price = a.currentPrice ?? a.basePrice ?? 0;
-    let lines;
-    if (kind === 'team') {
-      lines = `<div>Record: ${a.matchesWon || 0}W &middot; ${a.matchesDrawn || 0}D &middot; ${a.matchesLost || 0}L</div>
-        <div>Goals: ${a.goalsFor || 0} for / ${a.goalsAgainst || 0} against</div>
-        ${a.eliminated ? '<div class="am-elim">Eliminated</div>' : ''}`;
-    } else {
-      lines = `<div>${escape(a.position || '')}${a.teamName ? ' &middot; ' + escape(a.teamName) : ''}</div>
-        <div>Goals: ${a.goals || 0} &middot; Assists: ${a.assists || 0} &middot; Clean sheets: ${a.cleanSheets || 0}</div>
-        ${a.eliminated ? '<div class="am-elim">Eliminated</div>' : ''}`;
-    }
+    const context = kind === 'team'
+      ? `Record: ${a.matchesWon || 0}W &middot; ${a.matchesDrawn || 0}D &middot; ${a.matchesLost || 0}L &middot; ${a.goalsFor || 0} GF / ${a.goalsAgainst || 0} GA`
+      : `${escape(a.position || '')}${a.teamName ? ' &middot; ' + escape(a.teamName) : ''}`;
     amContent.innerHTML = `
       <h2>${flag ? escape(flag) + ' ' : ''}${escape(a.name || id)}</h2>
       <div class="am-big">${pts} pts &middot; $${price} market value</div>
-      <div class="am-stats">${lines}</div>
+      <div class="am-context">${context}${a.eliminated ? ' &middot; <span class="am-elim">Eliminated</span>' : ''}</div>
+      ${breakdownHtml(a, kind, pts)}
       <div class="am-own">Owned by ${own}/${ownDrafters} managers (${ownPct}%)</div>`;
     assetModal.style.display = 'flex';
+  }
+
+  // Itemized points breakdown that always sums to the asset's total.
+  function breakdownHtml(a, kind, total) {
+    const lines = window.fwc.pointsBreakdown(a, kind, scoringWeights);
+    if (!lines.length) {
+      return `<div class="am-bd"><div class="am-bd-row"><span>No points yet</span><span>0</span></div></div>`;
+    }
+    const rows = lines.map(l =>
+      `<div class="am-bd-row"><span>${escape(l.label)}${l.detail ? ` <span class="am-bd-detail">${escape(l.detail)}</span>` : ''}</span><span>${l.pts}</span></div>`
+    ).join('');
+    return `<div class="am-bd-head">Points breakdown</div>
+      <div class="am-bd">${rows}<div class="am-bd-row am-bd-total"><span>Total</span><span>${total}</span></div></div>`;
   }
 
   function escape(s) {

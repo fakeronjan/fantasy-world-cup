@@ -205,11 +205,63 @@ function flagFor(userDoc) {
   return (userDoc.countryFlag || '').trim();
 }
 
+// Scoring weights (config.scoringWeights), read once and cached.
+let _weightsCache = null;
+async function getScoringWeights() {
+  if (_weightsCache) return _weightsCache;
+  try {
+    const snap = await getDoc(doc(db, 'config', 'global'));
+    _weightsCache = (snap.exists() && snap.data().scoringWeights) || {};
+  } catch { _weightsCache = {}; }
+  return _weightsCache;
+}
+
+// Itemized points breakdown for a team/player asset doc, using the SAME fields
+// the ingest scores from (winsPlayedIn, cleanSheetsPlayedIn, etc. - NOT the
+// vestigial cleanSheets field). Returns [{label, detail, pts}]. Reconciles to
+// the asset's totalPoints: any unexplained remainder is added as an "Other"
+// line so EVERY point is always accounted for on the card.
+function pointsBreakdown(asset, kind, w) {
+  w = w || {};
+  const lines = [];
+  const total = Math.round(asset.totalPoints || 0);
+  if (kind === 'team') {
+    const wins = asset.matchesWon || 0, draws = asset.matchesDrawn || 0;
+    const winW = w.team_win ?? 3, drawW = w.team_draw ?? 1;
+    if (wins)  lines.push({ label: 'Wins',  detail: `${wins} × ${winW}`,  pts: wins * winW });
+    if (draws) lines.push({ label: 'Draws', detail: `${draws} × ${drawW}`, pts: draws * drawW });
+    const order = ['group', 'R32', 'R16', 'QF', 'SF', 'F', 'W'];
+    const bonusKey = { R32: 'bonus_r32', R16: 'bonus_r16', QF: 'bonus_qf', SF: 'bonus_sf', F: 'bonus_final', W: 'bonus_champion' };
+    const bonusLabel = { R32: 'Reached R32', R16: 'Reached R16', QF: 'Reached QF', SF: 'Reached SF', F: 'Reached Final', W: 'Champion' };
+    const idx = order.indexOf(asset.finalRound || 'group');
+    for (let i = 1; i <= idx; i++) {
+      const r = order[i];
+      const pts = w[bonusKey[r]] ?? 0;
+      if (pts) lines.push({ label: bonusLabel[r], detail: '', pts });
+    }
+  } else {
+    const goals = asset.goals || 0, assists = asset.assists || 0;
+    const cs = asset.cleanSheetsPlayedIn || 0, ws = asset.winsPlayedIn || 0;
+    const pos = (asset.position || '').toUpperCase();
+    const goalW = w.player_goal ?? 5, astW = w.player_assist ?? 3, wsW = w.player_win_share ?? 1;
+    const csW = pos === 'GK' ? (w.player_clean_sheet_gk ?? 5)
+              : pos === 'DEF' ? (w.player_clean_sheet_def ?? 2)
+              : (w.player_clean_sheet_other ?? 0);
+    if (goals)        lines.push({ label: 'Goals',   detail: `${goals} × ${goalW}`,   pts: goals * goalW });
+    if (assists)      lines.push({ label: 'Assists', detail: `${assists} × ${astW}`,  pts: assists * astW });
+    if (cs && csW)    lines.push({ label: `Clean sheet${pos ? ' (' + pos + ')' : ''}`, detail: `${cs} × ${csW}`, pts: cs * csW });
+    if (ws)           lines.push({ label: 'Win share', detail: `${ws} × ${wsW}`, pts: ws * wsW });
+  }
+  const sum = lines.reduce((s, l) => s + l.pts, 0);
+  if (sum !== total) lines.push({ label: 'Other', detail: '', pts: total - sum });
+  return lines;
+}
+
 // Expose to non-module scripts on the page if needed.
 window.fwc = {
   auth, db,
   signInWithGoogle, signOut, onAuth, isAdmin, nameFor, flagFor,
-  getGameState, renderStateBanner,
+  getGameState, renderStateBanner, getScoringWeights, pointsBreakdown,
   configIsPlaceholder,
   // Re-export Firestore helpers commonly used on pages, so individual pages
   // don't have to repeat the import URL.
