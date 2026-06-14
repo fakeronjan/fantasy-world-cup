@@ -121,6 +121,15 @@
   .am-bd-detail { color: var(--text-muted); font-size: 11px; }
   .am-bd-total { font-weight: 700; color: var(--bg-header); border-top: 2px solid var(--border-row); border-bottom: none; margin-top: 2px; }
   .am-own { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  .ml { font-size: 12px; }
+  .ml-row { display: grid; grid-template-columns: 46px 1fr auto 34px; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--border-row); }
+  .ml-row:last-child { border-bottom: none; }
+  .ml-date { color: var(--text-muted); }
+  .ml-opp { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ml-mid { color: var(--text-muted); font-variant-numeric: tabular-nums; text-align: right; }
+  .ml-mid .ml-note { color: var(--text-body); }
+  .ml-pts { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; color: var(--text-muted); }
+  .ml-pts.scoring { color: #16a34a; }
 </style>
 </head>
 <body>
@@ -264,6 +273,7 @@
   // ownership snapshot for the asset detail modal (set in loadStats)
   let ownTeamCount = {}, ownPlayerCount = {}, ownDrafters = 0;
   let scoringWeights = {};  // config.scoringWeights, for the points breakdown
+  let finishedMatches = [];  // for the game-by-game log in the asset modal
 
   async function loadCatalog(syncedAt) {
     if (catalogReady) return;
@@ -356,6 +366,7 @@
 
       await loadCatalog(syncedAt);
       scoringWeights = await window.fwc.getScoringWeights();
+      finishedMatches = await window.fwc.getFinishedMatches();
 
       // Ownership: count held picks across all rosters.
       const snap = await getDocs(collection(window.fwc.db, 'users'));
@@ -570,8 +581,29 @@
       <div class="am-big">${pts} pts &middot; $${price} market value</div>
       <div class="am-context">${context}${a.eliminated ? ' &middot; <span class="am-elim">Eliminated</span>' : ''}</div>
       ${breakdownHtml(a, kind, pts)}
+      ${matchLogHtml(a, kind)}
       <div class="am-own">Owned by ${own}/${ownDrafters} managers (${ownPct}%)</div>`;
     assetModal.style.display = 'flex';
+  }
+
+  // Game-by-game log below the breakdown.
+  function matchLogHtml(a, kind) {
+    const log = window.fwc.assetMatchLog(a, kind, finishedMatches, scoringWeights);
+    if (!log.length) return '';
+    const rows = log.map(r => {
+      const d = r.kickoff ? new Date(r.kickoff).toLocaleDateString('en-US', { timeZone: 'Pacific/Honolulu', month: 'short', day: 'numeric' }) : '';
+      const oppFlag = teamEmoji[r.oppId] ? teamEmoji[r.oppId] + ' ' : '';
+      const mid = kind === 'team'
+        ? `${r.gf}&ndash;${r.ga} ${r.result}`
+        : `${r.gf}&ndash;${r.ga}${r.note ? ` <span class="ml-note">${escape(r.note)}</span>` : ''}`;
+      return `<div class="ml-row">
+        <span class="ml-date">${escape(d)}</span>
+        <span class="ml-opp">${oppFlag}${escape(r.oppName)}</span>
+        <span class="ml-mid">${mid}</span>
+        <span class="ml-pts${r.pts > 0 ? ' scoring' : ''}">${r.pts > 0 ? '+' + r.pts : r.pts}</span>
+      </div>`;
+    }).join('');
+    return `<div class="am-bd-head">Game by game</div><div class="ml">${rows}</div>`;
   }
 
   // Itemized points breakdown that always sums to the asset's total.

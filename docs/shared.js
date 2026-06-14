@@ -257,11 +257,96 @@ function pointsBreakdown(asset, kind, w) {
   return lines;
 }
 
+// All FINISHED matches, cached in localStorage by the sync timestamp (they
+// only change when the ingest cron runs), so repeat use is read-light.
+async function getFinishedMatches() {
+  let syncedAt = null;
+  try {
+    const s = await getDoc(doc(db, 'leaderboard', 'snapshot'));
+    syncedAt = s.exists() ? (s.data().updatedAt || null) : null;
+  } catch { /* ignore */ }
+  const CACHE = 'fwc_finished_matches';
+  if (syncedAt) {
+    try {
+      const c = JSON.parse(localStorage.getItem(CACHE) || 'null');
+      if (c && c.ts === syncedAt && Array.isArray(c.m)) return c.m;
+    } catch { /* fall through */ }
+  }
+  try {
+    const { collection, getDocs, query, where } = await import(
+      "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"
+    );
+    const snap = await getDocs(query(collection(db, 'matches'), where('status', '==', 'FINISHED')));
+    const m = snap.docs.map(d => d.data());
+    if (syncedAt) { try { localStorage.setItem(CACHE, JSON.stringify({ ts: syncedAt, m })); } catch {} }
+    return m;
+  } catch { return []; }
+}
+
+// Game-by-game log for an asset, replicating the ingest's per-match scoring so
+// the per-match points tie out to the asset's breakdown/total. Returns rows
+// sorted oldest->newest: {kickoff, oppId, oppName, gf, ga, result, note, pts}.
+function assetMatchLog(asset, kind, matches, w) {
+  w = w || {};
+  const rows = [];
+  if (kind === 'team') {
+    const tid = asset.id;
+    for (const m of (matches || [])) {
+      const isHome = m.team1Id === tid, isAway = m.team2Id === tid;
+      if (!isHome && !isAway) continue;
+      const gf = isHome ? m.score1 : m.score2, ga = isHome ? m.score2 : m.score1;
+      const won = (m.winner === 'HOME_TEAM' && isHome) || (m.winner === 'AWAY_TEAM' && isAway);
+      const lost = (m.winner === 'HOME_TEAM' && isAway) || (m.winner === 'AWAY_TEAM' && isHome);
+      const result = won ? 'W' : lost ? 'L' : 'D';
+      const pts = won ? (w.team_win ?? 3) : (result === 'D' ? (w.team_draw ?? 1) : 0);
+      rows.push({
+        kickoff: m.kickoff || m.utcDate, oppId: isHome ? m.team2Id : m.team1Id,
+        oppName: isHome ? (m.team2Name || m.team2Id) : (m.team1Name || m.team1Id),
+        gf, ga, result, note: '', pts,
+      });
+    }
+  } else {
+    const fd = asset.fdId, tid = asset.teamId, pos = (asset.position || '').toUpperCase();
+    const csW = pos === 'GK' ? (w.player_clean_sheet_gk ?? 5)
+              : pos === 'DEF' ? (w.player_clean_sheet_def ?? 2) : (w.player_clean_sheet_other ?? 0);
+    for (const m of (matches || [])) {
+      const isHome = m.team1Id === tid, isAway = m.team2Id === tid;
+      if (!isHome && !isAway) continue;
+      const lineup = isHome ? (m.homeLineupFdIds || []) : (m.awayLineupFdIds || []);
+      const played = lineup.includes(fd);
+      const goals = (m.goals || []).filter(g => g.scorerFdId === fd).length;
+      const assists = (m.goals || []).filter(g => g.assistFdId === fd).length;
+      if (!played && !goals && !assists) continue; // not involved in this match
+      const teamWon = (m.winner === 'HOME_TEAM' && isHome) || (m.winner === 'AWAY_TEAM' && isAway);
+      const cs = isHome ? m.cleanSheetHome : m.cleanSheetAway;
+      const winShare = played && teamWon ? 1 : 0;
+      const cleanSheet = played && cs ? 1 : 0;
+      const pts = goals * (w.player_goal ?? 5) + assists * (w.player_assist ?? 3)
+                + winShare * (w.player_win_share ?? 1) + cleanSheet * csW;
+      const bits = [];
+      if (goals) bits.push(goals + 'G');
+      if (assists) bits.push(assists + 'A');
+      if (cleanSheet) bits.push('CS');
+      if (winShare) bits.push('win');
+      if (!bits.length) bits.push(played ? 'played' : 'sub');
+      rows.push({
+        kickoff: m.kickoff || m.utcDate, oppId: isHome ? m.team2Id : m.team1Id,
+        oppName: isHome ? (m.team2Name || m.team2Id) : (m.team1Name || m.team1Id),
+        gf: isHome ? m.score1 : m.score2, ga: isHome ? m.score2 : m.score1,
+        result: '', note: bits.join(' '), pts,
+      });
+    }
+  }
+  rows.sort((a, b) => String(a.kickoff || '').localeCompare(String(b.kickoff || '')));
+  return rows;
+}
+
 // Expose to non-module scripts on the page if needed.
 window.fwc = {
   auth, db,
   signInWithGoogle, signOut, onAuth, isAdmin, nameFor, flagFor,
   getGameState, renderStateBanner, getScoringWeights, pointsBreakdown,
+  getFinishedMatches, assetMatchLog,
   configIsPlaceholder,
   // Re-export Firestore helpers commonly used on pages, so individual pages
   // don't have to repeat the import URL.
