@@ -1,7 +1,11 @@
 name: email-daily-digest
 
 # Sends a daily digest email to every user with emailNotificationsEnabled=true.
-# Runs once per day at 23:00 UTC (after the day's matches finish).
+# Target delivery: ~11:00 AM US Eastern. 11 AM EDT = 15:00 UTC, but GitHub
+# Actions fires scheduled crons ~55-65 min LATE (observed in our run history),
+# so we schedule at 14:00 UTC and the lag carries actual delivery to ~11 AM ET.
+# (Set for EDT, which covers the whole June-July tournament. If GitHub ever
+# stops lagging, bump to 15:00 UTC.)
 #
 # For round-recap emails (after group/R32/R16/QF/SF/F end), trigger this
 # workflow manually via workflow_dispatch with the round name.
@@ -12,7 +16,7 @@ name: email-daily-digest
 
 on:
   schedule:
-    - cron: "0 23 * * *"
+    - cron: "0 14 * * *"
   workflow_dispatch:
     inputs:
       mode:
