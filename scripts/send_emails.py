@@ -53,15 +53,23 @@ def flag_for(u: dict) -> str:
     return (u.get("countryFlag") or "").strip()
 
 
-def load_today_matches(db, today_iso: str) -> list[dict]:
-    """Return finished matches from today with full detail (raw match docs)."""
+# Calendar dates use Hawaii time (UTC-10, no DST) so a late-night-Eastern game
+# stays on its intended matchday - matches the ingest's hawaii_date logic.
+HAWAII_TZ = timezone(timedelta(hours=-10))
+
+def load_recap_matches(db, date_iso: str) -> list[dict]:
+    """Finished matches whose Hawaii matchday == date_iso, full detail."""
     finished = []
     for m in db.collection("matches").stream():
         d = m.to_dict() or {}
         if d.get("status") != "FINISHED":
             continue
-        utc = d.get("utcDate", "")
-        if utc[:10] != today_iso:
+        utc = d.get("utcDate") or d.get("kickoff") or ""
+        try:
+            mh = datetime.fromisoformat(utc.replace("Z", "+00:00")).astimezone(HAWAII_TZ).strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+        if mh != date_iso:
             continue
         finished.append({"id": m.id, **d})
     finished.sort(key=lambda m: m.get("utcDate", ""))
@@ -226,35 +234,34 @@ def render_picks_today_html(roster: list[dict], today_matches: list[dict],
                  f'</tr>')
     if not rows:
         return ""
-    return (f'<h3 style="margin:24px 0 6px; font-size:14px; color:#1a6b8a">Your picks in today\'s action</h3>'
+    return (f'<h3 style="margin:24px 0 6px; font-size:14px; color:#1a6b8a">Your picks in yesterday\'s action</h3>'
             f'<table style="width:100%; border-collapse:collapse; font-size:13px">{rows}</table>')
 
 
 def render_today_matches_html(today_matches: list[dict], players_cache: dict) -> str:
     if not today_matches:
-        return '<p style="color:#888; font-size:13px; font-style:italic; margin-top:16px">No matches today.</p>'
+        return '<p style="color:#888; font-size:13px; font-style:italic; margin-top:16px">No matches yesterday.</p>'
     items = ""
     for m in today_matches:
         line = f"{escape_html(m.get('team1Name') or '?')} {m.get('score1', '?')}-{m.get('score2', '?')} {escape_html(m.get('team2Name') or '?')}"
         goal_summary = goals_summary_text(m, players_cache)
         goal_html = f'<br><span style="color:#666; font-size:11px">{escape_html(goal_summary)}</span>' if goal_summary else ""
         items += f'<li style="margin:6px 0; font-size:13px"><strong>{escape_html(m.get("round") or "?")}</strong> · {line}{goal_html}</li>'
-    return f'<h3 style="margin:24px 0 6px; font-size:14px; color:#1a6b8a">Today\'s matches</h3><ul style="padding-left:18px; margin:0">{items}</ul>'
+    return f'<h3 style="margin:24px 0 6px; font-size:14px; color:#1a6b8a">Yesterday\'s results</h3><ul style="padding-left:18px; margin:0">{items}</ul>'
 
 
 def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[dict],
-                      yesterday_points: int | None, roster: list[dict],
+                      roster: list[dict],
                       teams_cache: dict, players_cache: dict) -> tuple[str, str, str]:
     """Returns (subject, html_body, plain_text_body)."""
     name  = name_for(user)
     flag  = flag_for(user)
     pts   = int(user.get("totalPoints") or 0)
-    delta = (pts - yesterday_points) if yesterday_points is not None else None
+    # "gain" = points the roster earned in yesterday's matches (the recap window)
+    gain  = sum(points_today_for_pick(p, today_matches, teams_cache, players_cache)[0] for p in roster)
     rank  = next((i + 1 for i, u in enumerate(leaderboard) if u["uid"] == user["uid"]), None)
 
-    delta_str = ""
-    if delta is not None and delta != 0:
-        delta_str = f" ({'+' if delta > 0 else ''}{delta})"
+    delta_str = f" (+{gain})" if gain > 0 else ""
 
     subject_parts = ["Fantasy WC", datetime.utcnow().strftime("%b %d")]
     if rank: subject_parts.append(f"Rank #{rank}{delta_str}")
@@ -307,7 +314,7 @@ Hi {name},
 
 Your standing: {'#' + str(rank) if rank else 'unranked'} · {pts} pts{delta_str}
 
-Today: {(', '.join(f"{m['round']} {m['team1Name']} {m.get('score1','?')}-{m.get('score2','?')} {m['team2Name']}" for m in today_matches)) if today_matches else 'no matches'}
+Yesterday: {(', '.join(f"{m['round']} {m['team1Name']} {m.get('score1','?')}-{m.get('score2','?')} {m['team2Name']}" for m in today_matches)) if today_matches else 'no matches'}
 
 Your roster ({len(roster)} picks):
 {roster_plain}
@@ -436,8 +443,10 @@ def main():
         sys.exit("RESEND_API_KEY env var required (or use --dry-run)")
 
     db = firestore_client()
-    today_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    yesterday_iso = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+    # The digest sends in the morning ET, so it recaps the PREVIOUS Hawaii
+    # matchday (yesterday's games), consistent with the rest of the app's dating.
+    now_hawaii = datetime.now(timezone.utc).astimezone(HAWAII_TZ)
+    recap_iso = (now_hawaii - timedelta(days=1)).strftime("%Y-%m-%d")
 
     # Load all users sorted by global points. Group-specific leaderboards
     # are filtered out of this same list per-user inside render_leaderboards_html.
@@ -458,7 +467,7 @@ def main():
 
     today_matches = []
     if args.mode == "daily":
-        today_matches = load_today_matches(db, today_iso)
+        today_matches = load_recap_matches(db, recap_iso)
 
     n_sent = n_skipped = n_failed = 0
     for u in all_users:
@@ -469,11 +478,10 @@ def main():
             n_skipped += 1
             continue
 
-        yesterday_pts = (u.get("pointsByDate") or {}).get(yesterday_iso)
         roster = u.get("roster") or []
         if args.mode == "daily":
             subject, html, plain = render_daily_html(
-                u, all_users, today_matches, yesterday_pts,
+                u, all_users, today_matches,
                 roster, teams_cache, players_cache,
             )
         else:
