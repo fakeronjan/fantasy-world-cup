@@ -628,10 +628,10 @@
 
   function renderTabs() {
     const groups = viewerGroups();
-    // Everyone gets their group tabs plus an "Overall" tab spanning all
-    // players. Group tabs come first so a group member still defaults to
-    // their own group; the Overall tab is an added view, not the default.
-    const tabIds = [...groups, '_all'];
+    // "Overall" tab first (leftmost) and the default - show the full field of
+    // competition by default; group tabs follow for filtering down. Default
+    // works because selectedTab falls back to tabIds[0] = '_all'.
+    const tabIds = ['_all', ...groups];
     // If the only available tab is the global one (viewer has no groups),
     // there's nothing to switch between, so skip the tab bar entirely.
     if (tabIds.length === 1) {
