@@ -32,6 +32,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _fwc_lib import fd_get, firestore_client
+from firebase_admin import firestore
 
 
 # ---------------------------------------------------------------------------
@@ -73,6 +74,15 @@ HAWAII_TZ = timezone(timedelta(hours=-10))
 def hawaii_date(dt: datetime) -> str:
     """YYYY-MM-DD calendar date of a tz-aware datetime, in Hawaii time."""
     return dt.astimezone(HAWAII_TZ).strftime("%Y-%m-%d")
+
+def matchday(kickoff_iso: str) -> str | None:
+    """Hawaii calendar date of a match from its ISO kickoff string."""
+    if not kickoff_iso:
+        return None
+    try:
+        return hawaii_date(datetime.fromisoformat(kickoff_iso.replace("Z", "+00:00")))
+    except (ValueError, AttributeError):
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -260,15 +270,20 @@ def sync_matches(db, team_fd_to_slug: dict) -> int:
 # Step 2: recompute team stats
 # ---------------------------------------------------------------------------
 
-def recompute_teams(db, weights: dict) -> dict[str, dict]:
+def recompute_teams(db, weights: dict) -> tuple[dict[str, dict], str | None]:
     """Walk all FINISHED matches, recompute W/D/L/GF/GA/CS per team.
     Determine deepest round reached. Compute totalPoints.
-    Returns {team_doc_id: stats} for downstream player computation."""
+    Returns ({team_doc_id: stats}, latest_matchday) - the latter is the most
+    recent Hawaii matchday with results, used to bucket pointsByDate."""
     matches = []
+    latest_matchday = None
     for mdoc in db.collection("matches").stream():
         m = mdoc.to_dict() or {}
         if m.get("status") == "FINISHED" and m.get("score1") is not None:
             matches.append(m)
+            md = matchday(m.get("kickoff"))
+            if md and (latest_matchday is None or md > latest_matchday):
+                latest_matchday = md
 
     stats: dict[str, dict] = {}
     def _row(slug):
@@ -339,7 +354,7 @@ def recompute_teams(db, weights: dict) -> dict[str, dict]:
             batch.commit(); batch = db.batch()
     batch.commit()
     print(f"  updated {n} teams")
-    return stats
+    return stats, latest_matchday
 
 
 # ---------------------------------------------------------------------------
@@ -434,9 +449,14 @@ def recompute_players(db, team_stats: dict, weights: dict) -> None:
 # Step 4: recompute user totals + leaderboard snapshot
 # ---------------------------------------------------------------------------
 
-def recompute_users(db) -> list[dict]:
+def recompute_users(db, latest_matchday: str | None = None) -> list[dict]:
     teams_cache   = {d.id: d.to_dict() or {} for d in db.collection("teams").stream()}
     players_cache = {d.id: d.to_dict() or {} for d in db.collection("players").stream()}
+    # Bucket today's cumulative total under the most recent matchday that has
+    # results, NOT wall-clock now. A late game that first registers as finished
+    # after Hawaii midnight (GitHub cron lag) otherwise collapses into the next
+    # calendar day. Falls back to "now" only before any match has finished.
+    snap_date = latest_matchday or hawaii_date(datetime.now(timezone.utc))
 
     leaderboard: list[dict] = []
     batch = db.batch()
@@ -466,11 +486,17 @@ def recompute_users(db) -> list[dict]:
             pick["points"] = fwd_pts          # points THIS holder earned from the pick
             pick["eliminated"] = bool(ast.get("eliminated", False))
         # Snapshot today's cumulative total into pointsByDate so the
-        # leaderboard chart can draw a real trajectory over time. Keyed by
-        # Hawaii date so late-night-Eastern games stay on their matchday.
-        today = hawaii_date(datetime.now(timezone.utc))
+        # leaderboard chart can draw a real trajectory over time. Keyed by the
+        # latest matchday with results (snap_date), not wall-clock now, so a
+        # late game ingested after Hawaii midnight lands on its own matchday.
         points_by_date = dict(u.get("pointsByDate") or {})
-        points_by_date[today] = int(total)
+        # Drop any stale snapshot dated after the latest real matchday - these
+        # are leftovers from the old wall-clock bucketing (e.g. a 6/16 result
+        # ingested 6/17 that wrote a phantom 6/17 entry).
+        stale = [k for k in points_by_date if k > snap_date]
+        points_by_date[snap_date] = int(total)
+        for k in stale:
+            del points_by_date[k]
         batch.set(
             udoc.reference,
             {
@@ -481,6 +507,9 @@ def recompute_users(db) -> list[dict]:
             },
             merge=True,
         )
+        # merge=True deep-merges maps, so dropped keys must be deleted explicitly.
+        for k in stale:
+            batch.update(udoc.reference, {f"pointsByDate.{k}": firestore.DELETE_FIELD})
         leaderboard.append({
             "uid":         udoc.id,
             "displayName": u.get("displayName") or u.get("email"),
@@ -663,13 +692,13 @@ def main() -> None:
     sync_matches(db, team_fd_to_slug)
 
     print("Step 2: recompute team records + points…")
-    team_stats = recompute_teams(db, weights)
+    team_stats, latest_matchday = recompute_teams(db, weights)
 
     print("Step 3: recompute player goals/assists/wins/CS from match data…")
     recompute_players(db, team_stats, weights)
 
     print("Step 4: recompute user totals + leaderboard snapshot…")
-    leaderboard = recompute_users(db)
+    leaderboard = recompute_users(db, latest_matchday)
     write_leaderboard_snapshot(db, leaderboard)
 
     # Reload config - Steps 1-4 may have changed it (e.g., kickoff detection).
