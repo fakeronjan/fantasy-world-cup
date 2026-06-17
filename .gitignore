@@ -28,3 +28,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# CL spin-off harness data (regenerable via scripts/cl/fetch_cl_season.py)
+data/cl/
