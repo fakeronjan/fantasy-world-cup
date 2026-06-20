@@ -9,6 +9,7 @@ Run from project root:
   ./venv/bin/python scripts/enrich_player_clubs.py
 """
 import json
+import os
 import sys
 import time
 import urllib.request
@@ -17,13 +18,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SEED_PATH = ROOT / 'docs' / 'data' / 'seed_players.json'
 
-# Read API key from the existing Power Rankings env file.
-ENV_PATH = Path('/Users/ronjan/My Drive/~RJ/fakeronjan/Power Rankings/soccer club/.env')
-API_KEY = None
-for line in ENV_PATH.read_text().splitlines():
-    if line.startswith('FOOTBALL_DATA_KEY='):
-        API_KEY = line.split('=', 1)[1].strip('"\' ')
-        break
+# API key: env var first (set in ~/.zshrc and CI); fall back to the local
+# zidane .env, which shares FOOTBALL_DATA_KEY.
+ENV_PATH = Path.home() / 'code/fakeronjan/sports/zidane/.env'
+API_KEY = os.environ.get('FOOTBALL_DATA_KEY')
+if not API_KEY and ENV_PATH.exists():
+    for line in ENV_PATH.read_text().splitlines():
+        if line.startswith('FOOTBALL_DATA_KEY='):
+            API_KEY = line.split('=', 1)[1].strip('"\' ')
+            break
 if not API_KEY:
     sys.exit('FOOTBALL_DATA_KEY not found in env')
 

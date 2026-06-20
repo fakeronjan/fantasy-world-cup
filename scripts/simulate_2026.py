@@ -82,7 +82,7 @@ def load_match_schedule():
     if MATCHES_CACHE.exists():
         return json.loads(MATCHES_CACHE.read_text())
     # Fetch from football-data.org
-    env_path = Path("/Users/ronjan/My Drive/~RJ/fakeronjan/Power Rankings/soccer club/.env")
+    env_path = Path.home() / "code/fakeronjan/sports/zidane/.env"
     key = os.environ.get("FOOTBALL_DATA_KEY")
     if not key and env_path.exists():
         for line in env_path.read_text().splitlines():

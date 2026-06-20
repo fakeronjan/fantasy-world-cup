@@ -13,7 +13,7 @@ from typing import Any
 from urllib.request import Request, urlopen
 
 FD_BASE = "https://api.football-data.org/v4"
-PR_ENV_PATH = Path("/Users/ronjan/My Drive/~RJ/fakeronjan/Power Rankings/soccer club/.env")
+PR_ENV_PATH = Path.home() / "code/fakeronjan/sports/zidane/.env"
 
 
 # ---------------------------------------------------------------------------

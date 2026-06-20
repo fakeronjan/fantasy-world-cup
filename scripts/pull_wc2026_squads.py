@@ -21,8 +21,8 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 API_BASE = "https://api.football-data.org/v4"
 
-# Read the key from the existing Power Rankings .env (we share infrastructure).
-ENV_PATH = Path("/Users/ronjan/My Drive/~RJ/fakeronjan/Power Rankings/soccer club/.env")
+# Read the key from the local zidane .env (shares FOOTBALL_DATA_KEY); env var wins.
+ENV_PATH = Path.home() / "code/fakeronjan/sports/zidane/.env"
 
 
 def _load_key() -> str:
