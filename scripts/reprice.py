@@ -48,6 +48,10 @@ from simulate_2026 import (
     simulate_match, _record_match, _winner_loser,
     load_seed, build_team_indexes,
 )
+from _fwc_lib import (
+    advancer_slugs_for_round, round_fully_seeded,
+    eliminated_slugs as compute_eliminated_slugs,
+)
 
 # Forward-looking pricing constants
 TARGET_ROI       = 2.0    # target points per dollar (cap-anchored)
@@ -239,22 +243,34 @@ def hypothetical_advancers(teams, start_round):
 
 
 def live_advancers(db, start_round):
-    """Read real advancers from Firestore. A team is alive at `start_round`
-    iff eliminated=False AND final_round == start_round."""
+    """Read real advancers from Firestore by reading the `start_round` BRACKET.
+
+    A team is contesting `start_round` iff it's slotted into one of that
+    round's fixtures. We deliberately do NOT key off finalRound: a team's
+    finalRound only reaches `start_round` after it has *played* a
+    start_round match, so at the transition edge (round just completed, next
+    round not yet played) finalRound would identify nobody. The upstream feed
+    fills the next round's fixture slots as soon as the bracket is decided,
+    which is exactly when this should fire."""
+    matches = [m.to_dict() or {} for m in db.collection("matches").stream()]
+    slugs = advancer_slugs_for_round(matches, start_round)
+    if not slugs:
+        return []
     advancers = []
     for tdoc in db.collection("teams").stream():
-        t = tdoc.to_dict() or {}
-        if t.get("eliminated"):
-            continue
-        if t.get("finalRound") != start_round:
-            continue
-        advancers.append({**t, "id": tdoc.id})
+        if tdoc.id in slugs:
+            advancers.append({**(tdoc.to_dict() or {}), "id": tdoc.id})
     return advancers
 
 
-def write_prices_to_firestore(db, prices, advancers, all_teams, round_label):
+def write_prices_to_firestore(db, prices, advancers, all_teams, round_label, elim_slugs):
     """Persist marketValue/buyPrice/sellPrice to each team + player doc.
     Eliminated assets get marketValue=0 + a legacy display sellPrice.
+
+    `elim_slugs` is the explicit set of team slugs being eliminated this round.
+    Teams that are neither advancing (in `prices`) nor in `elim_slugs` are left
+    untouched - that protects beaten semifinalists who still have a 3rd-place
+    match to play, and teams whose bracket slot hasn't been seeded yet.
 
     NOTE: the actual auto-sell refund is now per-pick (25% of each holder's
     purchasePrice, in auto_sell_eliminated_picks), NOT this per-asset value.
@@ -293,6 +309,11 @@ def write_prices_to_firestore(db, prices, advancers, all_teams, round_label):
                 "priceHistory":     new_hist,
             }, merge=True)
             n_alive += 1
+        elif tid not in elim_slugs:
+            # Not advancing this round, but not being eliminated either - still
+            # has a 3rd-place match, or its bracket slot isn't seeded yet.
+            # Leave the doc exactly as-is.
+            continue
         elif t.get("liquidationValue") is not None:
             n_elim_existing += 1
         else:
@@ -314,6 +335,7 @@ def write_prices_to_firestore(db, prices, advancers, all_teams, round_label):
                 "buyPrice":         None,
                 "sellPrice":        liquidation,
                 "currentPrice":     0,
+                "eliminated":       True,
                 "priceHistory":     new_hist,
             }, merge=True)
             n_elim_new += 1
@@ -345,6 +367,9 @@ def write_prices_to_firestore(db, prices, advancers, all_teams, round_label):
                 "priceHistory":     new_hist,
             }, merge=True)
             n_p_alive += 1
+        elif p.get("teamId") not in elim_slugs:
+            # Player's team is still alive / awaiting 3rd-place / unseeded.
+            continue
         elif p.get("liquidationValue") is not None:
             n_p_elim_existing += 1
         else:
@@ -541,15 +566,27 @@ def main():
     # Live mode: read real advancers from Firestore.
     # Dry-run mode: synthesize advancers from seed.
     db = None
+    elim_slugs = set()
     if args.write:
         from _fwc_lib import firestore_client
         db = firestore_client()
+        matches = [m.to_dict() or {} for m in db.collection("matches").stream()]
+        if not round_fully_seeded(matches, args.from_round):
+            print(f"The {args.from_round} bracket is not fully seeded yet "
+                  f"(some fixtures have no teams assigned). Wait until the feed "
+                  f"fills every slot, then re-run. Aborting.")
+            return
         advancers = live_advancers(db, args.from_round)
         if not advancers:
-            print(f"No teams with finalRound={args.from_round} in Firestore. "
-                  f"Has the previous round been ingested? Aborting.")
+            print(f"No teams slotted into {args.from_round} fixtures. "
+                  f"Has the bracket been seeded? Aborting.")
             return
-        print(f"Live mode: {len(advancers)} teams advanced to {args.from_round}")
+        advancer_ids = {t["id"] for t in advancers}
+        champ = next((t["id"] for t in advancers
+                      if (t.get("finalRound") == "W")), None)
+        elim_slugs = compute_eliminated_slugs(matches, advancer_ids, champ)
+        print(f"Live mode: {len(advancers)} teams advanced to {args.from_round}; "
+              f"{len(elim_slugs)} eliminated")
     else:
         advancers = hypothetical_advancers(teams, args.from_round)
     print(f"Hypothetical {args.from_round} field ({len(advancers)} teams):")
@@ -581,7 +618,7 @@ def main():
 
     if args.write and db is not None:
         print(f"\nWriting prices to Firestore...")
-        write_prices_to_firestore(db, prices, advancers, teams, args.from_round)
+        write_prices_to_firestore(db, prices, advancers, teams, args.from_round, elim_slugs)
         if not args.skip_auto_sell:
             print(f"Auto-selling eliminated picks from user rosters...")
             auto_sell_eliminated_picks(db)

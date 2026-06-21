@@ -114,3 +114,78 @@ _STAGE_MAP = {
 
 def _our_round(stage: str) -> str:
     return _STAGE_MAP.get(stage or "", stage or "group")
+
+
+# ---------------------------------------------------------------------------
+# Knockout-bracket advancement (pure helpers - no Firestore / no network)
+# ---------------------------------------------------------------------------
+#
+# Source of truth at a round boundary is the BRACKET, not finalRound.
+# A team's finalRound only reaches round X *after* it has played an X match,
+# so finalRound cannot identify who advanced at the instant a round completes.
+# The upstream feed slots the surviving teams into the next round's fixtures
+# as soon as the bracket is officially decided - that's our signal.
+
+# How many fixtures each knockout round has in the 48-team format. Used to
+# detect a fully-seeded bracket (all slots filled) before we act on it.
+KO_FIXTURES_PER_ROUND = {"R32": 16, "R16": 8, "QF": 4, "SF": 2, "F": 1}
+
+
+def round_fixtures(matches: list[dict], round_label: str) -> list[dict]:
+    """All match dicts whose round == round_label."""
+    return [m for m in matches if (m or {}).get("round") == round_label]
+
+
+def round_fully_seeded(matches: list[dict], round_label: str) -> bool:
+    """True iff round_label has its expected fixture count AND every one has
+    both team slots assigned. Gates the transition so we never reprice off a
+    half-seeded bracket (e.g. the feed populates fixtures one at a time)."""
+    fixtures = round_fixtures(matches, round_label)
+    expected = KO_FIXTURES_PER_ROUND.get(round_label)
+    if expected is not None and len(fixtures) != expected:
+        return False
+    if not fixtures:
+        return False
+    return all(m.get("team1Id") and m.get("team2Id") for m in fixtures)
+
+
+def advancer_slugs_for_round(matches: list[dict], round_label: str) -> set[str]:
+    """Team slugs contesting round_label, read from that round's fixtures."""
+    slugs: set[str] = set()
+    for m in round_fixtures(matches, round_label):
+        for k in ("team1Id", "team2Id"):
+            if m.get(k):
+                slugs.add(m[k])
+    return slugs
+
+
+def team_pending_counts(matches: list[dict]):
+    """Returns ({slug: count of non-FINISHED fixtures it's slotted into},
+    {slugs with >=1 FINISHED match}). 'Pending' counts the 3rd-place match,
+    so a beaten semifinalist stays pending until that game is played."""
+    from collections import defaultdict
+    pending: dict[str, int] = defaultdict(int)
+    played: set[str] = set()
+    for m in matches:
+        finished = (m or {}).get("status") == "FINISHED"
+        for slug in (m.get("team1Id"), m.get("team2Id")):
+            if not slug:
+                continue
+            if finished:
+                played.add(slug)
+            else:
+                pending[slug] += 1
+    return pending, played
+
+
+def eliminated_slugs(matches: list[dict], advancer_ids: set[str],
+                     champion_slug: str | None = None) -> set[str]:
+    """Teams that are out: they've played, they're not advancing, they have no
+    remaining fixture (incl. 3rd-place), and they're not the champion."""
+    pending, played = team_pending_counts(matches)
+    return {
+        slug for slug in played
+        if slug not in advancer_ids
+        and slug != champion_slug
+        and pending.get(slug, 0) == 0
+    }

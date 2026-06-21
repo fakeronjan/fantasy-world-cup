@@ -270,7 +270,7 @@ def sync_matches(db, team_fd_to_slug: dict) -> int:
 # Step 2: recompute team stats
 # ---------------------------------------------------------------------------
 
-def recompute_teams(db, weights: dict) -> tuple[dict[str, dict], str | None]:
+def recompute_teams(db, weights: dict, current_round: str | None = None) -> tuple[dict[str, dict], str | None]:
     """Walk all FINISHED matches, recompute W/D/L/GF/GA/CS per team.
     Determine deepest round reached. Compute totalPoints.
     Returns ({team_doc_id: stats}, latest_matchday) - the latter is the most
@@ -339,6 +339,14 @@ def recompute_teams(db, weights: dict) -> tuple[dict[str, dict], str | None]:
                 if slug:
                     matches_by_team_pending[slug] += 1
 
+    # A team is eliminated once the tournament has left the group stage AND it
+    # has no remaining fixture (incl. the 3rd-place match) AND it isn't champion.
+    # Gating on `group_over` (rather than the old `fr != "group"` check) is what
+    # lets group-stage losers - whose finalRound stays "group" forever - finally
+    # get flagged, while never false-flagging a team mid-group-stage. Advancers
+    # are naturally excluded: once the bracket is seeded they hold a pending
+    # next-round fixture.
+    group_over = current_round not in (None, "pre", "group")
     for slug, row in stats.items():
         pts = weights["team_win"] * row["matchesWon"] + weights["team_draw"] * row["matchesDrawn"]
         fr = row["finalRound"]
@@ -346,7 +354,7 @@ def recompute_teams(db, weights: dict) -> tuple[dict[str, dict], str | None]:
         for r in ADVANCEMENT_ORDER[1:idx + 1]:
             pts += BONUSES.get(r, 0)
         row["totalPoints"] = int(pts)
-        row["eliminated"] = (matches_by_team_pending.get(slug, 0) == 0) and fr != "W" and fr != "group"
+        row["eliminated"] = group_over and (matches_by_team_pending.get(slug, 0) == 0) and fr != "W"
         ref = db.collection("teams").document(slug)
         batch.set(ref, row, merge=True)
         n += 1
@@ -557,12 +565,10 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
                 return "group"
         return None
 
-    # Collect all matches for the current round
-    round_matches = []
-    for mdoc in db.collection("matches").stream():
-        m = mdoc.to_dict() or {}
-        if m.get("round") == current:
-            round_matches.append(m)
+    # Load all matches once - used for round-completion, bracket-seeding, and
+    # elimination checks below.
+    all_matches = [mdoc.to_dict() or {} for mdoc in db.collection("matches").stream()]
+    round_matches = [m for m in all_matches if m.get("round") == current]
 
     if not round_matches:
         return None
@@ -581,14 +587,24 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
         print(f"  Tournament complete - currentRound=done, window closed")
         return nxt
 
-    print(f"  Round transition detected: {current} → {nxt}")
-    db.collection("config").document("global").set({
-        "currentRound":       nxt,
-        "transferWindowOpen": True,
-    }, merge=True)
-    print(f"  Set currentRound={nxt}, transferWindowOpen=True")
+    # The current round is over, but we can only reprice once the NEXT round's
+    # bracket is fully seeded (every fixture has both teams). The upstream feed
+    # fills these slots only after the bracket is officially decided, which can
+    # lag the final group-stage whistle by hours. Until then, HOLD: leave
+    # currentRound and the (still-closed) transfer window untouched and re-check
+    # next cron. This is the fix for the old failure mode where we flipped the
+    # round + opened the window against an empty bracket - which made
+    # live_advancers come back empty and silently skipped elimination +
+    # repricing, leaving dead teams sellable at full price.
+    from _fwc_lib import round_fully_seeded, eliminated_slugs as _elim_slugs
+    if not round_fully_seeded(all_matches, nxt):
+        print(f"  {current} complete, but {nxt} bracket not fully seeded yet - holding transition")
+        return None
 
-    # Trigger reprice for the new round
+    # Reprice FIRST and only flip the round + open the window if it all
+    # succeeds, so the game is never left half-transitioned (window open with
+    # stale prices). On any failure we return without flipping, and the next
+    # cron retries from the same state.
     try:
         from collections import defaultdict
         from reprice import (
@@ -604,19 +620,30 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
 
         advancers = live_advancers(db, nxt)
         if not advancers:
-            print(f"  WARN: no advancers found for {nxt}. Did ingest mark finalRound correctly?")
-            return nxt
+            print(f"  WARN: {nxt} bracket seeded but no team docs matched its slugs - holding")
+            return None
+        advancer_ids = {t["id"] for t in advancers}
+        champ = next((t["id"] for t in advancers if t.get("finalRound") == "W"), None)
+        elim = _elim_slugs(all_matches, advancer_ids, champ)
 
-        print(f"  Repricing for {nxt} ({len(advancers)} advancers, 1000 sims)...")
+        print(f"  Round transition {current} → {nxt}: {len(advancers)} advancers, "
+              f"{len(elim)} eliminated, repricing (1000 sims)...")
         prices = compute_reprice(advancers, nxt, players_by_team, runs=1000, seed=42)
-        write_prices_to_firestore(db, prices, advancers, teams, nxt)
+        write_prices_to_firestore(db, prices, advancers, teams, nxt, elim)
         auto_sell_eliminated_picks(db)
         snapshot_user_values(db, nxt)
         print(f"  Reprice + auto-sell + snapshot complete for {nxt}")
     except Exception as e:
-        print(f"  ERROR during reprice trigger: {e}")
-        # Don't crash the whole ingest - window is open, admin can re-run
-        # reprice manually if needed.
+        print(f"  ERROR during reprice; NOT transitioning (next cron will retry): {e}")
+        return None
+
+    # Pricing + eliminations are persisted - now it's safe to advance the round
+    # and open the transfer window.
+    db.collection("config").document("global").set({
+        "currentRound":       nxt,
+        "transferWindowOpen": True,
+    }, merge=True)
+    print(f"  Set currentRound={nxt}, transferWindowOpen=True")
     return nxt
 
 
@@ -692,7 +719,7 @@ def main() -> None:
     sync_matches(db, team_fd_to_slug)
 
     print("Step 2: recompute team records + points…")
-    team_stats, latest_matchday = recompute_teams(db, weights)
+    team_stats, latest_matchday = recompute_teams(db, weights, cfg.get("currentRound"))
 
     print("Step 3: recompute player goals/assists/wins/CS from match data…")
     recompute_players(db, team_stats, weights)
