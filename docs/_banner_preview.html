@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!--
+  DEV PREVIEW (not linked from the app). Shows every game-state banner,
+  including the new transition states, with the REAL markup/CSS so you can
+  eyeball them. Mirrors:
+    - shared.js  -> renderStateBanner()      (the site-wide #stateBanner)
+    - transfer.html -> .window-banner + its text (the transfer-page banner)
+  Keep in sync if those change. Open directly:  open docs/_banner_preview.html
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FWC banner preview</title>
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 820px;
+         margin: 30px auto; padding: 0 20px; color: #1f2937; background:#fafafa; }
+  h1 { font-size: 20px; } h2 { font-size: 15px; margin: 28px 0 6px; color:#374151; }
+  .when { font-size: 12px; color:#6b7280; margin: 0 0 6px; }
+  .new { background:#fde68a; color:#92400e; font-size:11px; font-weight:700;
+         padding:1px 6px; border-radius:4px; margin-left:8px; vertical-align:middle; }
+  /* ---- transfer.html .window-banner (copied verbatim) ---- */
+  .window-banner { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px;
+                   font-size: 13px; display: flex; align-items: center; gap: 12px; }
+  .window-banner.open  { background: #d1fae5; color: #065f46; }
+  .window-banner.closed { background: #fee2e2; color: #991b1b; }
+  .window-banner.transition { background: #fef3c7; color: #92400e;
+                              border: 2px solid #f59e0b; font-weight: 600; }
+</style>
+</head>
+<body>
+<h1>Fantasy World Cup — banner preview</h1>
+<p class="when">Reflects the group→R32 turnover (Sun Jun 28). Bold-bordered amber = the new transition states.</p>
+
+<h2>Site-wide banner (every page) — <code>#stateBanner</code></h2>
+<div id="globalBanners"></div>
+
+<h2>Transfer page banner — <code>.window-banner</code></h2>
+<p class="when">During settle lock (window closed):</p>
+<div class="window-banner transition closed">⚙️ Round transition in progress — results and modeling are settling. Transfers reopen shortly; nothing you stage now is saved yet.</div>
+<p class="when">After settle lock, window open (≥4h guaranteed):</p>
+<div class="window-banner transition">⚠️ TRANSITION STATE — transfers are LIVE, but the round just turned over. In the rare event of a bracket/scoring error, transfers made now may be reverted. Trade with that in mind.</div>
+<p class="when">Normal open / closed (no transition), for comparison:</p>
+<div class="window-banner open">Transfer window is OPEN. Make changes and click "Save" to commit. (Current round: R32)</div>
+<div class="window-banner closed">Transfer window is CLOSED. You can preview changes but the Save button won't commit. Owner opens windows from /admin.html.</div>
+
+<script>
+// --- copy of shared.js renderStateBanner() output (keep in sync) ---
+function renderStateBanner(targetEl, state) {
+  const ROUND_NAMES = { 'group':'Group stage','R32':'Round of 32','R16':'Round of 16',
+    'QF':'Quarter-finals','SF':'Semi-finals','F':'Final' };
+  let bg, color, icon, title, sub;
+  if (state.state === 'pre-kickoff') {
+    bg='#e0f2fe'; color='#075985'; icon='⏳'; title='Pre-kickoff';
+    sub='Drafts open until Jun 11, 8:00 PM EDT';
+  } else if (state.state === 'round-in-progress') {
+    bg='#f3f4f6'; color='#374151'; icon='🔒';
+    title=`${ROUND_NAMES[state.round]} in progress`;
+    sub='Rosters locked until the next transfer window opens.';
+  } else if (state.state === 'transition-settling') {
+    bg='#fef3c7'; color='#92400e'; icon='⚙️';
+    title=`Round transition in progress · ${ROUND_NAMES[state.round]}`;
+    sub='Results and modeling are settling — transfers reopen shortly.';
+  } else if (state.state === 'window-open') {
+    bg='#fef0f7'; color='#9d174d'; icon='🟢';
+    title=`Transfer window OPEN · ${ROUND_NAMES[state.round]}`;
+    sub = state.transition
+      ? 'Transfers are LIVE. Heads up: the game is in a transition state, so in the rare event of a bracket/scoring error, transfers made now may be reverted.'
+      : 'Make your moves on the Transfer page. Closes 1h before the next match.';
+  } else if (state.state === 'done') {
+    bg='#fef0f7'; color='#9d174d'; icon='🏆'; title='Tournament complete';
+    sub='Final standings on the Leaderboard.';
+  } else { return; }
+  targetEl.insertAdjacentHTML('beforeend', `
+    <div style="background:${bg}; color:${color}; padding:10px 14px; border-radius:6px;
+                margin-bottom:16px; font-size:13px; display:flex; align-items:center; gap:10px">
+      <span style="font-size:18px">${icon}</span>
+      <div style="flex:1"><strong>${title}</strong>
+        <span style="opacity:0.85; margin-left:6px">· ${sub}</span></div>
+    </div>`);
+}
+const host = document.getElementById('globalBanners');
+const label = (t, isNew) => host.insertAdjacentHTML('beforeend',
+  `<p class="when">${t}${isNew ? '<span class="new">NEW</span>' : ''}</p>`);
+label('Settle lock — window closed (Sun ~1–6am ET):', true);
+renderStateBanner(host, { state:'transition-settling', round:'R32' });
+label('Trading open, still in transition (Sun morning → 2pm ET):', true);
+renderStateBanner(host, { state:'window-open', round:'R32', transition:true });
+label('Normal window-open (no transition), for comparison:');
+renderStateBanner(host, { state:'window-open', round:'R32' });
+label('Round in progress (rosters locked):');
+renderStateBanner(host, { state:'round-in-progress', round:'R32' });
+label('Pre-kickoff & done, for completeness:');
+renderStateBanner(host, { state:'pre-kickoff' });
+renderStateBanner(host, { state:'done' });
+</script>
+</body>
+</html>
