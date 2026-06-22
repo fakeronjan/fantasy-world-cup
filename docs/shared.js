@@ -126,7 +126,12 @@ async function getGameState() {
 
     if (round === 'done') return { state: 'done' };
     if (beforeKickoff)    return { state: 'pre-kickoff', kickoff };
-    if (c.transferWindowOpen === true) return { state: 'window-open', round };
+    // Mid-transition: the round just turned over. While the settle lock holds
+    // (window still closed) show a "settling" banner; once trading opens, keep
+    // the transition flag so the window-open banner warns trades may be reverted.
+    const transition = c.transitionState === true;
+    if (transition && c.transferWindowOpen !== true) return { state: 'transition-settling', round };
+    if (c.transferWindowOpen === true) return { state: 'window-open', round, transition };
     return { state: 'round-in-progress', round };
   } catch (e) {
     console.error('getGameState failed:', e);
@@ -157,10 +162,16 @@ function renderStateBanner(targetEl, state) {
     bg = '#f3f4f6'; color = '#374151'; icon = '🔒';
     title = `${ROUND_NAMES[state.round] || state.round} in progress`;
     sub = `Rosters locked until the next transfer window opens.`;
+  } else if (state.state === 'transition-settling') {
+    bg = '#fef3c7'; color = '#92400e'; icon = '⚙️';
+    title = `Round transition in progress · ${ROUND_NAMES[state.round] || state.round}`;
+    sub = `Results and modeling are settling — transfers reopen shortly.`;
   } else if (state.state === 'window-open') {
     bg = '#fef0f7'; color = '#9d174d'; icon = '🟢';
     title = `Transfer window OPEN · ${ROUND_NAMES[state.round] || state.round}`;
-    sub = `Make your moves on the Transfer page. Closes 1h before the next match.`;
+    sub = state.transition
+      ? `Transfers are LIVE. Heads up: the game is in a transition state, so in the rare event of a bracket/scoring error, transfers made now may be reverted.`
+      : `Make your moves on the Transfer page. Closes 1h before the next match.`;
   } else if (state.state === 'done') {
     bg = '#fef0f7'; color = '#9d174d'; icon = '🏆';
     title = 'Tournament complete';

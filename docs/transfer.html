@@ -13,6 +13,7 @@
   }
   .window-banner.open  { background: #d1fae5; color: #065f46; }
   .window-banner.closed { background: #fee2e2; color: #991b1b; }
+  .window-banner.transition { background: #fef3c7; color: #92400e; border: 2px solid #f59e0b; font-weight: 600; }
 
   /* Pricing explainer - collapsible */
   .pricing-explainer {
@@ -354,11 +355,19 @@
     configDoc = cfg.exists() ? cfg.data() : { transferWindowOpen: false };
 
     const open = configDoc.transferWindowOpen === true;
-    windowBanner.classList.toggle('open', open);
-    windowBanner.classList.toggle('closed', !open);
-    windowBanner.textContent = open
-      ? `Transfer window is OPEN. Make changes and click "Save" to commit. (Current round: ${configDoc.currentRound || '?'})`
-      : `Transfer window is CLOSED. You can preview changes but the Save button won't commit. Owner opens windows from /admin.html.`;
+    const inTransition = configDoc.transitionState === true;
+    windowBanner.classList.toggle('open', open && !inTransition);
+    windowBanner.classList.toggle('closed', !open && !inTransition);
+    windowBanner.classList.toggle('transition', inTransition);
+    if (inTransition) {
+      windowBanner.textContent = open
+        ? `⚠️ TRANSITION STATE — transfers are LIVE, but the round just turned over. In the rare event of a bracket/scoring error, transfers made now may be reverted. Trade with that in mind.`
+        : `⚙️ Round transition in progress — results and modeling are settling. Transfers reopen shortly; nothing you stage now is saved yet.`;
+    } else {
+      windowBanner.textContent = open
+        ? `Transfer window is OPEN. Make changes and click "Save" to commit. (Current round: ${configDoc.currentRound || '?'})`
+        : `Transfer window is CLOSED. You can preview changes but the Save button won't commit. Owner opens windows from /admin.html.`;
+    }
     saveBtn.disabled = !open;
 
     teams = {}; players = {};

@@ -270,7 +270,7 @@ def sync_matches(db, team_fd_to_slug: dict) -> int:
 # Step 2: recompute team stats
 # ---------------------------------------------------------------------------
 
-def recompute_teams(db, weights: dict) -> tuple[dict[str, dict], str | None]:
+def recompute_teams(db, weights: dict, current_round: str | None = None) -> tuple[dict[str, dict], str | None]:
     """Walk all FINISHED matches, recompute W/D/L/GF/GA/CS per team.
     Determine deepest round reached. Compute totalPoints.
     Returns ({team_doc_id: stats}, latest_matchday) - the latter is the most
@@ -339,6 +339,14 @@ def recompute_teams(db, weights: dict) -> tuple[dict[str, dict], str | None]:
                 if slug:
                     matches_by_team_pending[slug] += 1
 
+    # A team is eliminated once the tournament has left the group stage AND it
+    # has no remaining fixture (incl. the 3rd-place match) AND it isn't champion.
+    # Gating on `group_over` (rather than the old `fr != "group"` check) is what
+    # lets group-stage losers - whose finalRound stays "group" forever - finally
+    # get flagged, while never false-flagging a team mid-group-stage. Advancers
+    # are naturally excluded: once the bracket is seeded they hold a pending
+    # next-round fixture.
+    group_over = current_round not in (None, "pre", "group")
     for slug, row in stats.items():
         pts = weights["team_win"] * row["matchesWon"] + weights["team_draw"] * row["matchesDrawn"]
         fr = row["finalRound"]
@@ -346,7 +354,7 @@ def recompute_teams(db, weights: dict) -> tuple[dict[str, dict], str | None]:
         for r in ADVANCEMENT_ORDER[1:idx + 1]:
             pts += BONUSES.get(r, 0)
         row["totalPoints"] = int(pts)
-        row["eliminated"] = (matches_by_team_pending.get(slug, 0) == 0) and fr != "W" and fr != "group"
+        row["eliminated"] = group_over and (matches_by_team_pending.get(slug, 0) == 0) and fr != "W"
         ref = db.collection("teams").document(slug)
         batch.set(ref, row, merge=True)
         n += 1
@@ -557,12 +565,10 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
                 return "group"
         return None
 
-    # Collect all matches for the current round
-    round_matches = []
-    for mdoc in db.collection("matches").stream():
-        m = mdoc.to_dict() or {}
-        if m.get("round") == current:
-            round_matches.append(m)
+    # Load all matches once - used for round-completion, bracket-seeding, and
+    # elimination checks below.
+    all_matches = [mdoc.to_dict() or {} for mdoc in db.collection("matches").stream()]
+    round_matches = [m for m in all_matches if m.get("round") == current]
 
     if not round_matches:
         return None
@@ -581,14 +587,35 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
         print(f"  Tournament complete - currentRound=done, window closed")
         return nxt
 
-    print(f"  Round transition detected: {current} → {nxt}")
-    db.collection("config").document("global").set({
-        "currentRound":       nxt,
-        "transferWindowOpen": True,
-    }, merge=True)
-    print(f"  Set currentRound={nxt}, transferWindowOpen=True")
+    # The current round is over, but we can only reprice once the NEXT round's
+    # bracket is fully seeded (every fixture has both teams). The upstream feed
+    # fills these slots only after the bracket is officially decided, which can
+    # lag the final group-stage whistle by hours. Until then, HOLD: leave
+    # currentRound and the (still-closed) transfer window untouched and re-check
+    # next cron. This is the fix for the old failure mode where we flipped the
+    # round + opened the window against an empty bracket - which made
+    # live_advancers come back empty and silently skipped elimination +
+    # repricing, leaving dead teams sellable at full price.
+    from _fwc_lib import (
+        round_fully_seeded, eliminated_slugs as _elim_slugs,
+        transition_overdue, ROUND_FIRST_KICKOFF_UTC,
+    )
+    if not round_fully_seeded(all_matches, nxt):
+        now = datetime.now(timezone.utc)
+        if transition_overdue(nxt, bracket_seeded=False, now=now):
+            # Anchored to the KNOWN public kickoff, not a guessed grace period:
+            # the round is about to start and we still can't auto-transition.
+            print(f"  ⚠️  {current} complete but {nxt} bracket STILL not seeded - "
+                  f"{nxt} kicks off {ROUND_FIRST_KICKOFF_UTC.get(nxt)}. "
+                  f"Run docs/MANUAL_KNOCKOUT_TRANSITION.md NOW.")
+        else:
+            print(f"  {current} complete, but {nxt} bracket not fully seeded yet - holding (will retry)")
+        return None
 
-    # Trigger reprice for the new round
+    # Reprice FIRST and only flip the round + open the window if it all
+    # succeeds, so the game is never left half-transitioned (window open with
+    # stale prices). On any failure we return without flipping, and the next
+    # cron retries from the same state.
     try:
         from collections import defaultdict
         from reprice import (
@@ -604,62 +631,178 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
 
         advancers = live_advancers(db, nxt)
         if not advancers:
-            print(f"  WARN: no advancers found for {nxt}. Did ingest mark finalRound correctly?")
-            return nxt
+            print(f"  WARN: {nxt} bracket seeded but no team docs matched its slugs - holding")
+            return None
+        advancer_ids = {t["id"] for t in advancers}
+        champ = next((t["id"] for t in advancers if t.get("finalRound") == "W"), None)
+        elim = _elim_slugs(all_matches, advancer_ids, champ)
 
-        print(f"  Repricing for {nxt} ({len(advancers)} advancers, 1000 sims)...")
+        # Snapshot the pre-transition state FIRST, so revert_transition.py can
+        # cleanly roll the turnover back if it's borked.
+        snapshot_pre_transition(db, nxt)
+
+        print(f"  Round transition {current} → {nxt}: {len(advancers)} advancers, "
+              f"{len(elim)} eliminated, repricing (1000 sims)...")
         prices = compute_reprice(advancers, nxt, players_by_team, runs=1000, seed=42)
-        write_prices_to_firestore(db, prices, advancers, teams, nxt)
+        write_prices_to_firestore(db, prices, advancers, teams, nxt, elim)
         auto_sell_eliminated_picks(db)
         snapshot_user_values(db, nxt)
         print(f"  Reprice + auto-sell + snapshot complete for {nxt}")
     except Exception as e:
-        print(f"  ERROR during reprice trigger: {e}")
-        # Don't crash the whole ingest - window is open, admin can re-run
-        # reprice manually if needed.
+        print(f"  ERROR during reprice; NOT transitioning (next cron will retry): {e}")
+        return None
+
+    # Pricing + eliminations are persisted. Advance the round and enter the
+    # SETTLE LOCK: window stays CLOSED for SETTLE_LOCK_SECONDS (a guaranteed
+    # no-trades window for a clean revert), and transitionState drives the
+    # site-wide "in transition" banner. maybe_open_window() opens trading once
+    # the settle lock elapses, guaranteeing the minimum open-trading period.
+    from _fwc_lib import SETTLE_LOCK_SECONDS
+    now = datetime.now(timezone.utc)
+    settle_until = now + timedelta(seconds=SETTLE_LOCK_SECONDS)
+    db.collection("config").document("global").set({
+        "currentRound":        nxt,
+        "transferWindowOpen":  False,
+        "transitionState":     True,
+        "transitionRound":     nxt,
+        "transitionStartedAt": now.isoformat(),
+        "settleUntil":         settle_until.isoformat(),
+        "windowClosesAt":      None,   # set when the window actually opens
+    }, merge=True)
+    print(f"  Set currentRound={nxt}; settle lock until {settle_until.isoformat()} "
+          f"(window opens after, ≥{SETTLE_LOCK_SECONDS//60}min)")
     return nxt
 
 
-def maybe_close_window(db, cfg: dict) -> bool:
-    """Close the transfer window when next round's first match is imminent.
+def snapshot_pre_transition(db, round_label: str) -> None:
+    """Back up the state a round-transition is about to mutate, so it can be
+    reverted. Stored at transitionBackups/{round_label}. Captures each team's +
+    player's pricing/elimination fields and each user's roster/budget/banked
+    points, plus the config flags. Overwrites any prior backup for this round."""
+    PRICE_FIELDS = ["marketValue", "buyPrice", "sellPrice", "currentPrice",
+                    "liquidationValue", "meanFuturePoints", "priceHistory",
+                    "eliminated"]
+    USER_FIELDS = ["roster", "currentBudget", "bankedPoints", "bankedTiebreaker",
+                   "exitedPicks", "valueByRound", "totalPoints", "tieBreakerScore"]
+    teams = {d.id: {k: (d.to_dict() or {}).get(k) for k in PRICE_FIELDS}
+             for d in db.collection("teams").stream()}
+    players = {d.id: {k: (d.to_dict() or {}).get(k) for k in PRICE_FIELDS}
+               for d in db.collection("players").stream()}
+    users = {d.id: {k: (d.to_dict() or {}).get(k) for k in USER_FIELDS}
+             for d in db.collection("users").stream()}
+    cfg = db.collection("config").document("global").get().to_dict() or {}
+    db.collection("transitionBackups").document(round_label).set({
+        "round":         round_label,
+        "createdAt":     datetime.now(timezone.utc).isoformat(),
+        "config":        {"currentRound": cfg.get("currentRound"),
+                          "transferWindowOpen": cfg.get("transferWindowOpen")},
+        "teams":         teams,
+        "players":       players,
+        "users":         users,
+    })
+    print(f"  pre-transition snapshot saved (transitionBackups/{round_label}): "
+          f"{len(teams)} teams, {len(players)} players, {len(users)} users")
 
-    Idempotent: no-op if window is already closed or no match is within
-    WINDOW_CLOSE_LEAD_SECONDS. Returns True if we closed it this call."""
+
+def maybe_open_window(db, cfg: dict) -> bool:
+    """Open trading once the settle lock has elapsed, and set windowClosesAt to
+    guarantee the minimum open-trading period (pushing the close past the
+    scheduled time if the bracket seeded late). Idempotent: no-op if the window
+    is already open or we're not in a settling transition."""
+    if cfg.get("transferWindowOpen"):
+        return False
+    if not cfg.get("transitionState"):
+        return False
+    current = (cfg.get("currentRound") or "pre")
+    if current in ("pre", "done", "group"):
+        return False
+    settle_until = cfg.get("settleUntil")
+    now = datetime.now(timezone.utc)
+    if settle_until:
+        dt = datetime.fromisoformat(settle_until) if "T" in settle_until else None
+        if dt and now < dt:
+            return False  # still settling
+
+    from _fwc_lib import window_close_at
+    closes = window_close_at(now, current, lead_seconds=WINDOW_CLOSE_LEAD_SECONDS)
+    db.collection("config").document("global").set({
+        "transferWindowOpen": True,
+        "windowOpenedAt":     now.isoformat(),
+        "windowClosesAt":     closes.isoformat(),
+    }, merge=True)
+    print(f"  Transfer window OPEN for {current}; closes {closes.isoformat()} "
+          f"(≥4h guaranteed)")
+    return True
+
+
+def maybe_close_window(db, cfg: dict) -> bool:
+    """Close the transfer window at its scheduled close time, and clear the
+    transition banner state when we do. Prefers the windowClosesAt set at open
+    time (which guarantees the ≥4h open period); falls back to "1h before the
+    current round's first match" if that field isn't present (e.g. a window
+    opened manually from admin). Idempotent. Returns True if we closed it."""
     if not cfg.get("transferWindowOpen"):
         return False
     current = (cfg.get("currentRound") or "pre")
     if current in ("pre", "done"):
         return False
 
-    # Earliest unplayed match for the CURRENT round (the round about to start)
-    earliest_iso = None
-    for mdoc in db.collection("matches").stream():
-        m = mdoc.to_dict() or {}
-        if m.get("round") != current:
-            continue
-        if m.get("status") == "FINISHED":
-            continue
-        utc = m.get("utcDate")
-        if utc and (earliest_iso is None or utc < earliest_iso):
-            earliest_iso = utc
-
-    if not earliest_iso:
-        return False
-
     now = datetime.now(timezone.utc)
-    try:
-        earliest_dt = datetime.fromisoformat(earliest_iso.replace("Z", "+00:00"))
-    except ValueError:
-        return False
-    delta = (earliest_dt - now).total_seconds()
-    if delta > WINDOW_CLOSE_LEAD_SECONDS:
+
+    closes_at = None
+    wc = cfg.get("windowClosesAt")
+    if wc:
+        try:
+            closes_at = datetime.fromisoformat(wc)
+        except ValueError:
+            closes_at = None
+
+    if closes_at is None:
+        # Fallback: 1h before the current round's earliest unplayed match.
+        earliest_iso = None
+        for mdoc in db.collection("matches").stream():
+            m = mdoc.to_dict() or {}
+            if m.get("round") != current or m.get("status") == "FINISHED":
+                continue
+            utc = m.get("utcDate")
+            if utc and (earliest_iso is None or utc < earliest_iso):
+                earliest_iso = utc
+        if not earliest_iso:
+            return False
+        try:
+            earliest_dt = datetime.fromisoformat(earliest_iso.replace("Z", "+00:00"))
+        except ValueError:
+            return False
+        closes_at = earliest_dt - timedelta(seconds=WINDOW_CLOSE_LEAD_SECONDS)
+
+    if now < closes_at:
         return False
 
+    # Closing trading also ends the transition window - clear the banner state.
     db.collection("config").document("global").set({
         "transferWindowOpen": False,
+        "transitionState":    False,
     }, merge=True)
-    print(f"  Transfer window closed - {current} first match starts in {int(delta/60)}min")
+    print(f"  Transfer window closed for {current}; transition state cleared")
     return True
+
+
+def sync_schedule_to_config(db) -> None:
+    """Cross-check the hardcoded canonical schedule against the feed, and publish
+    the key dates into config/global so the timing logic and the UI both anchor
+    to known public dates instead of guessing. Cheap (one match scan)."""
+    from _fwc_lib import (
+        schedule_drift, ROUND_FIRST_KICKOFF_UTC, GROUP_STAGE_LAST_KICKOFF_UTC,
+    )
+    matches = [m.to_dict() or {} for m in db.collection("matches").stream()]
+    drift = schedule_drift(matches)
+    for rnd, hard, feed in drift:
+        print(f"  ⚠️ SCHEDULE DRIFT {rnd}: hardcoded {hard} vs feed {feed} - verify the schedule")
+    db.collection("config").document("global").set({
+        "groupStageEndsAt": GROUP_STAGE_LAST_KICKOFF_UTC,
+        "roundStartsUtc":   dict(ROUND_FIRST_KICKOFF_UTC),
+    }, merge=True)
+    print(f"  schedule synced to config ({len(drift)} drift warning(s))")
 
 
 def write_leaderboard_snapshot(db, entries: list[dict]) -> None:
@@ -692,7 +835,7 @@ def main() -> None:
     sync_matches(db, team_fd_to_slug)
 
     print("Step 2: recompute team records + points…")
-    team_stats, latest_matchday = recompute_teams(db, weights)
+    team_stats, latest_matchday = recompute_teams(db, weights, cfg.get("currentRound"))
 
     print("Step 3: recompute player goals/assists/wins/CS from match data…")
     recompute_players(db, team_stats, weights)
@@ -710,8 +853,15 @@ def main() -> None:
         # Re-fetch config since the transition just changed it
         cfg = db.collection("config").document("global").get().to_dict() or {}
 
-    print("Step 6: check if transfer window should auto-close…")
+    print("Step 6: check if transfer window should open (settle lock elapsed)…")
+    if maybe_open_window(db, cfg):
+        cfg = db.collection("config").document("global").get().to_dict() or {}
+
+    print("Step 7: check if transfer window should auto-close…")
     maybe_close_window(db, cfg)
+
+    print("Step 8: sync canonical schedule to config + drift check…")
+    sync_schedule_to_config(db)
 
     print("\nDone. Live state refreshed.")
 
