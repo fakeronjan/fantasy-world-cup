@@ -18,6 +18,7 @@ from _fwc_lib import (
     eliminated_slugs, team_pending_counts,
     schedule_drift, scheduled_kickoff, transition_overdue,
     ROUND_FIRST_KICKOFF_UTC, parse_iso_utc,
+    window_close_at, MIN_OPEN_TRADING_SECONDS,
 )
 
 _failures = []
@@ -139,6 +140,26 @@ check("overdue does NOT fire a day out",
       transition_overdue("R32", bracket_seeded=False, now=well_before) is False)
 check("overdue never fires once the bracket is seeded",
       transition_overdue("R32", bracket_seeded=True, now=just_before) is False)
+
+
+# ---------------------------------------------------------------------------
+# Scenario E: window close time guarantees >= 4h open trading.
+# ---------------------------------------------------------------------------
+print("\nScenario E: guaranteed >=4h open-trading window")
+MIN_H = MIN_OPEN_TRADING_SECONDS / 3600
+# R32 scheduled close = kickoff (2026-06-28T19:00Z) - 1h = 18:00Z.
+# Normal case: bracket seeds overnight, window opens 06:00Z -> close = scheduled 18:00Z.
+open_early = parse_iso_utc("2026-06-28T06:00:00Z")
+close_early = window_close_at(open_early, "R32", lead_seconds=3600)
+check("normal open uses scheduled close (18:00Z)", close_early.isoformat().startswith("2026-06-28T18:00"))
+check("normal case gives well over 4h", (close_early - open_early).total_seconds() >= MIN_OPEN_TRADING_SECONDS)
+
+# Late seed: window opens 16:00Z -> scheduled 18:00Z would be only 2h, so push to open+4h.
+open_late = parse_iso_utc("2026-06-28T16:00:00Z")
+close_late = window_close_at(open_late, "R32", lead_seconds=3600)
+check("late open pushes close to open+4h", (close_late - open_late).total_seconds() == MIN_OPEN_TRADING_SECONDS)
+check(f"late open still guarantees {MIN_H:.0f}h", (close_late - open_late).total_seconds() >= MIN_OPEN_TRADING_SECONDS)
+check("late open close lands past scheduled (into the round)", close_late > parse_iso_utc("2026-06-28T18:00:00Z"))
 
 
 print()

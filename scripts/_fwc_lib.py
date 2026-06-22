@@ -245,6 +245,32 @@ def schedule_drift(matches: list[dict]) -> list[tuple]:
     return drift
 
 
+# Settle lock: after an auto-transition, trading stays closed this long so there
+# is a guaranteed no-trades window for a clean revert if the turnover is borked.
+# Short by design (the state itself settles in one cron tick).
+SETTLE_LOCK_SECONDS = 30 * 60
+# Guaranteed minimum OPEN trading once the window opens, even if the bracket
+# seeded late - the close is pushed out to honor this.
+MIN_OPEN_TRADING_SECONDS = 4 * 3600
+
+
+def window_close_at(open_at, round_label: str,
+                    min_open_seconds: int = MIN_OPEN_TRADING_SECONDS,
+                    lead_seconds: int = 3600):
+    """When the transfer window for `round_label` should close: the scheduled
+    close (round's known first kickoff minus `lead_seconds`) OR `open_at +
+    min_open_seconds`, whichever is LATER - so traders always get at least the
+    guaranteed minimum even if the window opened late. Anchored to the public
+    schedule (scheduled_kickoff), no guessing."""
+    from datetime import timedelta
+    guaranteed = open_at + timedelta(seconds=min_open_seconds)
+    ko = scheduled_kickoff(round_label)
+    if ko is None:
+        return guaranteed
+    scheduled = ko - timedelta(seconds=lead_seconds)
+    return max(scheduled, guaranteed)
+
+
 def transition_overdue(next_round: str, bracket_seeded: bool, now,
                        lead_seconds: int = 6 * 3600) -> bool:
     """True if `next_round`'s KNOWN first kickoff is within lead_seconds (or

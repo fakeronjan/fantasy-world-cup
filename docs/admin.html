@@ -223,6 +223,10 @@
           <button class="btn" id="closeTxBtn">Close transfer window</button>
         </div>
         <div class="action-row">
+          <button class="btn" id="openNowBtn">Open now (skip settle lock)</button>
+          <button class="btn" id="clearTransitionBtn">Clear transition banner</button>
+        </div>
+        <div class="action-row">
           <label class="muted" style="font-size:12px;align-self:center">Advance round to:</label>
           <select id="advanceRoundSel">
             <option value="">…</option>
@@ -312,6 +316,8 @@
   const refreshBtn   = document.getElementById('refreshBtn');
   const openTxBtn    = document.getElementById('openTxBtn');
   const closeTxBtn   = document.getElementById('closeTxBtn');
+  const openNowBtn   = document.getElementById('openNowBtn');
+  const clearTransitionBtn = document.getElementById('clearTransitionBtn');
   const advanceSel   = document.getElementById('advanceRoundSel');
   const advanceBtn   = document.getElementById('advanceBtn');
   const userList     = document.getElementById('userList');
@@ -684,6 +690,11 @@
   refreshBtn.addEventListener('click', loadAll);
   openTxBtn.addEventListener('click', () => patchConfig({ transferWindowOpen: true }));
   closeTxBtn.addEventListener('click', () => patchConfig({ transferWindowOpen: false }));
+  // Override the settle lock: open trading immediately. (Close still honors
+  // windowClosesAt / the scheduled close.)
+  openNowBtn.addEventListener('click', () => patchConfig({ transferWindowOpen: true, settleUntil: null }));
+  // Drop the "in transition" banner without closing the window.
+  clearTransitionBtn.addEventListener('click', () => patchConfig({ transitionState: false }));
   advanceBtn.addEventListener('click', () => {
     const r = advanceSel.value;
     if (!r) return;

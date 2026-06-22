@@ -1,10 +1,21 @@
 # Manual knockout-transition procedure (backup)
 
 The cron (`ingest_results.py`) now transitions each round **automatically and
-safely**: it waits until the next round's bracket is fully seeded, reprices,
-eliminates the knocked-out teams, auto-sells them off rosters, and only then
-flips `currentRound` and opens the transfer window. See
-`maybe_transition_round()`.
+safely**. When the next round's bracket is fully seeded it: snapshots the
+current state (for revert), reprices, eliminates the knocked-out teams,
+auto-sells them off rosters, flips `currentRound`, and enters a **settle lock**
+— `transitionState=true`, window still **closed** for `SETTLE_LOCK_SECONDS`
+(30 min default). After the lock, `maybe_open_window()` opens trading and sets
+`windowClosesAt` to guarantee at least **4 hours** of open trading
+(`MIN_OPEN_TRADING_SECONDS`), pushing the close past the scheduled time if the
+bracket seeded late. The site-wide banner shows "transition in progress" during
+the lock and a "transfers may be reverted" warning once open; it clears when the
+window closes. See `maybe_transition_round()` / `maybe_open_window()` /
+`maybe_close_window()`.
+
+**If a transition is borked, revert it** (the manual override) — see the last
+section. Admin UI also has **Open now (skip settle lock)** and **Clear
+transition banner** buttons.
 
 This doc is the **manual backstop** if the automated path is stuck (e.g. the
 feed seeds the bracket in a weird partial state, the cron is down, or you just
@@ -122,6 +133,35 @@ The cron will auto-close it ~1h before the first R32 match
 (`WINDOW_CLOSE_LEAD_SECONDS`).
 
 ---
+
+## Reverting a borked transition (manual override)
+
+Each auto-transition first snapshots the prior state to
+`transitionBackups/{round}`. To roll a turnover back:
+
+```bash
+# 1. Always preview first:
+GOOGLE_APPLICATION_CREDENTIALS="$SA" \
+  ./venv/bin/python scripts/revert_transition.py --round R32 --dry-run
+
+# 2. Clean revert (no user trades yet — e.g. during the settle lock):
+GOOGLE_APPLICATION_CREDENTIALS="$SA" \
+  ./venv/bin/python scripts/revert_transition.py --round R32
+
+# 3. If users already traded (window opened): it refuses unless you --force,
+#    which also unwinds those trades. The in-app banner warns users this can
+#    happen, so it's fair — but it's deliberate, never silent.
+GOOGLE_APPLICATION_CREDENTIALS="$SA" \
+  ./venv/bin/python scripts/revert_transition.py --round R32 --force
+```
+
+Revert restores team/player prices + elimination flags, every user's
+roster/budget/banked points, and the config round/window flags, and deletes that
+round's auto-sell transactions. Fix the underlying cause (e.g. wait for the feed
+to seed the bracket correctly), then let the next cron re-transition.
+
+The cleanest revert window is the **30-min settle lock** (window closed → zero
+trades). That's the whole point of the lock.
 
 ## Rollback / re-run notes
 
