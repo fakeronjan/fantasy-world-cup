@@ -16,6 +16,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _fwc_lib import (
     round_fully_seeded, advancer_slugs_for_round,
     eliminated_slugs, team_pending_counts,
+    schedule_drift, scheduled_kickoff, transition_overdue,
+    ROUND_FIRST_KICKOFF_UTC, parse_iso_utc,
 )
 
 _failures = []
@@ -109,6 +111,34 @@ ms = [m("F", "f0", "f1", status="FINISHED")]
 elim = eliminated_slugs(ms, advancer_ids=set(), champion_slug="f0")
 check("champion f0 not eliminated", "f0" not in elim)
 check("runner-up f1 eliminated", "f1" in elim)
+
+
+# ---------------------------------------------------------------------------
+# Scenario D: canonical schedule anchoring (no guessing about WHEN).
+# ---------------------------------------------------------------------------
+print("\nScenario D: schedule anchoring + drift cross-check")
+import json
+from datetime import timedelta
+cache = json.load(open(Path(__file__).resolve().parent.parent / "data" / "wc2026_matches_cache.json"))
+# Map the cache's stage labels into our round labels for the drift check.
+_stage = {"LAST_32": "R32", "LAST_16": "R16", "QUARTER_FINALS": "QF",
+          "SEMI_FINALS": "SF", "FINAL": "F"}
+cache_rounds = [{"round": _stage.get(m.get("stage")), "utcDate": m.get("utcDate")} for m in cache]
+drift = schedule_drift(cache_rounds)
+check("hardcoded schedule matches the stored fixtures (no drift)", drift == [])
+
+r32_ko = scheduled_kickoff("R32")
+check("R32 kickoff parses to the known date", r32_ko is not None and r32_ko.isoformat().startswith("2026-06-28"))
+
+# transition_overdue is anchored to the KNOWN kickoff, not a guessed grace window.
+just_before = parse_iso_utc("2026-06-28T16:00:00Z")   # 3h before R32 kickoff
+well_before  = parse_iso_utc("2026-06-27T00:00:00Z")  # >1 day before
+check("overdue fires within 6h of known R32 kickoff when unseeded",
+      transition_overdue("R32", bracket_seeded=False, now=just_before) is True)
+check("overdue does NOT fire a day out",
+      transition_overdue("R32", bracket_seeded=False, now=well_before) is False)
+check("overdue never fires once the bracket is seeded",
+      transition_overdue("R32", bracket_seeded=True, now=just_before) is False)
 
 
 print()

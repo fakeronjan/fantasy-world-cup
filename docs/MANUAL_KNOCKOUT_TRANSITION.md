@@ -41,6 +41,12 @@ have a `marketValue` — **you're done, stop here.**
 
 ## 1. Confirm the R32 bracket is fully seeded
 
+**Known deadline (public, hardcoded in `_fwc_lib.ROUND_FIRST_KICKOFF_UTC`):** the
+group stage's last kickoff is `2026-06-28T02:00Z` and **R32 kicks off
+`2026-06-28T19:00Z`** — so the bracket must be seeded and repriced inside that
+~15-hour window on June 28. The cron logs a loud ⚠️ if it's within 6h of that
+kickoff and still can't transition; that's your cue to run this by hand.
+
 The reprice is only correct once **every** R32 fixture has both teams assigned
 (the feed fills these only after FIFA officially sets the bracket, which can lag
 the final group whistle by hours). Check:

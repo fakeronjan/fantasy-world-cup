@@ -596,9 +596,20 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
     # round + opened the window against an empty bracket - which made
     # live_advancers come back empty and silently skipped elimination +
     # repricing, leaving dead teams sellable at full price.
-    from _fwc_lib import round_fully_seeded, eliminated_slugs as _elim_slugs
+    from _fwc_lib import (
+        round_fully_seeded, eliminated_slugs as _elim_slugs,
+        transition_overdue, ROUND_FIRST_KICKOFF_UTC,
+    )
     if not round_fully_seeded(all_matches, nxt):
-        print(f"  {current} complete, but {nxt} bracket not fully seeded yet - holding transition")
+        now = datetime.now(timezone.utc)
+        if transition_overdue(nxt, bracket_seeded=False, now=now):
+            # Anchored to the KNOWN public kickoff, not a guessed grace period:
+            # the round is about to start and we still can't auto-transition.
+            print(f"  ⚠️  {current} complete but {nxt} bracket STILL not seeded - "
+                  f"{nxt} kicks off {ROUND_FIRST_KICKOFF_UTC.get(nxt)}. "
+                  f"Run docs/MANUAL_KNOCKOUT_TRANSITION.md NOW.")
+        else:
+            print(f"  {current} complete, but {nxt} bracket not fully seeded yet - holding (will retry)")
         return None
 
     # Reprice FIRST and only flip the round + open the window if it all
@@ -689,6 +700,24 @@ def maybe_close_window(db, cfg: dict) -> bool:
     return True
 
 
+def sync_schedule_to_config(db) -> None:
+    """Cross-check the hardcoded canonical schedule against the feed, and publish
+    the key dates into config/global so the timing logic and the UI both anchor
+    to known public dates instead of guessing. Cheap (one match scan)."""
+    from _fwc_lib import (
+        schedule_drift, ROUND_FIRST_KICKOFF_UTC, GROUP_STAGE_LAST_KICKOFF_UTC,
+    )
+    matches = [m.to_dict() or {} for m in db.collection("matches").stream()]
+    drift = schedule_drift(matches)
+    for rnd, hard, feed in drift:
+        print(f"  ⚠️ SCHEDULE DRIFT {rnd}: hardcoded {hard} vs feed {feed} - verify the schedule")
+    db.collection("config").document("global").set({
+        "groupStageEndsAt": GROUP_STAGE_LAST_KICKOFF_UTC,
+        "roundStartsUtc":   dict(ROUND_FIRST_KICKOFF_UTC),
+    }, merge=True)
+    print(f"  schedule synced to config ({len(drift)} drift warning(s))")
+
+
 def write_leaderboard_snapshot(db, entries: list[dict]) -> None:
     entries.sort(key=lambda e: e["totalPoints"], reverse=True)
     for i, e in enumerate(entries, 1):
@@ -739,6 +768,9 @@ def main() -> None:
 
     print("Step 6: check if transfer window should auto-close…")
     maybe_close_window(db, cfg)
+
+    print("Step 7: sync canonical schedule to config + drift check…")
+    sync_schedule_to_config(db)
 
     print("\nDone. Live state refreshed.")
 

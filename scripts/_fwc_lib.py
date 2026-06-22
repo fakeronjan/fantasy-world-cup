@@ -189,3 +189,71 @@ def eliminated_slugs(matches: list[dict], advancer_ids: set[str],
         and slug != champion_slug
         and pending.get(slug, 0) == 0
     }
+
+
+# ---------------------------------------------------------------------------
+# Canonical WC 2026 schedule (UTC) - PUBLIC, FIXED, HARDCODED
+# ---------------------------------------------------------------------------
+#
+# These dates are well-known public information; the game's timing logic should
+# anchor to them rather than guess or depend on how fresh the feed is. Each
+# value is the round's FIRST kickoff; GROUP_STAGE's entry is its LAST kickoff
+# (the point after which the R32 bracket gets seeded). Verified against the
+# stored fixtures (data/wc2026_matches_cache.json); see schedule_drift() for the
+# runtime cross-check that flags any disagreement (a reschedule or feed bug).
+ROUND_FIRST_KICKOFF_UTC = {
+    "R32": "2026-06-28T19:00:00Z",
+    "R16": "2026-07-04T17:00:00Z",
+    "QF":  "2026-07-09T20:00:00Z",
+    "SF":  "2026-07-14T19:00:00Z",
+    "F":   "2026-07-19T19:00:00Z",
+}
+GROUP_STAGE_LAST_KICKOFF_UTC = "2026-06-28T02:00:00Z"
+
+
+def parse_iso_utc(s: str):
+    """Parse an ISO-8601 string (trailing Z ok) into a tz-aware UTC datetime."""
+    from datetime import datetime
+    if not s:
+        return None
+    try:
+        return datetime.fromisoformat(s.replace("Z", "+00:00"))
+    except (ValueError, AttributeError):
+        return None
+
+
+def scheduled_kickoff(round_label: str):
+    """Known first-kickoff datetime for a round, or None if not a knockout round."""
+    return parse_iso_utc(ROUND_FIRST_KICKOFF_UTC.get(round_label))
+
+
+def schedule_drift(matches: list[dict]) -> list[tuple]:
+    """Cross-check the hardcoded schedule against the feed's actual earliest
+    kickoff per round. Returns [(round, hardcoded_iso, feed_iso), ...] for any
+    round whose feed date differs from the hardcoded one - i.e. a reschedule or
+    a corrupt feed we should notice rather than silently follow."""
+    drift = []
+    for rnd, hard in ROUND_FIRST_KICKOFF_UTC.items():
+        feed = [(m.get("kickoff") or m.get("utcDate")) for m in matches
+                if (m or {}).get("round") == rnd]
+        feed = [x for x in feed if x]
+        if not feed:
+            continue
+        fmin = min(feed)
+        if fmin[:10] != hard[:10]:   # compare at day granularity
+            drift.append((rnd, hard, fmin))
+    return drift
+
+
+def transition_overdue(next_round: str, bracket_seeded: bool, now,
+                       lead_seconds: int = 6 * 3600) -> bool:
+    """True if `next_round`'s KNOWN first kickoff is within lead_seconds (or
+    already past) and we still can't transition (bracket not seeded). Anchored
+    to the public schedule - no guessing about how long seeding 'should' take.
+    Use to escalate to the manual procedure before the round actually starts."""
+    if bracket_seeded:
+        return False
+    dt = scheduled_kickoff(next_round)
+    if dt is None:
+        return False
+    return (dt - now).total_seconds() <= lead_seconds
