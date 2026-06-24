@@ -10,6 +10,12 @@ bracket state, runs N trials, and computes:
   # …with a forced minimum \$1 spread on either side so the market always
   # has a real bid-ask gap even at low MVs.
 
+A player's forward goal/assist SHARE within his team is form-aware: an
+empirical-Bayes blend of results-to-date with the preseason prior (see
+build_form_weights + FORM_M), capped per player (GOAL_SHARE_CAP) so a hot
+scorer rises while a thin-squad's lone listed player can't soak 100%.
+Attribution uses a separate RNG (_ATTR_RNG) so form never moves team prices.
+
 Eliminated assets settle at:
   marketValue = 0
   buyPrice    = N/A (cannot buy eliminated assets)
@@ -44,8 +50,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from simulate_2026 import (
-    WEIGHTS, BONUS_BY_ROUND, ADVANCEMENT_ORDER,
-    simulate_match, _record_match, _winner_loser,
+    WEIGHTS, BONUS_BY_ROUND, ADVANCEMENT_ORDER, POS_WEIGHTS, ASSIST_WEIGHTS,
+    simulate_match, _winner_loser, pick_lineup,
     load_seed, build_team_indexes,
 )
 from _fwc_lib import (
@@ -62,6 +68,23 @@ ELIM_REFUND_RATE = 0.25   # eliminated picks refund 25% of PURCHASE PRICE
                           # for clarity + per-user fairness: "get 25% of what
                           # you paid back." Applied per-pick in
                           # auto_sell_eliminated_picks().
+
+# --- Form-aware attribution (results-to-date drive forward player value) ---
+# Each surviving player's forward goal/assist SHARE within his team is an
+# empirical-Bayes blend of what he's actually produced this tournament and the
+# preseason prior (position x basePrice):
+#     weight_i = observed_i + FORM_M * prior_share_i
+# FORM_M is "prior pseudo-goals per team": small -> trust this tournament,
+# large -> trust the preseason price. GOAL_SHARE_CAP stops any one player from
+# being credited more than a realistic fraction of his team's goals (guards
+# thin seed squads where one listed player would otherwise soak 100%).
+FORM_M         = 3.0
+GOAL_SHARE_CAP = 0.45
+
+# Attribution draws from a SEPARATE RNG stream from match outcomes, so changing
+# the form weights re-splits goals among teammates WITHOUT perturbing which
+# teams win/advance (team prices stay provably pinned across form settings).
+_ATTR_RNG = random.Random()
 
 
 def round_half_up(x: float) -> int:
@@ -85,10 +108,68 @@ def liquidation_price(last_market_value: int) -> int:
     return max(0, round_half_up(last_market_value * ELIM_REFUND_RATE))
 
 
-def simulate_remaining(advancers, start_round, players_by_team):
+def build_form_weights(players_by_team, goals_by_id, assists_by_id, m=FORM_M):
+    """Empirical-Bayes forward attribution weights per player.
+
+    weight_i = observed_i + m * prior_share_i, where prior_share_i is the
+    player's share of his team's prior attribution mass (position x basePrice
+    for goals, ASSIST_WEIGHTS x basePrice for assists). Returns
+    (goal_weights, assist_weights) keyed by player id. Pass empty observed
+    dicts to recover the pure-prior behavior (used by dry-runs without live
+    results)."""
+    goal_w, ast_w = {}, {}
+    for tid, squad in players_by_team.items():
+        gprior = {p["id"]: POS_WEIGHTS.get(p.get("position", "?"), 1.0) * max(1, p.get("basePrice", 1))
+                  for p in squad}
+        aprior = {p["id"]: ASSIST_WEIGHTS.get(p.get("position", "?"), 1.0) * max(1, p.get("basePrice", 1))
+                  for p in squad}
+        gsum = sum(gprior.values()) or 1.0
+        asum = sum(aprior.values()) or 1.0
+        for p in squad:
+            pid = p["id"]
+            goal_w[pid] = (goals_by_id.get(pid, 0) or 0)   + m * (gprior[pid] / gsum)
+            ast_w[pid]  = (assists_by_id.get(pid, 0) or 0)  + m * (aprior[pid] / asum)
+    return goal_w, ast_w
+
+
+def _attribute(team_id, n, weight_map, players_by_team, exclude=None):
+    """Credit n events to draftable players, weighted by weight_map, with no
+    single player exceeding GOAL_SHARE_CAP share of the team's events. Spillover
+    above the cap goes to a phantom (unlisted squad) bucket and is dropped -
+    exactly right when the seed lists only a few players for a team. Draws from
+    the isolated _ATTR_RNG so attribution never perturbs match outcomes."""
+    if n == 0:
+        return []
+    cands = players_by_team.get(team_id, [])
+    if exclude:
+        cands = [p for p in cands if p["id"] not in exclude]
+    if not cands:
+        return []
+    w = [max(1e-9, weight_map.get(p["id"], 0.0)) for p in cands]
+    total = sum(w)
+    if total <= 0:
+        return []
+    cap = GOAL_SHARE_CAP
+    if cap is None:
+        return _ATTR_RNG.choices(cands, weights=w, k=n)
+    shares = [min(wi / total, cap) for wi in w]
+    phantom = max(0.0, 1.0 - sum(shares))
+    picks = _ATTR_RNG.choices(cands + [None], weights=shares + [phantom], k=n)
+    return [p for p in picks if p is not None]
+
+
+def simulate_remaining(advancers, start_round, players_by_team,
+                       goal_weights=None, assist_weights=None):
     """Simulate from `start_round` onward, treating `advancers` as the
     field at that round. Returns the same shape as run_tournament() but
-    accumulators only capture FUTURE events (group-stage skipped)."""
+    accumulators only capture FUTURE events (group-stage skipped).
+
+    Match OUTCOMES (scores, who advances) + lineups draw from the main `random`
+    stream; goal/assist ATTRIBUTION uses form weights via the isolated
+    _ATTR_RNG. With no weights passed, falls back to the position x basePrice
+    prior (legacy behavior)."""
+    if goal_weights is None or assist_weights is None:
+        goal_weights, assist_weights = build_form_weights(players_by_team, {}, {})
     team_stats = {t["id"]: dict(
         wins=0, draws=0, losses=0,
         goals_for=0, goals_against=0,
@@ -100,6 +181,36 @@ def simulate_remaining(advancers, start_round, players_by_team):
     player_assists     = defaultdict(int)
     player_wins_played = defaultdict(int)
     player_cs_played   = defaultdict(int)
+
+    def record(ta, tb, ga, gb):
+        sa, sb = team_stats[ta["id"]], team_stats[tb["id"]]
+        sa["goals_for"] += ga; sa["goals_against"] += gb
+        sb["goals_for"] += gb; sb["goals_against"] += ga
+        a_won, b_won = ga > gb, gb > ga
+        if a_won:   sa["wins"] += 1; sb["losses"] += 1
+        elif b_won: sb["wins"] += 1; sa["losses"] += 1
+        else:       sa["draws"] += 1; sb["draws"] += 1
+        cs_a, cs_b = (gb == 0), (ga == 0)
+        # Lineups (who played) come from the main stream - form-independent.
+        lineup_a = pick_lineup(ta, players_by_team)
+        lineup_b = pick_lineup(tb, players_by_team)
+        # Goals + assists via form weights on the isolated RNG.
+        for p in _attribute(ta["id"], ga, goal_weights, players_by_team):
+            player_goals[p["id"]] += 1
+        for p in _attribute(tb["id"], gb, goal_weights, players_by_team):
+            player_goals[p["id"]] += 1
+        n_ast_a = sum(1 for _ in range(ga) if _ATTR_RNG.random() < 0.6)
+        n_ast_b = sum(1 for _ in range(gb) if _ATTR_RNG.random() < 0.6)
+        for p in _attribute(ta["id"], n_ast_a, assist_weights, players_by_team):
+            player_assists[p["id"]] += 1
+        for p in _attribute(tb["id"], n_ast_b, assist_weights, players_by_team):
+            player_assists[p["id"]] += 1
+        for pid in lineup_a:
+            if a_won: player_wins_played[pid] += 1
+            if cs_a:  player_cs_played[pid]   += 1
+        for pid in lineup_b:
+            if b_won: player_wins_played[pid] += 1
+            if cs_b:  player_cs_played[pid]   += 1
 
     current = list(advancers)
     stage_idx = ADVANCEMENT_ORDER.index(start_round)
@@ -116,9 +227,7 @@ def simulate_remaining(advancers, start_round, players_by_team):
             ta, tb = current[j], current[j + 1]
             ga, gb, pen = simulate_match(ta, tb, ko=True)
             winner, loser = _winner_loser(ta, tb, ga, gb, pen)
-            _record_match(ta, tb, ga, gb, team_stats, player_goals, player_assists,
-                          player_wins_played, player_cs_played,
-                          players_by_team, is_group=False)
+            record(ta, tb, ga, gb)
             team_stats[winner["id"]]["final_round"] = next_label
             if round_label == "SF":
                 semis_losers.append(loser)
@@ -129,9 +238,7 @@ def simulate_remaining(advancers, start_round, players_by_team):
     if len(semis_losers) == 2:
         ta, tb = semis_losers
         ga, gb, pen = simulate_match(ta, tb, ko=True)
-        _record_match(ta, tb, ga, gb, team_stats, player_goals, player_assists,
-                      player_wins_played, player_cs_played,
-                      players_by_team, is_group=False)
+        record(ta, tb, ga, gb)
 
     return {
         "team_stats":         team_stats,
@@ -179,10 +286,19 @@ def score_future_points(result, advancers, start_round, players_by_team):
     return team_pts, player_pts
 
 
-def reprice(advancers, start_round, players_by_team, runs=1000, seed=42):
+def reprice(advancers, start_round, players_by_team, runs=1000, seed=42,
+            goals_by_id=None, assists_by_id=None, form_m=FORM_M):
     """Run N trials. Return per-asset price dict:
-       {asset_id: {kind, name, meanFuturePoints, marketValue, buyPrice, sellPrice}}."""
+       {asset_id: {kind, name, meanFuturePoints, marketValue, buyPrice, sellPrice}}.
+
+    goals_by_id / assists_by_id are results-to-date keyed by player id; they
+    drive each player's forward goal/assist share (empirical-Bayes blend with
+    the preseason prior). Omit them for a pure-prior dry-run."""
     random.seed(seed)
+    _ATTR_RNG.seed(seed + 1)   # separate stream so form weights never move teams
+
+    goal_weights, assist_weights = build_form_weights(
+        players_by_team, goals_by_id or {}, assists_by_id or {}, m=form_m)
 
     team_acc   = defaultdict(float)
     player_acc = defaultdict(float)
@@ -193,7 +309,8 @@ def reprice(advancers, start_round, players_by_team, runs=1000, seed=42):
         # expectation across plausible bracket positions.
         shuffled = list(advancers)
         random.shuffle(shuffled)
-        result = simulate_remaining(shuffled, start_round, players_by_team)
+        result = simulate_remaining(shuffled, start_round, players_by_team,
+                                    goal_weights, assist_weights)
         tp, pp = score_future_points(result, shuffled, start_round, players_by_team)
         for k, v in tp.items(): team_acc[k]   += v
         for k, v in pp.items(): player_acc[k] += v
@@ -553,7 +670,20 @@ def main():
                          "eliminated picks from user rosters and refunds "
                          "liquidation values to currentBudget. Useful for "
                          "price-only repricing without touching users.")
+    ap.add_argument("--form-m", type=float, default=FORM_M,
+                    help="Prior pseudo-goals per team for the empirical-Bayes "
+                         "form blend (small=trust this tournament, "
+                         "large=trust preseason price).")
+    ap.add_argument("--goal-cap", type=float, default=GOAL_SHARE_CAP,
+                    help="Max share of a team's goals any one player can be "
+                         "credited (guards thin seed squads).")
+    ap.add_argument("--form-json", default=None,
+                    help="Dry-run only: path to a JSON map of results-to-date "
+                         "({playerId: {goals, assists}} or the dumped state) so "
+                         "form effects can be previewed without Firestore.")
     args = ap.parse_args()
+
+    globals()["GOAL_SHARE_CAP"] = args.goal_cap
 
     teams, players = load_seed()
     by_slug, by_fdid = build_team_indexes(teams)
@@ -563,6 +693,9 @@ def main():
     print(f"Loaded {len(teams)} teams, {len(players)} players from seed")
     print(f"Warm-start round: {args.from_round}, runs: {args.runs}\n")
 
+    # Results-to-date drive each player's forward goal/assist share.
+    goals_by_id, assists_by_id = {}, {}
+
     # Live mode: read real advancers from Firestore.
     # Dry-run mode: synthesize advancers from seed.
     db = None
@@ -570,6 +703,10 @@ def main():
     if args.write:
         from _fwc_lib import firestore_client
         db = firestore_client()
+        for pdoc in db.collection("players").stream():
+            pd = pdoc.to_dict() or {}
+            goals_by_id[pdoc.id]   = pd.get("goals", 0) or 0
+            assists_by_id[pdoc.id] = pd.get("assists", 0) or 0
         matches = [m.to_dict() or {} for m in db.collection("matches").stream()]
         if not round_fully_seeded(matches, args.from_round):
             print(f"The {args.from_round} bracket is not fully seeded yet "
@@ -589,6 +726,20 @@ def main():
               f"{len(elim_slugs)} eliminated")
     else:
         advancers = hypothetical_advancers(teams, args.from_round)
+        if args.form_json:
+            import json as _json
+            raw = _json.loads(Path(args.form_json).read_text())
+            recs = raw.get("players", raw) if isinstance(raw, dict) else raw
+            it = recs.values() if isinstance(recs, dict) else recs
+            for r in it:
+                pid = r.get("id")
+                if pid is None:
+                    continue
+                goals_by_id[pid]   = r.get("goals", 0) or 0
+                assists_by_id[pid] = r.get("assists", 0) or 0
+            print(f"Loaded results-to-date for {len(goals_by_id)} players "
+                  f"from {args.form_json}")
+    print(f"Form blend: m={args.form_m}, goal-share cap={args.goal_cap}\n")
     print(f"Hypothetical {args.from_round} field ({len(advancers)} teams):")
     for t in advancers[:8]:
         print(f"  ${t['basePrice']:>2}  {t['name']}")
@@ -598,7 +749,9 @@ def main():
         print()
 
     prices = reprice(advancers, args.from_round, players_by_team,
-                     runs=args.runs, seed=args.seed)
+                     runs=args.runs, seed=args.seed,
+                     goals_by_id=goals_by_id, assists_by_id=assists_by_id,
+                     form_m=args.form_m)
 
     teams_list   = sorted([(p["marketValue"], pid, p) for pid, p in prices.items()
                            if p["kind"] == "team"], reverse=True)

@@ -629,6 +629,14 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
         for p in players:
             players_by_team[p["teamId"]].append(p)
 
+        # Results-to-date drive each surviving player's forward goal/assist
+        # share (form-aware pricing). Read them from the live player docs.
+        goals_by_id, assists_by_id = {}, {}
+        for pdoc in db.collection("players").stream():
+            pd = pdoc.to_dict() or {}
+            goals_by_id[pdoc.id]   = pd.get("goals", 0) or 0
+            assists_by_id[pdoc.id] = pd.get("assists", 0) or 0
+
         advancers = live_advancers(db, nxt)
         if not advancers:
             print(f"  WARN: {nxt} bracket seeded but no team docs matched its slugs - holding")
@@ -643,7 +651,8 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
 
         print(f"  Round transition {current} → {nxt}: {len(advancers)} advancers, "
               f"{len(elim)} eliminated, repricing (1000 sims)...")
-        prices = compute_reprice(advancers, nxt, players_by_team, runs=1000, seed=42)
+        prices = compute_reprice(advancers, nxt, players_by_team, runs=1000, seed=42,
+                                 goals_by_id=goals_by_id, assists_by_id=assists_by_id)
         write_prices_to_firestore(db, prices, advancers, teams, nxt, elim)
         auto_sell_eliminated_picks(db)
         snapshot_user_values(db, nxt)
