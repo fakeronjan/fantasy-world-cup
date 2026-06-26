@@ -194,6 +194,23 @@
     tr.lb-expanded .lb-expand-caret { transform: rotate(90deg); }
     tr:has(.lb-roster) { cursor: pointer; }
   }
+
+  /* --- projected final total (Monte Carlo) --- */
+  .proj-cell { font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .proj-med { font-weight: 700; color: var(--bg-header); }
+  .proj-range { font-size: 10px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; }
+  .proj-na { color: var(--text-muted); }
+  .proj-note {
+    font-size: 11px; color: var(--text-muted);
+    margin: 0 0 12px; line-height: 1.55;
+    background: var(--bg-card); border-left: 3px solid var(--accent);
+    padding: 9px 12px; border-radius: 0 4px 4px 0;
+  }
+  .proj-note strong { color: var(--bg-header); }
+  /* On the tightest screens, drop $ on hand so #/Player/Points/Proj/odds fit. */
+  @media (max-width: 540px) {
+    th.col-hide-sm, td.col-hide-sm { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -253,18 +270,29 @@
       Admin preview · rosters reveal for everyone at kickoff
     </p>
 
+    <p id="projNote" class="proj-note" style="display:none">
+      <strong>&#128200; Projected</strong> shows your median final total if your
+      current roster plays out the rest of the tournament, from 5,000 Monte Carlo
+      simulations. The smaller figure is the middle-60% range (p20&ndash;p80) and
+      narrows as more matches finish. <strong>Win %</strong> and <strong>Top 3</strong>
+      are your odds of finishing first and on the podium. Projections always assume
+      your current roster.
+    </p>
+
     <table class="data">
       <thead>
         <tr>
           <th>#</th>
           <th>Player</th>
-          <th class="num">Picks</th>
-          <th class="num">Spent</th>
+          <th class="num col-hide-sm">$ on hand</th>
           <th class="num">Points</th>
+          <th class="num">Proj.</th>
+          <th class="num">Win %</th>
+          <th class="num">Top 3</th>
         </tr>
       </thead>
       <tbody id="lbBody">
-        <tr><td colspan="5" class="empty-state">Loading…</td></tr>
+        <tr><td colspan="7" class="empty-state">Loading…</td></tr>
       </tbody>
     </table>
     <p class="last-updated" id="lastUpdated"></p>
@@ -294,6 +322,7 @@
   // 30s poll was pure waste and a Firestore-read sink (each poll scans the
   // whole users collection). 5 min keeps it fresh-enough at 1/10th the reads.
   const REFRESH_MS = 300_000;
+  const ROSTER_BUDGET = 60;   // salary cap; matches transfer.html BUDGET
 
   // Palette mirrors the tennis Power Rankings - distinct, color-blind-friendly,
   // keeps the FWC teal + pink at the top of the rotation.
@@ -472,9 +501,16 @@
     const rosterHtml = (rostersVisible && catalogReady)
       ? rosterLineHtml(u.roster || [], null, u.exitedPicks)
       : '<div class="pm-empty">Rosters reveal at kickoff.</div>';
+    const proj = projByUid ? projByUid[uid] : null;
+    const projLine = proj
+      ? `<div class="pm-stats" style="margin-top:4px">&#128200; Projected finish:
+           <strong>~${Math.round(proj.median)}</strong> (${proj.p20}&ndash;${proj.p80})
+           · ${proj.winPct}% win · ${proj.top3Pct}% top 3 · assumes current roster</div>`
+      : '';
     pmContent.innerHTML = `
       <h2>${flag ? escape(flag) + ' ' : ''}${escape(name)}</h2>
       <div class="pm-stats">#${idx + 1} overall · ${u.totalPoints ?? 0} pts · ${(u.roster || []).length} picks · $${u.totalSpent ?? 0} spent</div>
+      ${projLine}
       <h3>Roster</h3>
       ${rosterHtml}
       <h3>Transaction history</h3>
@@ -507,6 +543,27 @@
   let rostersVisible = false;    // reveal each player's roster (post-kickoff, or admin preview)
   let teamById = {}, playerById = {}, teamEmoji = {};
   let catalogReady = false;
+  let projByUid = null;   // uid -> projection row from projections.json
+  let projMeta = null;    // generatedAt / runs / bracketModel
+
+  // Monte Carlo projections are a static artifact refreshed by the ingest cron
+  // (project_standings.py -> docs/data/projections.json). Fetch once; absence
+  // (e.g. before the first run) degrades gracefully to a "–" column.
+  async function loadProjections() {
+    if (projByUid) return;
+    try {
+      const res = await fetch('./data/projections.json', { cache: 'no-store' });
+      if (!res.ok) { projByUid = {}; return; }
+      const data = await res.json();
+      projByUid = Object.fromEntries((data.users || []).map(u => [u.uid, u]));
+      projMeta = data;
+      if (Object.keys(projByUid).length) {
+        document.getElementById('projNote').style.display = 'block';
+      }
+    } catch {
+      projByUid = {};
+    }
+  }
 
   // Load the team/player catalog once, to resolve roster assetIds to
   // names + flags for the per-row roster line.
@@ -567,6 +624,7 @@
     document.getElementById('rosterNote').style.display =
       (gs.state === 'pre-kickoff' && isAdmin) ? 'block' : 'none';
     if (rostersVisible) await loadCatalog();
+    await loadProjections();
 
     await loadLeaderboard();
     if (!refreshTimer) refreshTimer = setInterval(loadLeaderboard, REFRESH_MS);
@@ -620,7 +678,7 @@
       renderTabs();
       renderFiltered();
     } catch (e) {
-      lbBody.innerHTML = `<tr><td colspan="5" class="empty-state">
+      lbBody.innerHTML = `<tr><td colspan="7" class="empty-state">
         Couldn't load leaderboard: ${escape(e.message)}
       </td></tr>`;
     }
@@ -676,7 +734,7 @@
 
   function renderTable(rows) {
     if (!rows.length) {
-      lbBody.innerHTML = `<tr><td colspan="5" class="empty-state">
+      lbBody.innerHTML = `<tr><td colspan="7" class="empty-state">
         No players yet. Be the first to <a href="./draft.html">draft a roster</a>.
       </td></tr>`;
       return;
@@ -699,8 +757,12 @@
     lbBody.innerHTML = rows.map((u, i) => {
       const rank = i + 1;
       const isMe = currentUser && u.uid === currentUser.uid;
-      const picks = (u.roster || []).length;
-      const spent = u.totalSpent ?? 0;
+      // Cash on hand = the stored currentBudget (which tracks auto-sell refunds);
+      // fall back to cap minus held purchase prices (same as the transfer page).
+      const heldCost = (u.roster || [])
+        .filter(p => p && p.currentlyHeld !== false)
+        .reduce((s, p) => s + (p.purchasePrice ?? 0), 0);
+      const onHand = u.currentBudget != null ? u.currentBudget : (ROSTER_BUDGET - heldCost);
       const pts   = u.totalPoints ?? 0;
       const name  = window.fwc.nameFor(u);
       const flag  = window.fwc.flagFor(u);
@@ -708,6 +770,16 @@
       const podiumClass = rank <= 3 ? `podium-${rank}` : '';
       const rosterLine = rostersVisible ? rosterLineHtml(u.roster || [], ownership, u.exitedPicks) : '';
       const caret = rosterLine ? ' <span class="lb-expand-caret">&#9656;</span>' : '';
+      // Projected final total (median + middle-60% range) + title odds, by uid.
+      const proj = projByUid ? projByUid[u.uid] : null;
+      const projCell = proj
+        ? `<div class="proj-med">${Math.round(proj.median)}</div>
+           <div class="proj-range">${proj.p20}&ndash;${proj.p80}</div>`
+        : '<span class="proj-na">&ndash;</span>';
+      const pctCell = (v) => v == null ? '<span class="proj-na">&ndash;</span>'
+        : v >= 1 ? `${Math.round(v)}%` : v > 0 ? '&lt;1%' : '&ndash;';
+      const winCell  = pctCell(proj ? proj.winPct  : null);
+      const top3Cell = pctCell(proj ? proj.top3Pct : null);
       // rank movement arrow
       let moveHtml = '';
       const prev = priorRank ? priorRank.get(u.uid) : null;
@@ -720,9 +792,11 @@
       return `<tr class="${isMe ? 'lb-row-me' : ''}">
         <td class="rank-cell ${podiumClass}">${rank}${moveHtml}</td>
         <td><span class="lb-name" data-uid="${escape(u.uid)}">${flagSpan}${escape(name)}</span>${isMe ? ' <span class="accent-text" style="font-size:11px">(you)</span>' : ''}${caret}${rosterLine}</td>
-        <td class="num">${picks}</td>
-        <td class="num">$${spent}</td>
+        <td class="num col-hide-sm">$${onHand}</td>
         <td class="num"><strong>${pts}</strong></td>
+        <td class="num proj-cell">${projCell}</td>
+        <td class="num proj-cell">${winCell}</td>
+        <td class="num proj-cell">${top3Cell}</td>
       </tr>`;
     }).join('');
   }
