@@ -202,6 +202,34 @@
     tr:has(.lb-roster) { cursor: pointer; }
   }
 
+  /* --- time-bounded transfer CTA (group stage → R32 kickoff) --- */
+  .transfer-cta {
+    background: #fff5fa;
+    border: 1px solid #ffd0e6;
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .transfer-cta .tc-head {
+    font-size: 14px; font-weight: 700; color: var(--bg-header);
+    margin-bottom: 5px;
+  }
+  .transfer-cta .tc-body {
+    font-size: 12.5px; color: var(--text-body); line-height: 1.55;
+  }
+  .transfer-cta .tc-body strong { color: var(--accent); }
+  .transfer-cta .tc-actions {
+    margin-top: 11px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px;
+  }
+  .transfer-cta .cta-btn {
+    display: inline-block; background: var(--accent); color: #fff;
+    font-size: 12px; font-weight: 700; text-decoration: none;
+    padding: 7px 15px; border-radius: 6px;
+  }
+  .transfer-cta .cta-btn:hover { background: #e85aa0; }
+  .transfer-cta .tc-deadline { font-size: 11px; color: var(--text-muted); }
+
   /* --- projected final total (Monte Carlo) --- */
   .proj-cell { font-variant-numeric: tabular-nums; line-height: 1.2; }
   .proj-med { font-weight: 700; color: var(--bg-header); }
@@ -251,6 +279,24 @@
     <!-- Group tabs - only shown when viewer is in 1+ groups -->
     <div id="lbTabs" style="display:none; margin-bottom:12px; border-bottom:2px solid var(--border-row);
          overflow-x:auto; white-space:nowrap"></div>
+
+    <!-- Time-bounded CTA: shows from now until R32 kickoff, explaining transfers. -->
+    <div id="transferCta" class="transfer-cta" style="display:none">
+      <div class="tc-head" id="ctaHead">&#128257; TRANSFER MARKET OPENING SOON: sell underperformers, buy up to 3 new players / countries!</div>
+      <div class="tc-body">
+        The market reopens between <strong>every round</strong> (the first window opens
+        after the group stage, Sun&nbsp;Jun&nbsp;28). Knocked-out teams are
+        <strong>auto-sold for 25% of what you paid</strong>, credited to your balance.
+        Selling is free and unlimited; <strong>buys are capped at 3 for the whole
+        tournament</strong>. No rush, though: you can <strong>bank your cash and save your
+        buys for a later round</strong> instead. Each window closes about an hour before
+        that round&rsquo;s first match.
+      </div>
+      <div class="tc-actions">
+        <a class="cta-btn" href="./transfer.html">Check out the transfer market &rarr;</a>
+        <span class="tc-deadline" id="ctaDeadline"></span>
+      </div>
+    </div>
 
     <div class="results-card" id="resultsCard">
       <div class="rc-head" id="rcHead">
@@ -332,6 +378,9 @@
   // whole users collection). 5 min keeps it fresh-enough at 1/10th the reads.
   const REFRESH_MS = 300_000;
   const ROSTER_BUDGET = 60;   // salary cap; matches transfer.html BUDGET
+  // First Round-of-32 match (official WC2026 schedule). The transfer CTA runs
+  // from now until this moment, then the knockouts are underway.
+  const R32_KICKOFF = new Date('2026-06-28T19:00:00Z');
 
   // Palette mirrors the tennis Power Rankings - distinct, color-blind-friendly,
   // keeps the FWC teal + pink at the top of the rotation.
@@ -574,6 +623,24 @@
     }
   }
 
+  // Show the transfer CTA from now until R32 kickoff, then drop it (the
+  // knockouts are underway and rosters lock). Stamps the deadline in local time.
+  function maybeShowTransferCta(gs) {
+    const el = document.getElementById('transferCta');
+    if (!el || new Date() >= R32_KICKOFF) return;
+    // Keep the headline honest if a window is actually live right now.
+    if (gs && gs.state === 'window-open') {
+      document.getElementById('ctaHead').innerHTML =
+        '&#128257; TRANSFER MARKET IS OPEN: sell underperformers, buy up to 3 new players / countries!';
+    }
+    document.getElementById('ctaDeadline').textContent =
+      'Round of 32 kicks off ' + R32_KICKOFF.toLocaleString(undefined, {
+        weekday: 'short', month: 'short', day: 'numeric',
+        hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+      });
+    el.style.display = 'block';
+  }
+
   // Load the team/player catalog once, to resolve roster assetIds to
   // names + flags for the per-row roster line.
   async function loadCatalog() {
@@ -628,6 +695,7 @@
     // at kickoff.)
     const gs = await window.fwc.getGameState();
     window.fwc.renderStateBanner(document.getElementById('stateBanner'), gs);
+    maybeShowTransferCta(gs);
     const isAdmin = window.fwc.isAdmin(user);
     rostersVisible = (gs.state !== 'pre-kickoff') || isAdmin;
     document.getElementById('rosterNote').style.display =
