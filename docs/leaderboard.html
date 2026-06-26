@@ -115,10 +115,17 @@
     color: var(--text-muted);
   }
   .lb-roster .rp-pts.scoring { color: #16a34a; }
-  /* exited (sold/eliminated) chip: grayed + struck name, retained pts kept */
-  .lb-roster .rp.rp-exited { opacity: 0.5; text-decoration: line-through; }
-  .lb-roster .rp.rp-exited .rp-pts,
-  .lb-roster .rp.rp-exited .rp-flag { text-decoration: none; }
+  /* exited chips: grayed, retained pts kept. Eliminated ("out") = struck name +
+     red badge (gone from the tournament); sold = plain name + neutral badge. */
+  .lb-roster .rp.rp-exited { opacity: 0.6; }
+  .lb-roster .rp.rp-elim .rp-xname { text-decoration: line-through; }
+  .lb-roster .rp-tag {
+    margin-left: 3px; font-size: 8px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.3px;
+    padding: 0 3px; border-radius: 3px;
+  }
+  .lb-roster .rp-tag.out  { color: #fff; background: #dc2626; }
+  .lb-roster .rp-tag.sold { color: var(--text-muted); background: var(--border-row); }
 
   /* rank movement arrows under the rank number */
   .rank-move { display: block; font-size: 9px; font-weight: 700; line-height: 1; margin-top: 2px; }
@@ -299,6 +306,8 @@
     <p class="lb-legend">
       <span class="diff">&#9670;</span> = differential (only manager holding it) ·
       <span style="color:#16a34a">&#9650;</span>/<span style="color:#dc2626">&#9660;</span> rank move since last day ·
+      grayed pick = no longer held: <span class="rp-tag out">out</span> eliminated /
+      <span class="rp-tag sold">sold</span> transferred (points kept either way) ·
       tap a name for their roster &amp; transactions
     </p>
     <p style="font-size:11px; color:var(--text-muted); margin:8px 0 0; text-align:center">
@@ -853,12 +862,17 @@
     teamEntries.sort(byPts);
     playerEntries.sort(byPts);
 
-    // Exited (sold/eliminated) chips: grayed + struck, retained points kept.
+    // Exited chips: grayed, retained points kept. Eliminated ("out") gets a
+    // struck name + red badge; sold gets a neutral badge (asset still live).
     const exitedChip = (e) => {
       const pts = e.points ?? 0;
       const flag = flagFor(e.kind, e.assetId);
-      return `<span class="rp rp-exited ${e.kind}">${flag ? `<span class="rp-flag">${flag}</span>` : ''}` +
-        `${escape(labelFor(e.kind, e.assetId))}<span class="rp-pts${pts > 0 ? ' scoring' : ''}">${pts}</span></span>`;
+      const elim = e.exitReason === 'eliminated';
+      return `<span class="rp rp-exited ${elim ? 'rp-elim' : 'rp-sold'} ${e.kind}">` +
+        `${flag ? `<span class="rp-flag">${flag}</span>` : ''}` +
+        `<span class="rp-xname">${escape(labelFor(e.kind, e.assetId))}</span>` +
+        `<span class="rp-tag ${elim ? 'out' : 'sold'}">${elim ? 'out' : 'sold'}</span>` +
+        `<span class="rp-pts${pts > 0 ? ' scoring' : ''}">${pts}</span></span>`;
     };
 
     const chips = [
