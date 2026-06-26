@@ -22,11 +22,14 @@ The strength model + calibration live in simulate_2026.py (validated by
 scripts/validate_model_honesty.py). We import its primitives so the projection
 and the offline balance sim can never drift apart.
 
-KNOWN SIMPLIFICATION (v1): the knockout bracket is seeded by standings
-(1v32, 2v31, ...), NOT the real WC2026 bracket tree (which group result feeds
-which slot). That gives favorites slightly easier early paths than reality and
-thus mildly over-projects rosters holding favorites. Upgrade to the faithful
-bracket map once R32 seeds. Search "TODO(bracket)".
+The knockout uses the REAL WC2026 bracket: group winners / runners-up fill
+their fixed Round-of-32 slots and the bracket tree (matches 73-104) is followed
+exactly, so a team's path difficulty is realistic. Seeding from simulated group
+positions means the bracket becomes fully exact once the group stage finalizes.
+The one residual approximation: the 8 best-third-place teams are matched to
+their slots by the official group constraints via a valid bipartite matching,
+not FIFA's exact allocation table (affects only which winner a 3rd-place team
+first meets). See R32_SLOTS / BRACKET_TREE.
 
 Usage:
   GOOGLE_APPLICATION_CREDENTIALS=.../key.json \
@@ -43,7 +46,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from _fwc_lib import firestore_client
 from simulate_2026 import (
     WEIGHTS, BONUS_BY_ROUND, ADVANCEMENT_ORDER,
-    simulate_match, _record_match, _winner_loser, _determine_advancers,
+    simulate_match, _record_match, _winner_loser,
 )
 
 OUT_PATH = ROOT / "docs" / "data" / "projections.json"
@@ -88,8 +91,10 @@ def load_state(db):
         if (md.get("stage") or "GROUP_STAGE") != "GROUP_STAGE":
             continue
         t1, t2 = md.get("team1Id"), md.get("team2Id")
-        if t1 in by_id: team_group[t1] = md.get("group")
-        if t2 in by_id: team_group[t2] = md.get("group")
+        # Normalize "GROUP_A" -> "A" to match the bracket's single-letter slots.
+        gl = (md.get("group") or "").split("_")[-1] or None
+        if t1 in by_id: team_group[t1] = gl
+        if t2 in by_id: team_group[t2] = gl
         if md.get("status") == "FINISHED" and md.get("score1") is not None:
             s1, s2 = int(md["score1"]), int(md["score2"])
             for tid, gf, ga in ((t1, s1, s2), (t2, s2, s1)):
@@ -129,6 +134,147 @@ def load_state(db):
 
 
 # ---------------------------------------------------------------------------
+# Official WC2026 knockout bracket
+# ---------------------------------------------------------------------------
+# Round of 32 = matches 73-88. Slot spec: ("1","A")=winner of group A,
+# ("2","A")=runner-up A, ("3","CDF")=best-third from one of those groups.
+# Source: official FIFA bracket (en.wikipedia.org/wiki/2026_FIFA_World_Cup_knockout_stage).
+R32_SLOTS = {
+    73: (("2", "A"), ("2", "B")),
+    74: (("1", "E"), ("3", "CDF")),
+    75: (("1", "F"), ("2", "C")),
+    76: (("1", "C"), ("2", "F")),
+    77: (("1", "I"), ("3", "CDFGH")),
+    78: (("2", "E"), ("2", "I")),
+    79: (("1", "A"), ("3", "CEFHI")),
+    80: (("1", "L"), ("3", "EIJK")),
+    81: (("1", "D"), ("3", "BEFIJ")),
+    82: (("1", "G"), ("3", "AEHIJ")),
+    83: (("2", "K"), ("2", "L")),
+    84: (("1", "H"), ("2", "J")),
+    85: (("1", "B"), ("3", "EFGIJ")),
+    86: (("1", "J"), ("2", "H")),
+    87: (("1", "K"), ("3", "DEIJL")),
+    88: (("2", "D"), ("2", "G")),
+}
+# Matches beyond R32: match_no -> (feeder_match_a, feeder_match_b).
+BRACKET_TREE = {
+    89: (73, 75), 90: (74, 77), 91: (76, 78), 92: (79, 80),
+    93: (83, 84), 94: (81, 82), 95: (86, 88), 96: (85, 87),
+    97: (89, 90), 98: (93, 94), 99: (91, 92), 100: (95, 96),
+    101: (97, 98), 102: (99, 100),
+    104: (101, 102),
+}
+# Round a match WINNER advances into (drives the advancement bonus). The
+# third-place playoff (103) is absent: it grants no bonus and no round change.
+WIN_ADVANCES_TO = {**{m: "R16" for m in range(73, 89)},
+                   **{m: "QF" for m in range(89, 97)},
+                   **{m: "SF" for m in range(97, 101)},
+                   101: "F", 102: "F", 104: "W"}
+THIRD_SLOT_MATCHES = [m for m, (a, b) in R32_SLOTS.items() if b[0] == "3"]
+
+
+def _group_positions(team_stats, team_group):
+    """Per-group 1st/2nd/3rd by (pts, gd, gf), plus the 8 best third-place
+    groups that advance. Returns (winners, runners, thirds, qual_third_groups)."""
+    byg = defaultdict(list)
+    for tid, g in team_group.items():
+        if g:
+            byg[g].append(tid)
+    key = lambda t: (team_stats[t]["group_pts"], team_stats[t]["group_gd"],
+                     team_stats[t]["group_gf"])
+    winners, runners, thirds, third_list = {}, {}, {}, []
+    for g, tids in byg.items():
+        r = sorted(tids, key=key, reverse=True)
+        if len(r) >= 1: winners[g] = r[0]
+        if len(r) >= 2: runners[g] = r[1]
+        if len(r) >= 3:
+            thirds[g] = r[2]; third_list.append(g)
+    third_list.sort(key=lambda g: key(thirds[g]), reverse=True)
+    return winners, runners, thirds, third_list[:8]
+
+
+def _assign_thirds(qual_groups):
+    """Match the 8 qualifying third-place groups to the 8 third-place R32 slots,
+    respecting each slot's allowed-group constraint (deterministic MRV
+    backtracking). Any perfect matching is a valid bracket; we do not replicate
+    FIFA's exact allocation table (the bracket's one residual approximation)."""
+    slots = sorted(((m, frozenset(R32_SLOTS[m][1][1])) for m in THIRD_SLOT_MATCHES),
+                   key=lambda s: (len(s[1]), s[0]))
+    qual = sorted(qual_groups)
+    result, used = {}, set()
+
+    def bt(i):
+        if i == len(slots):
+            return True
+        m, allowed = slots[i]
+        for g in qual:
+            if g in used or g not in allowed:
+                continue
+            used.add(g); result[m] = g
+            if bt(i + 1):
+                return True
+            used.discard(g); del result[m]
+        return False
+
+    if not bt(0):
+        # Rare (only if the qualifying set has no valid matching). Greedy fill.
+        result.clear(); rem = list(qual)
+        for m, allowed in slots:
+            pick = next((g for g in rem if g in allowed), rem[0] if rem else None)
+            if pick is not None:
+                result[m] = pick; rem.remove(pick)
+    return result
+
+
+def _resolve_r32(winners, runners, thirds, third_assign, by_id):
+    """Resolve the 16 R32 slot specs to (teamA_dict, teamB_dict) pairs."""
+    def slot(spec, m):
+        kind, ref = spec
+        if kind == "1": return winners.get(ref)
+        if kind == "2": return runners.get(ref)
+        g = third_assign.get(m)
+        return thirds.get(g) if g else None
+    pairs = {}
+    for m, (sa, sb) in R32_SLOTS.items():
+        a, b = slot(sa, m), slot(sb, m)
+        if a in by_id and b in by_id:
+            pairs[m] = (by_id[a], by_id[b])
+    return pairs
+
+
+def _simulate_bracket(r32_pairs, team_stats, players_by_team, pg, pa, pw, pc):
+    """Play matches 73..104 through the real bracket tree, mutating team_stats
+    and the player accumulators. Returns the champion team id (or None)."""
+    win, lose = {}, {}
+    order = list(range(73, 101)) + [101, 102, 103, 104]
+    for m in order:
+        if m == 103:  # third-place playoff = the two semifinal losers
+            if 101 not in lose or 102 not in lose:
+                continue
+            ta, tb = lose[101], lose[102]
+        elif m in r32_pairs:
+            ta, tb = r32_pairs[m]
+        elif m in BRACKET_TREE:
+            fa, fb = BRACKET_TREE[m]
+            if fa not in win or fb not in win:
+                continue
+            ta, tb = win[fa], win[fb]
+        else:
+            continue
+        ga, gb, pen = simulate_match(ta, tb, ko=True)
+        w, l = _winner_loser(ta, tb, ga, gb, pen)
+        _record_match(ta, tb, ga, gb, team_stats, pg, pa, pw, pc,
+                      players_by_team, is_group=False)
+        win[m], lose[m] = w, l
+        adv = WIN_ADVANCES_TO.get(m)
+        if adv and (ADVANCEMENT_ORDER.index(adv)
+                    > ADVANCEMENT_ORDER.index(team_stats[w["id"]]["final_round"])):
+            team_stats[w["id"]]["final_round"] = adv
+    return win[104]["id"] if 104 in win else None
+
+
+# ---------------------------------------------------------------------------
 # One Monte Carlo run of the REMAINING tournament
 # ---------------------------------------------------------------------------
 
@@ -153,55 +299,19 @@ def simulate_future(teams, by_id, players_by_team, actual_group, team_group,
         _record_match(ta, tb, ga, gb, team_stats, pg, pa, pw, pc,
                       players_by_team, is_group=True)
 
-    # Advancers from combined (actual + simulated) group tables
-    # TODO(bracket): _determine_advancers also SEEDS the bracket by standings
-    # (1v32...). Replace with the real WC2026 bracket slot map once R32 seeds.
-    advancer_ids = _determine_advancers(team_stats, team_group)
-    advancers = [by_id[tid] for tid in advancer_ids if tid in by_id]
-    for t in advancers:
-        if ADVANCEMENT_ORDER.index(team_stats[t["id"]]["final_round"]) < 1:
-            team_stats[t["id"]]["final_round"] = "R32"
-
-    # Knockout rounds (pen wins recorded as draws -> FIFA convention, matches
-    # the live game; the winner still advances for the round bonus).
-    current = list(advancers)
-    next_round = []
-    for i in range(0, len(current), 2):
-        if i + 1 >= len(current):
-            next_round.append(current[i]); continue
-        ta, tb = current[i], current[i + 1]
-        ga, gb, pen = simulate_match(ta, tb, ko=True)
-        winner, _ = _winner_loser(ta, tb, ga, gb, pen)
-        _record_match(ta, tb, ga, gb, team_stats, pg, pa, pw, pc,
-                      players_by_team, is_group=False)
-        team_stats[winner["id"]]["final_round"] = "R16"
-        next_round.append(winner)
-    current = next_round
-
-    semis_losers, champion = [], None
-    for round_label, next_label in [("R16", "QF"), ("QF", "SF"), ("SF", "F"), ("F", "W")]:
-        nr = []
-        for i in range(0, len(current), 2):
-            if i + 1 >= len(current):
-                nr.append(current[i]); continue
-            ta, tb = current[i], current[i + 1]
-            ga, gb, pen = simulate_match(ta, tb, ko=True)
-            winner, loser = _winner_loser(ta, tb, ga, gb, pen)
-            _record_match(ta, tb, ga, gb, team_stats, pg, pa, pw, pc,
-                          players_by_team, is_group=False)
-            team_stats[winner["id"]]["final_round"] = next_label
-            if round_label == "SF":
-                semis_losers.append(loser)
-            if round_label == "F":
-                champion = winner
-            nr.append(winner)
-        current = nr
-
-    if len(semis_losers) == 2:
-        ta, tb = semis_losers
-        ga, gb, pen = simulate_match(ta, tb, ko=True)
-        _record_match(ta, tb, ga, gb, team_stats, pg, pa, pw, pc,
-                      players_by_team, is_group=False)
+    # Seed the REAL WC2026 bracket from group positions (actual + simulated),
+    # then play it out through the fixed tree. Becomes exact once groups finish.
+    # Pen wins record as draws (FIFA convention, matches the live game); the
+    # winner still advances for the round bonus.
+    winners, runners, thirds, qual = _group_positions(team_stats, team_group)
+    third_assign = _assign_thirds(qual)
+    r32_pairs = _resolve_r32(winners, runners, thirds, third_assign, by_id)
+    for ta, tb in r32_pairs.values():
+        for t in (ta, tb):
+            if ADVANCEMENT_ORDER.index(team_stats[t["id"]]["final_round"]) < 1:
+                team_stats[t["id"]]["final_round"] = "R32"
+    champion_id = _simulate_bracket(r32_pairs, team_stats, players_by_team,
+                                    pg, pa, pw, pc)
 
     # Future points per asset
     team_pts = {}
@@ -226,7 +336,7 @@ def simulate_future(teams, by_id, players_by_team, actual_group, team_group,
                 + WEIGHTS["player_win_share"] * pw.get(p["id"], 0)
                 + cs * pc.get(p["id"], 0))
 
-    return team_pts, player_pts, (champion["id"] if champion else None)
+    return team_pts, player_pts, champion_id
 
 
 # ---------------------------------------------------------------------------
