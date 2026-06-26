@@ -63,8 +63,16 @@ BONUS_BY_ROUND = {
 }
 
 # Match simulation parameters
-BASE_GOALS_PER_MATCH = 2.6  # historical WC avg ≈ 2.5-2.7
+# Calibrated 2026-06-26 against the 60 finished WC2026 group matches. The
+# original sqrt(price) strength model (PRICE_EXPONENT=0.5) was under-confident
+# in favorites (it said ~45% when favorites actually won ~69%) and ran a touch
+# low on goals (predicted 2.6 vs actual ~2.95). We moved BOTH knobs HALFWAY
+# toward the small-sample optimum, not all the way, to avoid overfitting one
+# tournament's group stage (group != knockout); the p25-p75 projection bands
+# carry the residual uncertainty. See scripts/validate_model_honesty.py.
+BASE_GOALS_PER_MATCH = 2.8  # was 2.6; historical WC avg ≈ 2.5-2.7, 2026 ran hot
 ET_GOALS_PER_MATCH   = 0.6  # extra time has fewer goals
+PRICE_EXPONENT       = 0.75 # was 0.5 (sqrt); sharpens the favorite's edge
 
 
 # ---------------------------------------------------------------------------
@@ -130,11 +138,13 @@ def poisson_sample(lam: float) -> int:
 
 def match_lambdas(team_a, team_b, base=BASE_GOALS_PER_MATCH):
     """Return (lambda_a, lambda_b) for Poisson goal sampling.
-    Uses sqrt of prices to soften the favorite's edge."""
+    Strength = basePrice ** PRICE_EXPONENT; the favorite gets that share of
+    `base` goals. Exponent 0.75 calibrated against finished group matches
+    (see the BASE_GOALS_PER_MATCH note)."""
     pa = max(1, team_a["basePrice"])
     pb = max(1, team_b["basePrice"])
-    sa = math.sqrt(pa)
-    sb = math.sqrt(pb)
+    sa = pa ** PRICE_EXPONENT
+    sb = pb ** PRICE_EXPONENT
     share = sa / (sa + sb)
     return base * share, base * (1 - share)
 
