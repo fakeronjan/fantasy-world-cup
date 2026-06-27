@@ -310,6 +310,23 @@ def render_today_matches_html(today_matches: list[dict], players_cache: dict) ->
     return f'<h3 style="margin:24px 0 6px; font-size:14px; color:#1a6b8a">Yesterday\'s results</h3><ul style="padding-left:18px; margin:0">{items}</ul>'
 
 
+def render_footer_html() -> str:
+    """Email footer whose LAST line is a per-send timestamp. Gmail threads our
+    daily emails (same sender + constant 'Fantasy WC' subject prefix) and
+    collapses any identical trailing block behind its 'trim repeated content'
+    toggle - which was hiding the leaderboard + the previously-static footer. A
+    unique final line makes every email's trailing block distinct, so there's
+    nothing for Gmail to collapse."""
+    sent = datetime.now(timezone.utc).astimezone(EASTERN).strftime("%b %-d, %Y at %-I:%M %p ET")
+    return f"""
+  <hr style="margin:32px 0; border:none; border-top:1px solid #ddd">
+  <p style="font-size:11px; color:#888">
+    You're getting this because you opted into Fantasy WC emails on your profile.
+    <a href="{PROFILE_URL}" style="color:#1a6b8a">Manage email preferences</a>.
+  </p>
+  <p style="font-size:10px; color:#bbb; margin-top:6px">Sent {sent}</p>"""
+
+
 def render_transfer_cta_html(gs: dict) -> str:
     """Time-aware transfer-market CTA mirroring the leaderboard's states:
     OPEN now (with the closing deadline) vs opening soon vs pre-kickoff draft.
@@ -470,11 +487,7 @@ def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[d
     <a href="{LEADERBOARD_URL}" style="background:#1a6b8a; color:#fff; padding:10px 18px; border-radius:4px; text-decoration:none; font-weight:600; font-size:13px">View full leaderboard →</a>
   </p>
 
-  <hr style="margin:32px 0; border:none; border-top:1px solid #ddd">
-  <p style="font-size:11px; color:#888">
-    You're getting this because you opted into Fantasy WC emails on your profile.
-    <a href="{PROFILE_URL}" style="color:#1a6b8a">Manage email preferences</a>.
-  </p>
+  {render_footer_html()}
 </body></html>"""
 
     # Plain-text fallback (kept tight)
@@ -548,11 +561,7 @@ def render_round_recap_html(user: dict, leaderboard: list[dict], round_name: str
     <a href="{LEADERBOARD_URL}" style="background:#1a6b8a; color:#fff; padding:10px 18px; border-radius:4px; text-decoration:none; font-weight:600; font-size:13px">Full leaderboard →</a>
   </p>
 
-  <hr style="margin:32px 0; border:none; border-top:1px solid #ddd">
-  <p style="font-size:11px; color:#888">
-    You're getting this because you opted into Fantasy WC emails on your profile.
-    <a href="{PROFILE_URL}" style="color:#1a6b8a">Manage email preferences</a>.
-  </p>
+  {render_footer_html()}
 </body></html>"""
 
     odds_keys_plain = _odds_keys_plain(proj, teams_cache or {}, players_cache or {})
