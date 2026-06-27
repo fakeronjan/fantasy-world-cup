@@ -75,6 +75,7 @@ def load_state(db):
     for p in db.collection("players").stream():
         pd = p.to_dict() or {}
         row = {"id": p.id, "teamId": pd.get("teamId"),
+               "name": pd.get("name"),
                "position": (pd.get("position") or "?"),
                "basePrice": pd.get("basePrice") or 1,
                "totalPoints": int(pd.get("totalPoints") or 0)}
@@ -372,28 +373,79 @@ def main():
     scores = [[] for _ in users]
     win_counts = [0] * len(users)
     top3_counts = [0] * len(users)
+    # Per-user per-asset future-point sums: overall, and conditioned on the user
+    # finishing 1st / top-3 in that same sim. Drives "keys to win": an asset
+    # whose future points are markedly higher in the sims where the user wins is
+    # central to their winning path. This captures differentials for free -- an
+    # asset everyone owns barely swings any one manager's RELATIVE finish, so its
+    # win-conditional mean tracks its overall mean (near-zero lift), while a
+    # unique pick that fires in your winning sims lifts sharply.
+    asset_all  = [defaultdict(float) for _ in users]
+    asset_win  = [defaultdict(float) for _ in users]
+    asset_top3 = [defaultdict(float) for _ in users]
     t0 = time.time()
     for run in range(args.runs):
         tp, pp, _ = simulate_future(teams, by_id, players_by_team,
                                     actual_group, team_group, remaining_group)
-        run_scores = []
+        run_scores, run_contrib = [], []
         for i, u in enumerate(users):
-            fut = sum((tp if kind == "team" else pp).get(aid, 0)
-                      for kind, aid in u["roster"])
-            run_scores.append(u["current"] + fut)
+            contrib = [((kind, aid), (tp if kind == "team" else pp).get(aid, 0))
+                       for kind, aid in u["roster"]]
+            run_contrib.append(contrib)
+            run_scores.append(u["current"] + sum(v for _, v in contrib))
         for i, s in enumerate(run_scores):
             scores[i].append(s)
         # Finishing order this sim: #1 -> win, top 3 -> podium.
         order = sorted(range(len(run_scores)), key=lambda i: -run_scores[i])
-        win_counts[order[0]] += 1
-        for i in order[:3]:
+        winner, top3 = order[0], set(order[:3])
+        win_counts[winner] += 1
+        for i in top3:
             top3_counts[i] += 1
+        for i, contrib in enumerate(run_contrib):
+            aa, aw, at3 = asset_all[i], asset_win[i], asset_top3[i]
+            is_win, is_t3 = i == winner, i in top3
+            for key, val in contrib:
+                if not val:
+                    continue
+                aa[key] += val
+                if is_win: aw[key] += val
+                if is_t3: at3[key] += val
     elapsed = time.time() - t0
     print(f"{args.runs} runs in {elapsed:.1f}s", file=sys.stderr)
 
     # current ranking (by current total) for rank-shift readout
     cur_rank = {u["uid"]: r for r, u in enumerate(
         sorted(users, key=lambda x: -x["current"]), 1)}
+
+    # "Keys to win": the held assets most central to a manager's best outcome.
+    # Rank each asset by its LIFT = (mean future pts in the conditioning sims)
+    # minus (mean future pts overall). Condition on winning sims if the manager
+    # has a realistic title path, else on top-3 sims, else give up (goal="none").
+    # A path is "realistic" at >=1% of sims (also the leaderboard's <1% display
+    # cutoff) with an absolute floor for a stable conditional mean.
+    KEY_THR = max(10, round(0.01 * args.runs))   # min sims to condition on
+    MAX_KEYS = 3
+
+    def keys_for(i, roster):
+        if win_counts[i] >= KEY_THR:
+            goal, cnt, cond = "win", win_counts[i], asset_win[i]
+        elif top3_counts[i] >= KEY_THR:
+            goal, cnt, cond = "top3", top3_counts[i], asset_top3[i]
+        else:
+            return "none", []
+        ranked = []
+        for kind, aid in roster:
+            k = (kind, aid)
+            cond_mean = cond.get(k, 0) / cnt
+            lift = cond_mean - asset_all[i].get(k, 0) / args.runs
+            ranked.append((lift, cond_mean, kind, aid))
+        # Prefer positive-lift swing assets; if none swings (you coast in on
+        # others' collapses), fall back to your biggest contributors so the
+        # column is never empty when a path exists. Drop assets that never score.
+        pos = [r for r in ranked if r[0] > 1e-9]
+        pick = (sorted(pos, key=lambda r: -r[0]) if pos
+                else sorted([r for r in ranked if r[1] > 0], key=lambda r: -r[1]))
+        return goal, [{"kind": kind, "id": aid} for _, _, kind, aid in pick[:MAX_KEYS]]
 
     rows = []
     for i, u in enumerate(users):
@@ -403,6 +455,7 @@ def main():
         team_spend = sum(team_price.get(a, 0) for k, a in u["roster"] if k == "team")
         play_spend = sum(player_price.get(a, 0) for k, a in u["roster"] if k == "player")
         tot_spend = team_spend + play_spend
+        keys_goal, keys = keys_for(i, u["roster"])
         rows.append({
             "uid": u["uid"], "name": u["name"],
             "current": u["current"],
@@ -413,6 +466,7 @@ def main():
             "top3Pct": round(100 * top3_counts[i] / args.runs, 1),
             "teamShare": round(100 * team_spend / tot_spend) if tot_spend else 0,
             "nTeams": n_team, "nPlayers": n_play,
+            "keysGoal": keys_goal, "keys": keys,
         })
 
     proj_rank = {r["uid"]: rk for rk, r in enumerate(
@@ -424,15 +478,25 @@ def main():
 
     rows.sort(key=lambda x: -x["median"])
 
+    # asset id -> short name for the readout (front-end resolves its own labels)
+    asset_name = {("team", t["id"]): t["name"] for t in teams}
+    for ps in players_by_team.values():
+        for p in ps:
+            nm = (p.get("name") or p["id"]).split()[-1]
+            asset_name[("player", p["id"])] = nm
+
     # ---- face-validity readout -------------------------------------------
     print(f"\n{'name':<20}{'cur':>5}{'rk':>3} -> {'med':>5}{'rk':>3}{'shift':>6}"
-          f"{'p20':>6}{'p80':>6}{'win%':>6}{'top3%':>7}{'team$%':>7}")
+          f"{'p20':>6}{'p80':>6}{'win%':>6}{'top3%':>7}  keys")
     for r in rows:
         arrow = f"+{r['rankShift']}" if r['rankShift'] > 0 else str(r['rankShift'])
+        ktag = "" if r["keysGoal"] == "win" else f"[{r['keysGoal']}] "
+        knames = ", ".join(asset_name.get((k["kind"], k["id"]), k["id"])
+                           for k in r["keys"]) or "-"
         print(f"{r['name'][:19]:<20}{r['current']:>5}{r['curRank']:>3} -> "
               f"{r['median']:>5.0f}{r['projRank']:>3}{arrow:>6}"
               f"{r['p20']:>6.0f}{r['p80']:>6.0f}{r['winPct']:>5.1f}%"
-              f"{r['top3Pct']:>6.1f}%{r['teamShare']:>6}%")
+              f"{r['top3Pct']:>6.1f}%  {ktag}{knames}")
 
     out = {
         "generatedAt": data_as_of or datetime.now(timezone.utc).isoformat(),

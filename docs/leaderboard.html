@@ -235,6 +235,21 @@
   .proj-med { font-weight: 700; color: var(--bg-header); }
   .proj-range { font-size: 10px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; }
   .proj-na { color: var(--text-muted); }
+  /* Keys to win: the held assets most central to a manager's best outcome. */
+  .keys-col { min-width: 150px; }
+  .keys-cell { line-height: 1.5; }
+  .key-chip {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    margin: 1px 5px 1px 0; white-space: nowrap;
+  }
+  .key-chip.team   { color: var(--bg-header); }
+  .key-chip.player { color: var(--accent); }
+  .key-chip .kc-flag { margin-right: 3px; }
+  .keys-goal {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.4px; text-transform: uppercase;
+    color: var(--text-muted); margin-left: 2px; vertical-align: 1px;
+  }
   .proj-note {
     font-size: 11px; color: var(--text-muted);
     margin: 0 0 12px; line-height: 1.55;
@@ -328,8 +343,10 @@
       current roster plays out the rest of the tournament, from 5,000 Monte Carlo
       simulations. The smaller figure is the middle-60% range (p20&ndash;p80) and
       narrows as more matches finish. <strong>Win %</strong> and <strong>Top 3</strong>
-      are your odds of finishing first and on the podium. Projections always assume
-      your current roster.
+      are your odds of finishing first and on the podium. <strong>Keys to win</strong>
+      are the picks on your roster that swing those odds the most &ndash; root for
+      them. Managers with no realistic title path show what to root for to reach the
+      podium instead. Projections always assume your current roster.
     </p>
 
     <table class="data">
@@ -342,10 +359,11 @@
           <th class="num">Proj.</th>
           <th class="num">Win %</th>
           <th class="num">Top 3</th>
+          <th class="keys-col">Keys to win</th>
         </tr>
       </thead>
       <tbody id="lbBody">
-        <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+        <tr><td colspan="8" class="empty-state">Loading…</td></tr>
       </tbody>
     </table>
     <p class="last-updated" id="lastUpdated"></p>
@@ -532,6 +550,30 @@
     return e + (pl?.name || assetId);
   }
 
+  // "Keys to win" cell: the held assets (from projections.json) whose success
+  // most lifts this manager's title odds, resolved to flag + short name. Reveals
+  // roster picks, so it's gated behind rostersVisible exactly like the roster
+  // line. keysGoal === 'top3' tags managers with no realistic title path.
+  function keysCellHtml(proj, withTag = true) {
+    if (!proj || !proj.keys || !proj.keys.length || !catalogReady) {
+      return '<span class="proj-na">&ndash;</span>';
+    }
+    const shortName = (s) => String(s).trim().split(/\s+/).pop();
+    const chips = proj.keys.map(k => {
+      const flag = k.kind === 'team'
+        ? (teamEmoji[k.id] || '')
+        : (teamEmoji[playerById[k.id]?.teamId] || '');
+      const name = k.kind === 'team'
+        ? (teamById[k.id]?.name || k.id)
+        : shortName(playerById[k.id]?.name || k.id);
+      return `<span class="key-chip ${k.kind}">` +
+        `${flag ? `<span class="kc-flag">${flag}</span>` : ''}${escape(name)}</span>`;
+    }).join('');
+    const tag = (withTag && proj.keysGoal === 'top3')
+      ? '<span class="keys-goal">for top 3</span>' : '';
+    return chips + tag;
+  }
+
   function renderTxHistory(txs) {
     const typeLabel = (t) =>
       t.type === 'draft' ? 'Drafted roster'
@@ -565,10 +607,16 @@
            <strong>~${Math.round(proj.median)}</strong> (${proj.p20}&ndash;${proj.p80})
            · ${proj.winPct}% win · ${proj.top3Pct}% top 3 · assumes current roster</div>`
       : '';
+    const keysLine = (proj && proj.keys && proj.keys.length && rostersVisible && catalogReady)
+      ? `<div class="pm-stats keys-cell" style="margin-top:4px">&#128081;
+           ${proj.keysGoal === 'top3' ? 'Keys to top 3:' : 'Keys to win:'}
+           ${keysCellHtml(proj, false)}</div>`
+      : '';
     pmContent.innerHTML = `
       <h2>${flag ? escape(flag) + ' ' : ''}${escape(name)}</h2>
       <div class="pm-stats">#${idx + 1} overall · ${u.totalPoints ?? 0} pts · ${(u.roster || []).length} picks · $${u.totalSpent ?? 0} spent</div>
       ${projLine}
+      ${keysLine}
       <h3>Roster</h3>
       ${rosterHtml}
       <h3>Transaction history</h3>
@@ -857,6 +905,8 @@
         : v >= 1 ? `${Math.round(v)}%` : v > 0 ? '&lt;1%' : '&ndash;';
       const winCell  = pctCell(proj ? proj.winPct  : null);
       const top3Cell = pctCell(proj ? proj.top3Pct : null);
+      const keysCell = rostersVisible ? keysCellHtml(proj)
+        : '<span class="proj-na">&ndash;</span>';
       // rank movement arrow
       let moveHtml = '';
       const prev = priorRank ? priorRank.get(u.uid) : null;
@@ -874,6 +924,7 @@
         <td class="num proj-cell">${projCell}</td>
         <td class="num proj-cell">${winCell}</td>
         <td class="num proj-cell">${top3Cell}</td>
+        <td class="keys-cell">${keysCell}</td>
       </tr>`;
     }).join('');
   }

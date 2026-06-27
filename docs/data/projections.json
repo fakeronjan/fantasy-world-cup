@@ -17,6 +17,21 @@
       "teamShare": 37,
       "nTeams": 3,
       "nPlayers": 6,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "argentina"
+        },
+        {
+          "kind": "team",
+          "id": "belgium"
+        },
+        {
+          "kind": "player",
+          "id": "3218-argentina"
+        }
+      ],
       "curRank": 1,
       "projRank": 1,
       "rankShift": 0
@@ -34,6 +49,21 @@
       "teamShare": 57,
       "nTeams": 6,
       "nPlayers": 6,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "germany"
+        },
+        {
+          "kind": "team",
+          "id": "senegal"
+        },
+        {
+          "kind": "player",
+          "id": "22396-colombia"
+        }
+      ],
       "curRank": 4,
       "projRank": 2,
       "rankShift": 2
@@ -51,6 +81,21 @@
       "teamShare": 33,
       "nTeams": 3,
       "nPlayers": 7,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "netherlands"
+        },
+        {
+          "kind": "player",
+          "id": "7459-netherlands"
+        },
+        {
+          "kind": "team",
+          "id": "brazil"
+        }
+      ],
       "curRank": 2,
       "projRank": 3,
       "rankShift": -1
@@ -68,6 +113,21 @@
       "teamShare": 77,
       "nTeams": 8,
       "nPlayers": 2,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "brazil"
+        },
+        {
+          "kind": "team",
+          "id": "colombia"
+        },
+        {
+          "kind": "team",
+          "id": "paraguay"
+        }
+      ],
       "curRank": 5,
       "projRank": 4,
       "rankShift": 1
@@ -85,6 +145,21 @@
       "teamShare": 27,
       "nTeams": 2,
       "nPlayers": 10,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "player",
+          "id": "15892-portugal"
+        },
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "player",
+          "id": "6486-sweden"
+        }
+      ],
       "curRank": 3,
       "projRank": 5,
       "rankShift": -2
@@ -102,6 +177,21 @@
       "teamShare": 100,
       "nTeams": 11,
       "nPlayers": 0,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "mexico"
+        },
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "team",
+          "id": "colombia"
+        }
+      ],
       "curRank": 11,
       "projRank": 6,
       "rankShift": 5
@@ -119,6 +209,21 @@
       "teamShare": 52,
       "nTeams": 5,
       "nPlayers": 5,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "player",
+          "id": "170281-south-korea"
+        },
+        {
+          "kind": "team",
+          "id": "brazil"
+        },
+        {
+          "kind": "team",
+          "id": "canada"
+        }
+      ],
       "curRank": 7,
       "projRank": 7,
       "rankShift": 0
@@ -136,6 +241,21 @@
       "teamShare": 58,
       "nTeams": 6,
       "nPlayers": 5,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "united-states"
+        },
+        {
+          "kind": "player",
+          "id": "131040-united-states"
+        },
+        {
+          "kind": "player",
+          "id": "8492-united-states"
+        }
+      ],
       "curRank": 8,
       "projRank": 8,
       "rankShift": 0
@@ -153,6 +273,21 @@
       "teamShare": 100,
       "nTeams": 11,
       "nPlayers": 0,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "portugal"
+        },
+        {
+          "kind": "team",
+          "id": "brazil"
+        },
+        {
+          "kind": "team",
+          "id": "mexico"
+        }
+      ],
       "curRank": 9,
       "projRank": 9,
       "rankShift": 0
@@ -170,6 +305,21 @@
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "brazil"
+        },
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "team",
+          "id": "colombia"
+        }
+      ],
       "curRank": 19,
       "projRank": 10,
       "rankShift": 9
@@ -187,6 +337,21 @@
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "united-states"
+        },
+        {
+          "kind": "team",
+          "id": "japan"
+        },
+        {
+          "kind": "team",
+          "id": "portugal"
+        }
+      ],
       "curRank": 17,
       "projRank": 11,
       "rankShift": 6
@@ -204,6 +369,21 @@
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "norway"
+        },
+        {
+          "kind": "team",
+          "id": "portugal"
+        },
+        {
+          "kind": "team",
+          "id": "argentina"
+        }
+      ],
       "curRank": 15,
       "projRank": 12,
       "rankShift": 3
@@ -221,6 +401,21 @@
       "teamShare": 53,
       "nTeams": 6,
       "nPlayers": 6,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "switzerland"
+        },
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "team",
+          "id": "ecuador"
+        }
+      ],
       "curRank": 10,
       "projRank": 13,
       "rankShift": -3
@@ -238,6 +433,21 @@
       "teamShare": 0,
       "nTeams": 0,
       "nPlayers": 12,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "player",
+          "id": "32570-spain"
+        },
+        {
+          "kind": "player",
+          "id": "157135-spain"
+        },
+        {
+          "kind": "player",
+          "id": "202283-spain"
+        }
+      ],
       "curRank": 6,
       "projRank": 14,
       "rankShift": -8
@@ -255,6 +465,21 @@
       "teamShare": 100,
       "nTeams": 12,
       "nPlayers": 0,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "japan"
+        },
+        {
+          "kind": "team",
+          "id": "egypt"
+        },
+        {
+          "kind": "team",
+          "id": "france"
+        }
+      ],
       "curRank": 12,
       "projRank": 15,
       "rankShift": -3
@@ -272,6 +497,21 @@
       "teamShare": 43,
       "nTeams": 3,
       "nPlayers": 6,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "team",
+          "id": "england"
+        },
+        {
+          "kind": "player",
+          "id": "318-croatia"
+        }
+      ],
       "curRank": 13,
       "projRank": 16,
       "rankShift": -3
@@ -289,6 +529,21 @@
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "team",
+          "id": "argentina"
+        },
+        {
+          "kind": "team",
+          "id": "ghana"
+        }
+      ],
       "curRank": 18,
       "projRank": 17,
       "rankShift": 1
@@ -306,6 +561,21 @@
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "portugal"
+        },
+        {
+          "kind": "team",
+          "id": "croatia"
+        },
+        {
+          "kind": "team",
+          "id": "japan"
+        }
+      ],
       "curRank": 14,
       "projRank": 18,
       "rankShift": -4
@@ -323,6 +593,21 @@
       "teamShare": 100,
       "nTeams": 12,
       "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "south-africa"
+        },
+        {
+          "kind": "team",
+          "id": "portugal"
+        },
+        {
+          "kind": "team",
+          "id": "croatia"
+        }
+      ],
       "curRank": 16,
       "projRank": 19,
       "rankShift": -3
@@ -340,6 +625,21 @@
       "teamShare": 14,
       "nTeams": 1,
       "nPlayers": 10,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "england"
+        },
+        {
+          "kind": "player",
+          "id": "7888-england"
+        },
+        {
+          "kind": "player",
+          "id": "7848-england"
+        }
+      ],
       "curRank": 20,
       "projRank": 20,
       "rankShift": 0
