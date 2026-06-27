@@ -43,6 +43,66 @@ SENDER = "Fantasy WC <noreply@mail.fakeronjan.com>"
 SITE_URL = "https://fakeronjan.github.io/fantasy-world-cup/"
 PROFILE_URL = SITE_URL + "profile.html"
 LEADERBOARD_URL = SITE_URL + "leaderboard.html"
+TRANSFER_URL = SITE_URL + "transfer.html"
+
+PROJECTIONS_PATH = Path(__file__).resolve().parent.parent / "docs" / "data" / "projections.json"
+
+ROUND_NAMES = {
+    "group": "group stage", "R32": "Round of 32", "R16": "Round of 16",
+    "QF": "quarter-finals", "SF": "semi-finals", "F": "final",
+}
+
+# Deadlines are shown in US Eastern (the WC2026 host region). June/July is EDT
+# (UTC-4); a fixed offset is fine for the tournament window and avoids a tz dep.
+EASTERN = timezone(timedelta(hours=-4))
+
+
+def _to_dt(v):
+    """Coerce a Firestore timestamp (admin SDK datetime) or ISO string to an
+    aware datetime, or None."""
+    if v is None:
+        return None
+    if isinstance(v, datetime):
+        return v if v.tzinfo else v.replace(tzinfo=timezone.utc)
+    try:
+        return datetime.fromisoformat(str(v).replace("Z", "+00:00"))
+    except (ValueError, TypeError):
+        return None
+
+
+def _fmt_dt(dt) -> str:
+    if not dt:
+        return ""
+    return dt.astimezone(EASTERN).strftime("%a %b %-d, %-I:%M %p ET")
+
+
+def load_game_state(db) -> dict:
+    """Mirror docs/shared.js getGameState() so the email's transfer CTA matches
+    what the site shows: open now vs opening soon vs pre-kickoff vs done."""
+    c = db.collection("config").document("global").get().to_dict() or {}
+    round_ = c.get("currentRound") or "pre"
+    kdt = _to_dt(c.get("kickoffTimestamp"))
+    before_kickoff = (kdt is None) or (datetime.now(timezone.utc) < kdt)
+    if round_ == "done":
+        return {"state": "done", "round": round_}
+    if before_kickoff:
+        return {"state": "pre-kickoff", "round": round_, "kickoff": kdt}
+    if c.get("transitionState") is True and c.get("transferWindowOpen") is not True:
+        return {"state": "transition-settling", "round": round_}
+    if c.get("transferWindowOpen") is True:
+        return {"state": "window-open", "round": round_,
+                "closesAt": _to_dt(c.get("windowClosesAt"))}
+    return {"state": "round-in-progress", "round": round_}
+
+
+def load_projections() -> dict:
+    """uid -> projection row from the committed projections.json (best-effort;
+    absence degrades the email gracefully to no odds/keys block)."""
+    try:
+        data = json.loads(PROJECTIONS_PATH.read_text())
+        return {r["uid"]: r for r in data.get("users", [])}
+    except (OSError, ValueError, KeyError):
+        return {}
 
 
 def name_for(u: dict) -> str:
@@ -250,9 +310,119 @@ def render_today_matches_html(today_matches: list[dict], players_cache: dict) ->
     return f'<h3 style="margin:24px 0 6px; font-size:14px; color:#1a6b8a">Yesterday\'s results</h3><ul style="padding-left:18px; margin:0">{items}</ul>'
 
 
+def render_transfer_cta_html(gs: dict) -> str:
+    """Time-aware transfer-market CTA mirroring the leaderboard's states:
+    OPEN now (with the closing deadline) vs opening soon vs pre-kickoff draft.
+    Returns '' when there's nothing to act on (tournament done / unknown)."""
+    state = (gs or {}).get("state")
+    rn = ROUND_NAMES.get(gs.get("round"), gs.get("round")) if gs else ""
+    if state == "window-open":
+        closes = _fmt_dt(gs.get("closesAt"))
+        deadline = (f'<div style="font-size:11px; color:#9d174d; margin-top:10px; font-weight:600">'
+                    f'&#9201; Window closes {closes}</div>') if closes else ""
+        return f"""
+  <div style="background:#fff5fa; border:1px solid #ff6eb4; border-radius:6px; padding:16px; margin-bottom:16px">
+    <div style="font-size:13px; font-weight:800; color:#9d174d; text-transform:uppercase; letter-spacing:0.5px">&#128257; Transfer market is OPEN</div>
+    <div style="font-size:13px; color:#444; margin-top:6px">Sell underperformers and buy up to <strong>3</strong> new players / countries for the {escape_html(rn)}.</div>
+    <div style="margin-top:12px"><a href="{TRANSFER_URL}" style="background:#ff6eb4; color:#fff; padding:9px 16px; border-radius:4px; text-decoration:none; font-weight:700; font-size:13px">Make transfers &rarr;</a></div>
+    {deadline}
+  </div>"""
+    if state in ("round-in-progress", "transition-settling"):
+        return f"""
+  <div style="background:#f8f8f6; border:1px solid #ddd; border-radius:6px; padding:16px; margin-bottom:16px">
+    <div style="font-size:13px; font-weight:800; color:#1a6b8a; text-transform:uppercase; letter-spacing:0.5px">&#128257; Transfer market opening soon</div>
+    <div style="font-size:13px; color:#444; margin-top:6px">Rosters are locked during the {escape_html(rn)}. The market reopens once the round finishes &ndash; line up your moves now.</div>
+    <div style="margin-top:12px"><a href="{TRANSFER_URL}" style="background:#1a6b8a; color:#fff; padding:9px 16px; border-radius:4px; text-decoration:none; font-weight:700; font-size:13px">Preview the market &rarr;</a></div>
+  </div>"""
+    if state == "pre-kickoff":
+        return f"""
+  <div style="background:#e0f2fe; border:1px solid #7dd3fc; border-radius:6px; padding:16px; margin-bottom:16px">
+    <div style="font-size:13px; font-weight:800; color:#075985; text-transform:uppercase; letter-spacing:0.5px">&#9203; Draft window open</div>
+    <div style="font-size:13px; color:#444; margin-top:6px">Lock in your roster before kickoff.</div>
+    <div style="margin-top:12px"><a href="{SITE_URL}draft.html" style="background:#075985; color:#fff; padding:9px 16px; border-radius:4px; text-decoration:none; font-weight:700; font-size:13px">Draft your team &rarr;</a></div>
+  </div>"""
+    return ""
+
+
+def _transfer_cta_plain(gs: dict) -> str:
+    state = (gs or {}).get("state")
+    rn = ROUND_NAMES.get(gs.get("round"), gs.get("round")) if gs else ""
+    if state == "window-open":
+        closes = _fmt_dt(gs.get("closesAt"))
+        tail = f" Closes {closes}." if closes else ""
+        return f"TRANSFER MARKET OPEN: buy up to 3 new picks for the {rn}.{tail} {TRANSFER_URL}"
+    if state in ("round-in-progress", "transition-settling"):
+        return f"Transfer market opens after the {rn}. Line up your moves: {TRANSFER_URL}"
+    if state == "pre-kickoff":
+        return f"Draft window open - lock in your roster: {SITE_URL}draft.html"
+    return ""
+
+
+def _pct_str(v) -> str:
+    if v is None:
+        return "&ndash;"
+    if v >= 1:
+        return f"{round(v)}%"
+    return "&lt;1%" if v > 0 else "&ndash;"
+
+
+def render_odds_keys_html(proj: dict, teams_cache: dict, players_cache: dict) -> str:
+    """Title odds (win % / top-3 %) + the manager's keys to win, from
+    projections.json. Hidden if the user has no projection row."""
+    if not proj:
+        return ""
+    chips = ""
+    for k in (proj.get("keys") or []):
+        if k.get("kind") == "team":
+            a = teams_cache.get(k["id"]) or {}
+            nm, emoji, color = (a.get("name") or k["id"]), (a.get("emoji") or ""), "#1a6b8a"
+        else:
+            a = players_cache.get(k["id"]) or {}
+            nm = (a.get("name") or k["id"]).split()[-1]
+            emoji = (teams_cache.get(a.get("teamId")) or {}).get("emoji") or ""
+            color = "#ff6eb4"
+        chips += (f'<span style="display:inline-block; margin:2px 10px 2px 0; font-weight:700; '
+                  f'color:{color}; font-size:13px">{(emoji + " ") if emoji else ""}{escape_html(nm)}</span>')
+    goal = proj.get("keysGoal") or "none"
+    keys_label = ("Keys to win" if goal == "win"
+                  else "Keys to reach the top 3" if goal == "top3" else "")
+    keys_block = (f'<div style="margin-top:12px; border-top:1px solid #e5e5e5; padding-top:10px">'
+                  f'<span style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.5px">{keys_label} &#128081;</span>'
+                  f'<div style="margin-top:4px">{chips}</div></div>') if chips and keys_label else ""
+    return f"""
+  <div style="background:#f8f8f6; border-radius:6px; padding:16px; margin-bottom:16px">
+    <div style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px">Title odds &#183; if your current roster plays out</div>
+    <table style="width:100%; border-collapse:collapse; text-align:center"><tr>
+      <td style="width:50%; padding:0 8px"><div style="font-size:26px; font-weight:800; color:#ff6eb4">{_pct_str(proj.get("winPct"))}</div><div style="font-size:11px; color:#888">to win it all</div></td>
+      <td style="width:50%; padding:0 8px; border-left:1px solid #e5e5e5"><div style="font-size:26px; font-weight:800; color:#1a6b8a">{_pct_str(proj.get("top3Pct"))}</div><div style="font-size:11px; color:#888">top-3 finish</div></td>
+    </tr></table>
+    {keys_block}
+  </div>"""
+
+
+def _odds_keys_plain(proj: dict, teams_cache: dict, players_cache: dict) -> str:
+    if not proj:
+        return ""
+    win = _pct_str(proj.get("winPct")).replace("&lt;", "<").replace("&ndash;", "-")
+    top3 = _pct_str(proj.get("top3Pct")).replace("&lt;", "<").replace("&ndash;", "-")
+    names = []
+    for k in (proj.get("keys") or []):
+        if k.get("kind") == "team":
+            names.append((teams_cache.get(k["id"]) or {}).get("name") or k["id"])
+        else:
+            names.append(((players_cache.get(k["id"]) or {}).get("name") or k["id"]).split()[-1])
+    goal = proj.get("keysGoal") or "none"
+    label = "Keys to win" if goal == "win" else "Keys to reach top 3" if goal == "top3" else ""
+    line = f"Title odds: {win} to win · {top3} top-3 finish"
+    if names and label:
+        line += f"\n{label}: {', '.join(names)}"
+    return line
+
+
 def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[dict],
                       roster: list[dict],
-                      teams_cache: dict, players_cache: dict) -> tuple[str, str, str]:
+                      teams_cache: dict, players_cache: dict,
+                      proj: dict = None, game_state: dict = None) -> tuple[str, str, str]:
     """Returns (subject, html_body, plain_text_body)."""
     name  = name_for(user)
     flag  = flag_for(user)
@@ -271,6 +441,8 @@ def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[d
     picks_today_block  = render_picks_today_html(roster, today_matches, teams_cache, players_cache)
     roster_block       = render_roster_html(roster, teams_cache, players_cache)
     leaderboards_block = render_leaderboards_html(user, leaderboard)
+    cta_block          = render_transfer_cta_html(game_state or {})
+    odds_keys_block    = render_odds_keys_html(proj, teams_cache, players_cache)
 
     html = f"""<!DOCTYPE html>
 <html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; max-width:600px; margin:0 auto; padding:24px; color:#1a1a1a">
@@ -287,6 +459,8 @@ def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[d
     </div>
   </div>
 
+  {odds_keys_block}
+  {cta_block}
   {matches_block}
   {picks_today_block}
   {roster_block}
@@ -308,12 +482,14 @@ def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[d
         f"  - {name_for_pick(p, teams_cache, players_cache)[0]} (paid ${int(p.get('purchasePrice') or 0)})"
         for p in roster
     )
+    odds_keys_plain = _odds_keys_plain(proj, teams_cache, players_cache)
+    cta_plain = _transfer_cta_plain(game_state or {})
     plain = f"""Fantasy World Cup · {datetime.utcnow().strftime("%A, %B %d")}
 
 Hi {name},
 
 Your standing: {'#' + str(rank) if rank else 'unranked'} · {pts} pts{delta_str}
-
+{(odds_keys_plain + chr(10)) if odds_keys_plain else ''}{(cta_plain + chr(10)) if cta_plain else ''}
 Yesterday: {(', '.join(f"{m['round']} {m['team1Name']} {m.get('score1','?')}-{m.get('score2','?')} {m['team2Name']}" for m in today_matches)) if today_matches else 'no matches'}
 
 Your roster ({len(roster)} picks):
@@ -327,7 +503,8 @@ Manage emails: {PROFILE_URL}
 
 def render_round_recap_html(user: dict, leaderboard: list[dict], round_name: str,
                               roster: list[dict] = None,
-                              teams_cache: dict = None, players_cache: dict = None) -> tuple[str, str, str]:
+                              teams_cache: dict = None, players_cache: dict = None,
+                              proj: dict = None, game_state: dict = None) -> tuple[str, str, str]:
     """Round-end recap email. Lighter content than daily; emphasis on the
     completed round + the freshly-opened transfer window."""
     name = name_for(user)
@@ -339,6 +516,11 @@ def render_round_recap_html(user: dict, leaderboard: list[dict], round_name: str
 
     leaderboards_block = render_leaderboards_html(user, leaderboard)
     roster_block = render_roster_html(roster or [], teams_cache or {}, players_cache or {}) if roster is not None else ""
+    odds_keys_block = render_odds_keys_html(proj, teams_cache or {}, players_cache or {})
+    # A round recap fires when the window opens, so the CTA renders OPEN; fall
+    # back to a synthetic window-open state if we couldn't read config.
+    cta_block = render_transfer_cta_html(game_state or {"state": "window-open",
+                                                        "round": user.get("_round")})
 
     html = f"""<!DOCTYPE html>
 <html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; max-width:600px; margin:0 auto; padding:24px; color:#1a1a1a">
@@ -357,13 +539,13 @@ def render_round_recap_html(user: dict, leaderboard: list[dict], round_name: str
     </div>
   </div>
 
+  {odds_keys_block}
+  {cta_block}
   {roster_block}
   {leaderboards_block}
 
   <p style="margin-top:32px">
-    <a href="{SITE_URL}transfer.html" style="background:#ff6eb4; color:#fff; padding:10px 18px; border-radius:4px; text-decoration:none; font-weight:600; font-size:13px">Make transfers →</a>
-    &nbsp;
-    <a href="{LEADERBOARD_URL}" style="background:#1a6b8a; color:#fff; padding:10px 18px; border-radius:4px; text-decoration:none; font-weight:600; font-size:13px">Full leaderboard</a>
+    <a href="{LEADERBOARD_URL}" style="background:#1a6b8a; color:#fff; padding:10px 18px; border-radius:4px; text-decoration:none; font-weight:600; font-size:13px">Full leaderboard →</a>
   </p>
 
   <hr style="margin:32px 0; border:none; border-top:1px solid #ddd">
@@ -373,6 +555,7 @@ def render_round_recap_html(user: dict, leaderboard: list[dict], round_name: str
   </p>
 </body></html>"""
 
+    odds_keys_plain = _odds_keys_plain(proj, teams_cache or {}, players_cache or {})
     plain = f"""{round_name} complete.
 
 Hi {name},
@@ -380,10 +563,10 @@ Hi {name},
 {round_name} is in the books. Eliminated picks have been auto-sold. The next transfer window is OPEN.
 
 Your standing: {'#' + str(rank) if rank else 'unranked'} · {pts} pts
-
+{(odds_keys_plain + chr(10)) if odds_keys_plain else ''}
 Top 5: {' · '.join(f"{i+1}. {name_for(u)} ({int(u.get('totalPoints') or 0)})" for i, u in enumerate(leaderboard[:5]))}
 
-Transfer page: {SITE_URL}transfer.html
+Transfer page: {TRANSFER_URL}
 Leaderboard:   {LEADERBOARD_URL}
 Manage emails: {PROFILE_URL}
 """
@@ -436,6 +619,9 @@ def main():
                     help="Required for --mode round; the round that just completed")
     ap.add_argument("--dry-run", action="store_true",
                     help="Render emails to stdout without sending")
+    ap.add_argument("--only", default="",
+                    help="Send only to this email address (test mode; bypasses "
+                         "the opt-in check). Empty = normal send to all opted-in.")
     args = ap.parse_args()
 
     api_key = os.environ.get("RESEND_API_KEY", "")
@@ -469,25 +655,44 @@ def main():
     if args.mode == "daily":
         today_matches = load_recap_matches(db, recap_iso)
 
+    # Transfer-window state (mirrors the site) + per-user title odds / keys.
+    game_state = load_game_state(db)
+    proj_by_uid = load_projections()
+    print(f"Game state: {game_state.get('state')} ({game_state.get('round')}); "
+          f"projections for {len(proj_by_uid)} users")
+
+    only = (args.only or "").strip().lower()
+    if only:
+        print(f"TEST MODE: sending only to {only} (opt-in check bypassed)")
+
     n_sent = n_skipped = n_failed = 0
     for u in all_users:
-        if not u.get("emailNotificationsEnabled"):
-            n_skipped += 1
-            continue
-        if not u.get("email"):
-            n_skipped += 1
-            continue
+        if only:
+            # Explicit test target: match by email, ignore the opt-in toggle.
+            if (u.get("email") or "").strip().lower() != only:
+                n_skipped += 1
+                continue
+        else:
+            if not u.get("emailNotificationsEnabled"):
+                n_skipped += 1
+                continue
+            if not u.get("email"):
+                n_skipped += 1
+                continue
 
         roster = u.get("roster") or []
+        proj = proj_by_uid.get(u["uid"])
         if args.mode == "daily":
             subject, html, plain = render_daily_html(
                 u, all_users, today_matches,
                 roster, teams_cache, players_cache,
+                proj=proj, game_state=game_state,
             )
         else:
             subject, html, plain = render_round_recap_html(
                 u, all_users, args.round_name,
                 roster=roster, teams_cache=teams_cache, players_cache=players_cache,
+                proj=proj, game_state=game_state,
             )
 
         if args.dry_run:
