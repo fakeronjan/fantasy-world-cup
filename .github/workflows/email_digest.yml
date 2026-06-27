@@ -31,6 +31,10 @@ on:
         description: "Round name (only used for mode=round, e.g. 'Round of 32')"
         required: false
         default: "Round of 32"
+      only_email:
+        description: "Test mode: send ONLY to this email address (blank = send to all opted-in)"
+        required: false
+        default: ""
 
 jobs:
   send:
@@ -66,7 +70,7 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/fwc/sa.json
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-        run: python scripts/send_emails.py --mode "${{ inputs.mode }}" --round-name "${{ inputs.round_name }}"
+        run: python scripts/send_emails.py --mode "${{ inputs.mode }}" --round-name "${{ inputs.round_name }}" --only "${{ inputs.only_email }}"
 
       - name: Clean up credentials
         if: always()
