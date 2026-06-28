@@ -73,6 +73,16 @@
   .bar-team   > span { background: var(--bg-header); }
   .bar-player > span { background: var(--accent); }
 
+  /* transfer activity: buy/sell detail chips */
+  .tx-chips { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 3px 8px;
+    font-size: 11px; line-height: 1.4; }
+  .tx-chip { white-space: nowrap; font-weight: 600; }
+  .tx-chip .flag { font-size: 12px; margin-right: 2px;
+    font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif; }
+  .tx-buy  { color: #16a34a; }
+  .tx-sell { color: var(--accent); }
+  .tx-none { color: var(--text-muted); font-style: italic; font-weight: 400; }
+
   .empty-state, .locked-state {
     text-align: center; padding: 56px 24px; color: var(--text-muted);
   }
@@ -215,7 +225,7 @@
         </div>
       </div>
 
-      <div class="section-label" style="margin-top:18px">Transfer activity · buys used (3 per manager, whole tournament)</div>
+      <div class="section-label" style="margin-top:18px">Transfer activity · buys &amp; sales (3 buys per manager, whole tournament)</div>
       <div class="stats-card">
         <div id="transferList"></div>
       </div>
@@ -434,8 +444,10 @@
       renderRows(valueTeamsList,   valueTeams,   { mode: 'value', denom: nDrafters, kind: 'team',   collapseTo: COLLAPSE_TO });
       renderRows(valuePlayersList, valuePlayers, { mode: 'value', denom: nDrafters, kind: 'player', collapseTo: COLLAPSE_TO });
 
-      // --- Transfer activity (buys used; empty until windows open ~late June) ---
-      renderTransferActivity(users);
+      // --- Transfer activity (buys + sales; empty until windows open ~late June) ---
+      const txSnap = await getDocs(collection(window.fwc.db, 'transactions'));
+      const txs = txSnap.docs.map(d => d.data());
+      renderTransferActivity(users, txs);
 
       // Real last-sync time (read once at the top of this function).
       lastUpdated.textContent = syncedAt
@@ -514,13 +526,26 @@
     }
   }
 
-  // Transfer activity: who has spent their voluntary buys. Empty until the
-  // first transfer window opens after the group stage (~late June).
-  function renderTransferActivity(users) {
+  // Transfer activity: each manager's voluntary transfer-window moves, with the
+  // actual countries/players bought (+) and sold (-). Skips the draft and forced
+  // auto-sells (eliminations) -- this is about strategic transfer activity.
+  // Empty until the first window opens after the group stage (~late June).
+  function renderTransferActivity(users, txs) {
+    const byUid = {};
+    for (const t of (txs || [])) {
+      if (!t.uid || t.round === 'pre') continue;
+      if (['price-adjustment', 'draft', 'draft-update', 'auto-sell-elimination'].includes(t.type)) continue;
+      const e = (byUid[t.uid] ||= { buys: [], sells: [] });
+      for (const b of (t.buys  || [])) e.buys.push({ kind: b.kind, id: b.assetId });
+      for (const s of (t.sells || [])) e.sells.push({ kind: s.kind, id: s.assetId });
+    }
+
     const movers = users
-      .map(u => ({ u, buys: u.buysUsedTotal || 0 }))
-      .filter(m => m.buys > 0)
-      .sort((a, b) => b.buys - a.buys);
+      .map(u => ({ u, buys: u.buysUsedTotal || 0, tx: byUid[u.uid] || { buys: [], sells: [] } }))
+      .filter(m => m.buys > 0 || m.tx.buys.length || m.tx.sells.length)
+      .sort((a, b) => b.buys - a.buys
+        || (b.tx.buys.length + b.tx.sells.length) - (a.tx.buys.length + a.tx.sells.length)
+        || window.fwc.nameFor(a.u).localeCompare(window.fwc.nameFor(b.u)));
 
     if (!movers.length) {
       transferList.innerHTML = `<div class="list-empty">
@@ -530,19 +555,35 @@
       return;
     }
 
-    const totalBuys = movers.reduce((s, m) => s + m.buys, 0);
-    const summary = `<div class="card-sub">${movers.length} manager${movers.length === 1 ? '' : 's'}
-      made ${totalBuys} buy${totalBuys === 1 ? '' : 's'} so far</div>`;
+    const shortName = (s) => String(s).trim().split(/\s+/).pop();
+    const chip = (kind, id, sign) => {
+      const flag = kind === 'team' ? (teamEmoji[id] || '') : (teamEmoji[playerById[id]?.teamId] || '');
+      const name = kind === 'team' ? (teamById[id]?.name || id) : shortName(playerById[id]?.name || id);
+      const cls  = sign === '+' ? 'tx-buy' : 'tx-sell';
+      return `<span class="tx-chip ${cls}">${sign}&nbsp;${flag ? `<span class="flag">${flag}</span>` : ''}${escape(name)}</span>`;
+    };
+
+    const totalBuys  = movers.reduce((s, m) => s + m.tx.buys.length, 0);
+    const totalSells = movers.reduce((s, m) => s + m.tx.sells.length, 0);
+    const summary = `<div class="card-sub">${movers.length} manager${movers.length === 1 ? '' : 's'} active ·
+      ${totalBuys} buy${totalBuys === 1 ? '' : 's'}, ${totalSells} sale${totalSells === 1 ? '' : 's'}</div>`;
+
     const rows = movers.map((m, i) => {
       const flag = window.fwc.flagFor(m.u);
       const flagSpan = flag ? `<span class="flag">${flag}</span>` : '';
       const name = window.fwc.nameFor(m.u);
-      const barPct = Math.round((m.buys / BUYS_CAP) * 100);
+      const chips = [
+        ...m.tx.buys.map(b  => chip(b.kind, b.id, '+')),
+        ...m.tx.sells.map(s => chip(s.kind, s.id, '−')),
+      ].join('');
+      const chipsHtml = chips
+        ? `<div class="tx-chips">${chips}</div>`
+        : `<div class="tx-chips tx-none">buys used, details not recorded</div>`;
       return `<div class="own-row">
         <div class="own-rank">${i + 1}</div>
         <div class="own-main">
           <div class="own-name">${flagSpan}${escape(name)}</div>
-          <div class="own-bar bar-player"><span style="width:${barPct}%"></span></div>
+          ${chipsHtml}
         </div>
         <div class="own-meta">
           <div class="top">${m.buys}/${BUYS_CAP}</div>
