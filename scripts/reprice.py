@@ -10,11 +10,13 @@ bracket state, runs N trials, and computes:
   # …with a forced minimum \$1 spread on either side so the market always
   # has a real bid-ask gap even at low MVs.
 
-A player's forward goal/assist SHARE within his team is form-aware: an
-empirical-Bayes blend of results-to-date with the preseason prior (see
-build_form_weights + FORM_M), capped per player (GOAL_SHARE_CAP) so a hot
-scorer rises while a thin-squad's lone listed player can't soak 100%.
-Attribution uses a separate RNG (_ATTR_RNG) so form never moves team prices.
+A player's forward value is his EXPECTED GOALS/GAME x his expected remaining
+appearances (which grows with how deep his team is projected to run). Goals/game
+is an empirical-Bayes blend of the preseason prior (position x basePrice) with
+his OWN group-stage goal COUNT - see build_player_rates + RATE_PRIOR_GAMES. There
+is no team-share and no cap, so a prolific scorer is rewarded for the number of
+goals he scored, not a fraction of his team's total. Assists use the prior rate
+only; win-share + clean-sheet points come from the simulated lineups.
 
 Eliminated assets settle at:
   marketValue = 0
@@ -69,22 +71,27 @@ ELIM_REFUND_RATE = 0.25   # eliminated picks refund 25% of PURCHASE PRICE
                           # you paid back." Applied per-pick in
                           # auto_sell_eliminated_picks().
 
-# --- Form-aware attribution (results-to-date drive forward player value) ---
-# Each surviving player's forward goal/assist SHARE within his team is an
-# empirical-Bayes blend of what he's actually produced this tournament and the
-# preseason prior (position x basePrice):
-#     weight_i = observed_i + FORM_M * prior_share_i
-# FORM_M is "prior pseudo-goals per team": small -> trust this tournament,
-# large -> trust the preseason price. GOAL_SHARE_CAP stops any one player from
-# being credited more than a realistic fraction of his team's goals (guards
-# thin seed squads where one listed player would otherwise soak 100%).
-FORM_M         = 3.0
-GOAL_SHARE_CAP = 0.45
-
-# Attribution draws from a SEPARATE RNG stream from match outcomes, so changing
-# the form weights re-splits goals among teammates WITHOUT perturbing which
-# teams win/advance (team prices stay provably pinned across form settings).
-_ATTR_RNG = random.Random()
+# --- Per-player rate pricing (results-to-date drive forward player value) ---
+# A player's forward value is his EXPECTED GOALS/GAME x his expected remaining
+# appearances (which grows with how far his team is projected to advance). Goals/
+# game is an empirical-Bayes blend of the preseason prior (position x basePrice)
+# and his OWN group-stage goal COUNT -- NOT a share of his team's goals. So a
+# prolific scorer is rewarded for the number of goals he scored, never capped at
+# a fraction of the team total. Assists use the prior rate only (the in-tournament
+# signal we trust is goals); win-share + clean-sheet points still come from the
+# simulated lineups/results.
+#
+#   goals/game_i   = (group_goals_i + m * prior_gpg_i) / (GROUP_GAMES + m)
+#   assists/game_i = prior_apg_i
+#   prior_gpg_i    = POS_WEIGHTS[pos] * basePrice_i * GOAL_PRIOR_SCALE
+#   prior_apg_i    = ASSIST_WEIGHTS[pos] * basePrice_i * ASSIST_PRIOR_SCALE
+GROUP_GAMES        = 3      # group matches per team = the observed window
+RATE_PRIOR_GAMES   = 3.0    # EB strength of the preseason prior, in pseudo-games
+                            # (higher -> trust basePrice; lower -> trust this
+                            # tournament's goals). Exposed via --form-m.
+GOAL_PRIOR_SCALE   = 0.020  # (POS_WEIGHTS x basePrice) -> prior goals/game
+ASSIST_PRIOR_SCALE = 0.015  # (ASSIST_WEIGHTS x basePrice) -> prior assists/game
+FORM_M             = RATE_PRIOR_GAMES   # back-compat alias for the CLI default
 
 
 def round_half_up(x: float) -> int:
@@ -94,12 +101,19 @@ def round_half_up(x: float) -> int:
     return math.floor(x + 0.5)
 
 
-def derive_market_prices(market_value: int) -> tuple[int, int]:
-    """Compute (buyPrice, sellPrice) from a rounded marketValue.
-    Both are rounded to whole dollars from MV ± 10% vig, with a forced
-    minimum $1 spread either side so the market never has a zero gap."""
-    buy  = max(market_value + 1, round_half_up(market_value * VIG_BUY))
-    sell = max(1, min(market_value - 1, round_half_up(market_value * VIG_SELL)))
+def derive_market_prices(mean_fp: float, market_value: int) -> tuple[int, int]:
+    """Compute (buyPrice, sellPrice) from EXPECTED POINTS directly, so
+    points-per-dollar stays flat across the whole price range.
+
+    The +/-10% vig is applied in the POINTS domain (buy = xPts*1.1/ROI, sell =
+    xPts*0.9/ROI) and only then rounded. The old version added a flat +/-$1 to
+    the rounded marketValue, which was a ~50% markup on a $2 asset but ~11% on a
+    $9 one - so cheap assets were value traps and premium assets the only good
+    buy. Applying the vig before rounding removes that bias. Clamp so
+    buy >= marketValue >= sell >= 1; the cheapest assets may collapse to a zero
+    spread, which is an acceptable edge for $1-2 fillers."""
+    buy  = max(market_value, round_half_up(mean_fp * VIG_BUY  / TARGET_ROI))
+    sell = max(1, min(market_value, round_half_up(mean_fp * VIG_SELL / TARGET_ROI)))
     return buy, sell
 
 
@@ -108,68 +122,37 @@ def liquidation_price(last_market_value: int) -> int:
     return max(0, round_half_up(last_market_value * ELIM_REFUND_RATE))
 
 
-def build_form_weights(players_by_team, goals_by_id, assists_by_id, m=FORM_M):
-    """Empirical-Bayes forward attribution weights per player.
+def build_player_rates(players_by_team, goals_by_id, m=RATE_PRIOR_GAMES):
+    """Per-player expected goals/game and assists/game.
 
-    weight_i = observed_i + m * prior_share_i, where prior_share_i is the
-    player's share of his team's prior attribution mass (position x basePrice
-    for goals, ASSIST_WEIGHTS x basePrice for assists). Returns
-    (goal_weights, assist_weights) keyed by player id. Pass empty observed
-    dicts to recover the pure-prior behavior (used by dry-runs without live
-    results)."""
-    goal_w, ast_w = {}, {}
+    goals/game = (group_goals + m * prior_gpg) / (GROUP_GAMES + m)   [EB blend]
+    assists/game = prior_apg                                         [prior only]
+
+    Both priors come from the preseason model (POS_WEIGHTS / ASSIST_WEIGHTS x
+    basePrice). There is NO team-share normalization and NO cap: a player's own
+    goal COUNT drives his rate, so a prolific scorer outranks a teammate-diluted
+    one. Pass an empty goals_by_id to recover the pure-prior rates (dry runs)."""
+    gpg, apg = {}, {}
     for tid, squad in players_by_team.items():
-        gprior = {p["id"]: POS_WEIGHTS.get(p.get("position", "?"), 1.0) * max(1, p.get("basePrice", 1))
-                  for p in squad}
-        aprior = {p["id"]: ASSIST_WEIGHTS.get(p.get("position", "?"), 1.0) * max(1, p.get("basePrice", 1))
-                  for p in squad}
-        gsum = sum(gprior.values()) or 1.0
-        asum = sum(aprior.values()) or 1.0
         for p in squad:
             pid = p["id"]
-            goal_w[pid] = (goals_by_id.get(pid, 0) or 0)   + m * (gprior[pid] / gsum)
-            ast_w[pid]  = (assists_by_id.get(pid, 0) or 0)  + m * (aprior[pid] / asum)
-    return goal_w, ast_w
+            pos = p.get("position", "?")
+            base = max(1, p.get("basePrice", 1))
+            prior_gpg = POS_WEIGHTS.get(pos, 1.0) * base * GOAL_PRIOR_SCALE
+            obs = goals_by_id.get(pid, 0) or 0
+            gpg[pid] = (obs + m * prior_gpg) / (GROUP_GAMES + m)
+            apg[pid] = ASSIST_WEIGHTS.get(pos, 1.0) * base * ASSIST_PRIOR_SCALE
+    return gpg, apg
 
 
-def _attribute(team_id, n, weight_map, players_by_team, exclude=None):
-    """Credit n events to draftable players, weighted by weight_map, with no
-    single player exceeding GOAL_SHARE_CAP share of the team's events. Spillover
-    above the cap goes to a phantom (unlisted squad) bucket and is dropped -
-    exactly right when the seed lists only a few players for a team. Draws from
-    the isolated _ATTR_RNG so attribution never perturbs match outcomes."""
-    if n == 0:
-        return []
-    cands = players_by_team.get(team_id, [])
-    if exclude:
-        cands = [p for p in cands if p["id"] not in exclude]
-    if not cands:
-        return []
-    w = [max(1e-9, weight_map.get(p["id"], 0.0)) for p in cands]
-    total = sum(w)
-    if total <= 0:
-        return []
-    cap = GOAL_SHARE_CAP
-    if cap is None:
-        return _ATTR_RNG.choices(cands, weights=w, k=n)
-    shares = [min(wi / total, cap) for wi in w]
-    phantom = max(0.0, 1.0 - sum(shares))
-    picks = _ATTR_RNG.choices(cands + [None], weights=shares + [phantom], k=n)
-    return [p for p in picks if p is not None]
-
-
-def simulate_remaining(advancers, start_round, players_by_team,
-                       goal_weights=None, assist_weights=None):
-    """Simulate from `start_round` onward, treating `advancers` as the
-    field at that round. Returns the same shape as run_tournament() but
-    accumulators only capture FUTURE events (group-stage skipped).
-
-    Match OUTCOMES (scores, who advances) + lineups draw from the main `random`
-    stream; goal/assist ATTRIBUTION uses form weights via the isolated
-    _ATTR_RNG. With no weights passed, falls back to the position x basePrice
-    prior (legacy behavior)."""
-    if goal_weights is None or assist_weights is None:
-        goal_weights, assist_weights = build_form_weights(players_by_team, {}, {})
+def simulate_remaining(advancers, start_round, players_by_team):
+    """Simulate from `start_round` onward, treating `advancers` as the field at
+    that round. Tracks per-player APPEARANCES (games played), win-share games,
+    and clean-sheet games for FUTURE matches only (group stage skipped). Goals
+    and assists are NOT simulated here - they're computed analytically from each
+    player's rate x his appearances in score_future_points(), which is the whole
+    point of the rate model. Match outcomes + lineups draw the main `random`
+    stream, so team prices stay pinned regardless of the player rate settings."""
     team_stats = {t["id"]: dict(
         wins=0, draws=0, losses=0,
         goals_for=0, goals_against=0,
@@ -177,8 +160,7 @@ def simulate_remaining(advancers, start_round, players_by_team,
         final_round=start_round,
         group_pts=0, group_gd=0, group_gf=0,
     ) for t in advancers}
-    player_goals       = defaultdict(int)
-    player_assists     = defaultdict(int)
+    player_apps        = defaultdict(int)
     player_wins_played = defaultdict(int)
     player_cs_played   = defaultdict(int)
 
@@ -191,24 +173,14 @@ def simulate_remaining(advancers, start_round, players_by_team,
         elif b_won: sb["wins"] += 1; sa["losses"] += 1
         else:       sa["draws"] += 1; sb["draws"] += 1
         cs_a, cs_b = (gb == 0), (ga == 0)
-        # Lineups (who played) come from the main stream - form-independent.
         lineup_a = pick_lineup(ta, players_by_team)
         lineup_b = pick_lineup(tb, players_by_team)
-        # Goals + assists via form weights on the isolated RNG.
-        for p in _attribute(ta["id"], ga, goal_weights, players_by_team):
-            player_goals[p["id"]] += 1
-        for p in _attribute(tb["id"], gb, goal_weights, players_by_team):
-            player_goals[p["id"]] += 1
-        n_ast_a = sum(1 for _ in range(ga) if _ATTR_RNG.random() < 0.6)
-        n_ast_b = sum(1 for _ in range(gb) if _ATTR_RNG.random() < 0.6)
-        for p in _attribute(ta["id"], n_ast_a, assist_weights, players_by_team):
-            player_assists[p["id"]] += 1
-        for p in _attribute(tb["id"], n_ast_b, assist_weights, players_by_team):
-            player_assists[p["id"]] += 1
         for pid in lineup_a:
+            player_apps[pid] += 1
             if a_won: player_wins_played[pid] += 1
             if cs_a:  player_cs_played[pid]   += 1
         for pid in lineup_b:
+            player_apps[pid] += 1
             if b_won: player_wins_played[pid] += 1
             if cs_b:  player_cs_played[pid]   += 1
 
@@ -242,19 +214,24 @@ def simulate_remaining(advancers, start_round, players_by_team,
 
     return {
         "team_stats":         team_stats,
-        "player_goals":       dict(player_goals),
-        "player_assists":     dict(player_assists),
+        "player_apps":        dict(player_apps),
         "player_wins_played": dict(player_wins_played),
         "player_cs_played":   dict(player_cs_played),
     }
 
 
-def score_future_points(result, advancers, start_round, players_by_team):
+def score_future_points(result, advancers, start_round, players_by_team,
+                        gpg, apg):
     """Compute future-points for each surviving asset.
 
-    Bonuses for `start_round` itself are NOT counted (those were earned
-    by advancing into that round, before this transfer window). Only
-    bonuses for rounds *strictly after* start_round count as future."""
+    Players: goals = rate x appearances (goals/game * games played this run),
+    same for assists; win-share + clean-sheet from the simulated lineups. This
+    is the rate model: a player's goal points scale with HIS expected goals/game
+    and how many games his team is projected to play, never a share of the team.
+
+    Bonuses for `start_round` itself are NOT counted (those were earned by
+    advancing into that round, before this transfer window). Only bonuses for
+    rounds strictly after start_round count as future."""
     team_pts = {}
     start_idx = ADVANCEMENT_ORDER.index(start_round)
     for tid, stats in result["team_stats"].items():
@@ -268,21 +245,23 @@ def score_future_points(result, advancers, start_round, players_by_team):
 
     player_pts = {}
     alive_ids = {t["id"] for t in advancers}
+    apps = result["player_apps"]
     for tid, ps in players_by_team.items():
         if tid not in alive_ids:
             continue
         for p in ps:
+            pid = p["id"]
             pos = p.get("position")
             if   pos == "GK":  cs_rate = WEIGHTS["player_clean_sheet_gk"]
             elif pos == "DEF": cs_rate = WEIGHTS["player_clean_sheet_def"]
             else:              cs_rate = WEIGHTS["player_clean_sheet_other"]
-            pts = (
-                WEIGHTS["player_goal"]       * result["player_goals"].get(p["id"], 0)
-                + WEIGHTS["player_assist"]    * result["player_assists"].get(p["id"], 0)
-                + WEIGHTS["player_win_share"] * result["player_wins_played"].get(p["id"], 0)
-                + cs_rate                     * result["player_cs_played"].get(p["id"], 0)
+            games = apps.get(pid, 0)
+            player_pts[pid] = (
+                WEIGHTS["player_goal"]       * gpg.get(pid, 0.0) * games
+                + WEIGHTS["player_assist"]    * apg.get(pid, 0.0) * games
+                + WEIGHTS["player_win_share"] * result["player_wins_played"].get(pid, 0)
+                + cs_rate                     * result["player_cs_played"].get(pid, 0)
             )
-            player_pts[p["id"]] = pts
     return team_pts, player_pts
 
 
@@ -291,14 +270,14 @@ def reprice(advancers, start_round, players_by_team, runs=1000, seed=42,
     """Run N trials. Return per-asset price dict:
        {asset_id: {kind, name, meanFuturePoints, marketValue, buyPrice, sellPrice}}.
 
-    goals_by_id / assists_by_id are results-to-date keyed by player id; they
-    drive each player's forward goal/assist share (empirical-Bayes blend with
-    the preseason prior). Omit them for a pure-prior dry-run."""
+    goals_by_id keys player ids to group-stage goals; it drives each player's
+    expected goals/game (empirical-Bayes blend with the preseason prior).
+    assists_by_id is accepted for back-compat but unused - assists use the prior
+    rate only (the in-tournament signal we trust is goals). Omit goals_by_id for
+    a pure-prior dry-run."""
     random.seed(seed)
-    _ATTR_RNG.seed(seed + 1)   # separate stream so form weights never move teams
 
-    goal_weights, assist_weights = build_form_weights(
-        players_by_team, goals_by_id or {}, assists_by_id or {}, m=form_m)
+    gpg, apg = build_player_rates(players_by_team, goals_by_id or {}, m=form_m)
 
     team_acc   = defaultdict(float)
     player_acc = defaultdict(float)
@@ -309,9 +288,9 @@ def reprice(advancers, start_round, players_by_team, runs=1000, seed=42,
         # expectation across plausible bracket positions.
         shuffled = list(advancers)
         random.shuffle(shuffled)
-        result = simulate_remaining(shuffled, start_round, players_by_team,
-                                    goal_weights, assist_weights)
-        tp, pp = score_future_points(result, shuffled, start_round, players_by_team)
+        result = simulate_remaining(shuffled, start_round, players_by_team)
+        tp, pp = score_future_points(result, shuffled, start_round,
+                                     players_by_team, gpg, apg)
         for k, v in tp.items(): team_acc[k]   += v
         for k, v in pp.items(): player_acc[k] += v
 
@@ -321,7 +300,7 @@ def reprice(advancers, start_round, players_by_team, runs=1000, seed=42,
     for t in advancers:
         mean_fp = team_acc[t["id"]] / runs
         market_value = max(1, round_half_up(mean_fp / TARGET_ROI))
-        buy, sell = derive_market_prices(market_value)
+        buy, sell = derive_market_prices(mean_fp, market_value)
         prices[t["id"]] = {
             "kind": "team",
             "name": t["name"],
@@ -337,7 +316,7 @@ def reprice(advancers, start_round, players_by_team, runs=1000, seed=42,
         for p in ps:
             mean_fp = player_acc[p["id"]] / runs
             market_value = max(1, round_half_up(mean_fp / TARGET_ROI))
-            buy, sell = derive_market_prices(market_value)
+            buy, sell = derive_market_prices(mean_fp, market_value)
             prices[p["id"]] = {
                 "kind": "player",
                 "name": p["name"],
@@ -671,19 +650,14 @@ def main():
                          "liquidation values to currentBudget. Useful for "
                          "price-only repricing without touching users.")
     ap.add_argument("--form-m", type=float, default=FORM_M,
-                    help="Prior pseudo-goals per team for the empirical-Bayes "
-                         "form blend (small=trust this tournament, "
+                    help="EB strength of the preseason prior in pseudo-games "
+                         "(small=trust this tournament's goals, "
                          "large=trust preseason price).")
-    ap.add_argument("--goal-cap", type=float, default=GOAL_SHARE_CAP,
-                    help="Max share of a team's goals any one player can be "
-                         "credited (guards thin seed squads).")
     ap.add_argument("--form-json", default=None,
                     help="Dry-run only: path to a JSON map of results-to-date "
                          "({playerId: {goals, assists}} or the dumped state) so "
                          "form effects can be previewed without Firestore.")
     args = ap.parse_args()
-
-    globals()["GOAL_SHARE_CAP"] = args.goal_cap
 
     teams, players = load_seed()
     by_slug, by_fdid = build_team_indexes(teams)
@@ -739,7 +713,7 @@ def main():
                 assists_by_id[pid] = r.get("assists", 0) or 0
             print(f"Loaded results-to-date for {len(goals_by_id)} players "
                   f"from {args.form_json}")
-    print(f"Form blend: m={args.form_m}, goal-share cap={args.goal_cap}\n")
+    print(f"Player rate blend: prior strength m={args.form_m} pseudo-games\n")
     print(f"Hypothetical {args.from_round} field ({len(advancers)} teams):")
     for t in advancers[:8]:
         print(f"  ${t['basePrice']:>2}  {t['name']}")
