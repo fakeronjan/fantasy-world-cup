@@ -790,6 +790,7 @@
           assetId: r.id, kind: r.kind,
           purchasePrice: r.price,
           purchasedAt: now,
+          round: 'pre',   // drafting is always pre-tournament
           currentlyHeld: true,
         })),
         totalSpent: rosterSpent(),
