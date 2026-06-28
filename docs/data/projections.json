@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T16:12:21.533120+00:00",
+  "generatedAt": "2026-06-28T17:36:15.363735+00:00",
   "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
@@ -12,8 +12,8 @@
       "p20": 182,
       "p80": 236,
       "mean": 209.3,
-      "winPct": 55.7,
-      "top3Pct": 88.2,
+      "winPct": 58.8,
+      "top3Pct": 89.8,
       "teamShare": 37,
       "nTeams": 3,
       "nPlayers": 6,
@@ -44,8 +44,8 @@
       "p20": 146,
       "p80": 196,
       "mean": 171.2,
-      "winPct": 5.8,
-      "top3Pct": 30.4,
+      "winPct": 6.7,
+      "top3Pct": 33.9,
       "teamShare": 54,
       "nTeams": 5,
       "nPlayers": 6,
@@ -57,11 +57,11 @@
         },
         {
           "kind": "team",
-          "id": "germany"
+          "id": "spain"
         },
         {
           "kind": "team",
-          "id": "senegal"
+          "id": "germany"
         }
       ],
       "curRank": 3,
@@ -76,8 +76,8 @@
       "p20": 141,
       "p80": 188,
       "mean": 165.0,
-      "winPct": 5.2,
-      "top3Pct": 29.2,
+      "winPct": 6.3,
+      "top3Pct": 31.9,
       "teamShare": 77,
       "nTeams": 8,
       "nPlayers": 2,
@@ -89,11 +89,11 @@
         },
         {
           "kind": "team",
-          "id": "colombia"
+          "id": "spain"
         },
         {
           "kind": "team",
-          "id": "spain"
+          "id": "colombia"
         }
       ],
       "curRank": 4,
@@ -108,8 +108,8 @@
       "p20": 144,
       "p80": 183,
       "mean": 163.9,
-      "winPct": 5.1,
-      "top3Pct": 23.2,
+      "winPct": 5.3,
+      "top3Pct": 24.3,
       "teamShare": 38,
       "nTeams": 3,
       "nPlayers": 5,
@@ -140,8 +140,8 @@
       "p20": 139,
       "p80": 175,
       "mean": 156.8,
-      "winPct": 1.5,
-      "top3Pct": 12.7,
+      "winPct": 1.6,
+      "top3Pct": 13.9,
       "teamShare": 28,
       "nTeams": 2,
       "nPlayers": 9,
@@ -157,7 +157,7 @@
         },
         {
           "kind": "player",
-          "id": "15892-portugal"
+          "id": "8279-sweden"
         }
       ],
       "curRank": 5,
@@ -172,8 +172,8 @@
       "p20": 132,
       "p80": 177,
       "mean": 154.4,
-      "winPct": 2.0,
-      "top3Pct": 14.7,
+      "winPct": 2.3,
+      "top3Pct": 17.1,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -204,8 +204,8 @@
       "p20": 126,
       "p80": 186,
       "mean": 157.6,
-      "winPct": 8.8,
-      "top3Pct": 21.2,
+      "winPct": 8.9,
+      "top3Pct": 21.9,
       "teamShare": 58,
       "nTeams": 6,
       "nPlayers": 5,
@@ -236,8 +236,8 @@
       "p20": 126,
       "p80": 178,
       "mean": 152.6,
-      "winPct": 1.0,
-      "top3Pct": 9.4,
+      "winPct": 1.1,
+      "top3Pct": 9.7,
       "teamShare": 53,
       "nTeams": 4,
       "nPlayers": 4,
@@ -269,7 +269,7 @@
       "p80": 170,
       "mean": 144.7,
       "winPct": 0.2,
-      "top3Pct": 2.6,
+      "top3Pct": 3.5,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -277,11 +277,11 @@
       "keys": [
         {
           "kind": "team",
-          "id": "senegal"
+          "id": "brazil"
         },
         {
           "kind": "team",
-          "id": "brazil"
+          "id": "senegal"
         },
         {
           "kind": "team",
@@ -301,7 +301,7 @@
       "p80": 161,
       "mean": 139.5,
       "winPct": 0.0,
-      "top3Pct": 1.5,
+      "top3Pct": 1.8,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -309,11 +309,11 @@
       "keys": [
         {
           "kind": "team",
-          "id": "portugal"
+          "id": "japan"
         },
         {
           "kind": "team",
-          "id": "japan"
+          "id": "portugal"
         },
         {
           "kind": "team",
@@ -333,7 +333,7 @@
       "p80": 162,
       "mean": 141.6,
       "winPct": 1.0,
-      "top3Pct": 5.8,
+      "top3Pct": 6.3,
       "teamShare": 51,
       "nTeams": 5,
       "nPlayers": 6,
@@ -357,38 +357,6 @@
       "rankShift": -1
     },
     {
-      "uid": "b7kCU3JVSCUixm6QA99bLIu2CKE2",
-      "name": "Katherine Kwok",
-      "current": 80,
-      "median": 141.0,
-      "p20": 114,
-      "p80": 187,
-      "mean": 148.9,
-      "winPct": 5.9,
-      "top3Pct": 19.5,
-      "teamShare": 0,
-      "nTeams": 0,
-      "nPlayers": 12,
-      "keysGoal": "win",
-      "keys": [
-        {
-          "kind": "player",
-          "id": "32570-spain"
-        },
-        {
-          "kind": "player",
-          "id": "157135-spain"
-        },
-        {
-          "kind": "player",
-          "id": "202283-spain"
-        }
-      ],
-      "curRank": 7,
-      "projRank": 12,
-      "rankShift": -5
-    },
-    {
       "uid": "jy5ChTD9bbYDqcd94VlNKTi4kHV2",
       "name": "Lisa Jordan",
       "current": 75,
@@ -397,7 +365,7 @@
       "p80": 170,
       "mean": 143.5,
       "winPct": 0.5,
-      "top3Pct": 5.1,
+      "top3Pct": 5.3,
       "teamShare": 43,
       "nTeams": 3,
       "nPlayers": 6,
@@ -417,8 +385,8 @@
         }
       ],
       "curRank": 9,
-      "projRank": 13,
-      "rankShift": -4
+      "projRank": 12,
+      "rankShift": -3
     },
     {
       "uid": "U4EovkPv7FeYoVYRZpqAxR6CUOo2",
@@ -429,7 +397,7 @@
       "p80": 161,
       "mean": 137.7,
       "winPct": 0.0,
-      "top3Pct": 3.5,
+      "top3Pct": 4.0,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -441,16 +409,16 @@
         },
         {
           "kind": "team",
-          "id": "portugal"
+          "id": "argentina"
         },
         {
           "kind": "team",
-          "id": "argentina"
+          "id": "portugal"
         }
       ],
       "curRank": 19,
-      "projRank": 14,
-      "rankShift": 5
+      "projRank": 13,
+      "rankShift": 6
     },
     {
       "uid": "UoQrvoSZY8gpncC1w1TEKsoFUWz1",
@@ -461,7 +429,7 @@
       "p80": 157,
       "mean": 135.0,
       "winPct": 1.0,
-      "top3Pct": 7.1,
+      "top3Pct": 7.4,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -481,8 +449,8 @@
         }
       ],
       "curRank": 13,
-      "projRank": 15,
-      "rankShift": -2
+      "projRank": 14,
+      "rankShift": -1
     },
     {
       "uid": "rVcSCBgxnqZbIkKYLWk6iHSB7LL2",
@@ -492,8 +460,8 @@
       "p20": 113,
       "p80": 157,
       "mean": 135.1,
-      "winPct": 0.9,
-      "top3Pct": 4.1,
+      "winPct": 1.0,
+      "top3Pct": 4.2,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -513,8 +481,8 @@
         }
       ],
       "curRank": 12,
-      "projRank": 16,
-      "rankShift": -4
+      "projRank": 15,
+      "rankShift": -3
     },
     {
       "uid": "aJJO3KVhiiQ8zOVvgtIrCcB0EUC2",
@@ -525,15 +493,60 @@
       "p80": 156,
       "mean": 131.3,
       "winPct": 0.0,
-      "top3Pct": 1.0,
+      "top3Pct": 1.5,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
-      "keysGoal": "none",
-      "keys": [],
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "ghana"
+        },
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "team",
+          "id": "spain"
+        }
+      ],
       "curRank": 20,
+      "projRank": 16,
+      "rankShift": 4
+    },
+    {
+      "uid": "b7kCU3JVSCUixm6QA99bLIu2CKE2",
+      "name": "Katherine Kwok",
+      "current": 80,
+      "median": 129.0,
+      "p20": 109,
+      "p80": 155,
+      "mean": 131.8,
+      "winPct": 0.0,
+      "top3Pct": 1.6,
+      "teamShare": 0,
+      "nTeams": 0,
+      "nPlayers": 9,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "player",
+          "id": "32570-spain"
+        },
+        {
+          "kind": "player",
+          "id": "202283-spain"
+        },
+        {
+          "kind": "player",
+          "id": "7884-spain"
+        }
+      ],
+      "curRank": 7,
       "projRank": 17,
-      "rankShift": 3
+      "rankShift": -10
     },
     {
       "uid": "oiL1RFojGYXiivwwG55CL2Y25Mf2",
@@ -576,7 +589,7 @@
       "p80": 139,
       "mean": 119.1,
       "winPct": 0.0,
-      "top3Pct": 1.4,
+      "top3Pct": 1.5,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -607,8 +620,8 @@
       "p20": 69,
       "p80": 187,
       "mean": 126.8,
-      "winPct": 5.1,
-      "top3Pct": 17.6,
+      "winPct": 5.2,
+      "top3Pct": 18.6,
       "teamShare": 14,
       "nTeams": 1,
       "nPlayers": 10,
