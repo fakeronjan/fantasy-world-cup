@@ -613,6 +613,8 @@
       assetId, kind,
       purchasePrice: price,
       purchasedAt: new Date().toISOString(),
+      // Round this pick was acquired in (for the price-arc + audit trail).
+      round: configDoc.currentRound || null,
       // Forward-only scoring: snapshot the asset's points/tiebreaker NOW so the
       // buyer only earns what it scores AFTER purchase.
       pointsAtPurchase: a.totalPoints || 0,
