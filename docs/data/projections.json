@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-06-28T11:25:26.193529+00:00",
-  "runs": 5000,
+  "generatedAt": "2026-06-28T12:56:09.017601+00:00",
+  "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
   "users": [
@@ -11,9 +11,9 @@
       "median": 207.0,
       "p20": 182,
       "p80": 236,
-      "mean": 209.5,
-      "winPct": 54.0,
-      "top3Pct": 86.8,
+      "mean": 209.3,
+      "winPct": 55.7,
+      "top3Pct": 88.2,
       "teamShare": 37,
       "nTeams": 3,
       "nPlayers": 6,
@@ -29,43 +29,11 @@
         },
         {
           "kind": "player",
-          "id": "38101-norway"
+          "id": "3218-argentina"
         }
       ],
       "curRank": 1,
       "projRank": 1,
-      "rankShift": 0
-    },
-    {
-      "uid": "mniYEjmbmod2SGOgtqG1iPjccRh2",
-      "name": "Lisette Bruens",
-      "current": 105,
-      "median": 170.0,
-      "p20": 151,
-      "p80": 195,
-      "mean": 173.6,
-      "winPct": 10.2,
-      "top3Pct": 31.6,
-      "teamShare": 33,
-      "nTeams": 3,
-      "nPlayers": 7,
-      "keysGoal": "win",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "netherlands"
-        },
-        {
-          "kind": "player",
-          "id": "7459-netherlands"
-        },
-        {
-          "kind": "team",
-          "id": "brazil"
-        }
-      ],
-      "curRank": 2,
-      "projRank": 2,
       "rankShift": 0
     },
     {
@@ -75,9 +43,9 @@
       "median": 169.0,
       "p20": 146,
       "p80": 196,
-      "mean": 171.0,
-      "winPct": 5.6,
-      "top3Pct": 28.3,
+      "mean": 171.2,
+      "winPct": 5.8,
+      "top3Pct": 30.4,
       "teamShare": 54,
       "nTeams": 5,
       "nPlayers": 6,
@@ -89,27 +57,27 @@
         },
         {
           "kind": "team",
-          "id": "senegal"
+          "id": "germany"
         },
         {
           "kind": "team",
-          "id": "germany"
+          "id": "senegal"
         }
       ],
       "curRank": 3,
-      "projRank": 3,
-      "rankShift": 0
+      "projRank": 2,
+      "rankShift": 1
     },
     {
       "uid": "HTICTtDMQIVjsLo5hn5UOVfUBO62",
       "name": "Amanda Schneider",
       "current": 89,
       "median": 164.0,
-      "p20": 142,
-      "p80": 189,
-      "mean": 165.4,
-      "winPct": 4.6,
-      "top3Pct": 28.2,
+      "p20": 141,
+      "p80": 188,
+      "mean": 165.0,
+      "winPct": 5.2,
+      "top3Pct": 29.2,
       "teamShare": 77,
       "nTeams": 8,
       "nPlayers": 2,
@@ -129,19 +97,51 @@
         }
       ],
       "curRank": 4,
+      "projRank": 3,
+      "rankShift": 1
+    },
+    {
+      "uid": "mniYEjmbmod2SGOgtqG1iPjccRh2",
+      "name": "Lisette Bruens",
+      "current": 105,
+      "median": 161.0,
+      "p20": 144,
+      "p80": 183,
+      "mean": 163.9,
+      "winPct": 5.1,
+      "top3Pct": 23.2,
+      "teamShare": 38,
+      "nTeams": 3,
+      "nPlayers": 5,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "netherlands"
+        },
+        {
+          "kind": "team",
+          "id": "brazil"
+        },
+        {
+          "kind": "player",
+          "id": "7459-netherlands"
+        }
+      ],
+      "curRank": 2,
       "projRank": 4,
-      "rankShift": 0
+      "rankShift": -2
     },
     {
       "uid": "XHZVe2PB3LRGejEg8xjBpsSwGqE2",
       "name": "Carl H",
       "current": 89,
-      "median": 157.0,
+      "median": 156.0,
       "p20": 139,
       "p80": 175,
-      "mean": 157.3,
-      "winPct": 1.2,
-      "top3Pct": 11.5,
+      "mean": 156.8,
+      "winPct": 1.5,
+      "top3Pct": 12.7,
       "teamShare": 28,
       "nTeams": 2,
       "nPlayers": 9,
@@ -157,7 +157,7 @@
         },
         {
           "kind": "player",
-          "id": "8279-sweden"
+          "id": "15892-portugal"
         }
       ],
       "curRank": 5,
@@ -165,47 +165,15 @@
       "rankShift": 0
     },
     {
-      "uid": "mixdmNZGD3YnzSFOJ077AKfQKXL2",
-      "name": "Ronjan Sikdar",
-      "current": 86,
-      "median": 157.0,
-      "p20": 135,
-      "p80": 182,
-      "mean": 158.5,
-      "winPct": 0.7,
-      "top3Pct": 11.7,
-      "teamShare": 57,
-      "nTeams": 5,
-      "nPlayers": 4,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "netherlands"
-        },
-        {
-          "kind": "team",
-          "id": "canada"
-        },
-        {
-          "kind": "player",
-          "id": "38101-norway"
-        }
-      ],
-      "curRank": 6,
-      "projRank": 6,
-      "rankShift": 0
-    },
-    {
       "uid": "wKbTN7lhX8VybKLCQx4UdfE1csm2",
       "name": "Harry Brisson",
       "current": 67,
-      "median": 155.0,
+      "median": 154.0,
       "p20": 132,
       "p80": 177,
-      "mean": 154.8,
-      "winPct": 2.2,
-      "top3Pct": 14.4,
+      "mean": 154.4,
+      "winPct": 2.0,
+      "top3Pct": 14.7,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -225,19 +193,19 @@
         }
       ],
       "curRank": 11,
-      "projRank": 7,
-      "rankShift": 4
+      "projRank": 6,
+      "rankShift": 5
     },
     {
       "uid": "8bkCEfWUnENleI0OpbE7VCbCGuf1",
       "name": "Mariss Mednis",
       "current": 77,
       "median": 153.0,
-      "p20": 127,
+      "p20": 126,
       "p80": 186,
-      "mean": 157.7,
-      "winPct": 8.2,
-      "top3Pct": 19.8,
+      "mean": 157.6,
+      "winPct": 8.8,
+      "top3Pct": 21.2,
       "teamShare": 58,
       "nTeams": 6,
       "nPlayers": 5,
@@ -249,25 +217,57 @@
         },
         {
           "kind": "player",
+          "id": "8492-united-states"
+        },
+        {
+          "kind": "player",
           "id": "131040-united-states"
+        }
+      ],
+      "curRank": 8,
+      "projRank": 7,
+      "rankShift": 1
+    },
+    {
+      "uid": "mixdmNZGD3YnzSFOJ077AKfQKXL2",
+      "name": "Ronjan Sikdar",
+      "current": 86,
+      "median": 151.0,
+      "p20": 126,
+      "p80": 178,
+      "mean": 152.6,
+      "winPct": 1.0,
+      "top3Pct": 9.4,
+      "teamShare": 53,
+      "nTeams": 4,
+      "nPlayers": 4,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "brazil"
+        },
+        {
+          "kind": "team",
+          "id": "united-states"
         },
         {
           "kind": "player",
           "id": "145-united-states"
         }
       ],
-      "curRank": 8,
+      "curRank": 6,
       "projRank": 8,
-      "rankShift": 0
+      "rankShift": -2
     },
     {
       "uid": "w2UmABKpdKaRJ5FuvNw0iBmKbrf1",
       "name": "Rekhmina Babar",
       "current": 55,
-      "median": 147.0,
-      "p20": 120,
-      "p80": 171,
-      "mean": 145.2,
+      "median": 146.0,
+      "p20": 119,
+      "p80": 170,
+      "mean": 144.7,
       "winPct": 0.2,
       "top3Pct": 2.6,
       "teamShare": 100,
@@ -293,47 +293,15 @@
       "rankShift": 9
     },
     {
-      "uid": "jy5ChTD9bbYDqcd94VlNKTi4kHV2",
-      "name": "Lisa Jordan",
-      "current": 75,
-      "median": 142.0,
-      "p20": 116,
-      "p80": 170,
-      "mean": 143.4,
-      "winPct": 0.3,
-      "top3Pct": 5.1,
-      "teamShare": 43,
-      "nTeams": 3,
-      "nPlayers": 6,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "france"
-        },
-        {
-          "kind": "team",
-          "id": "england"
-        },
-        {
-          "kind": "player",
-          "id": "8004-england"
-        }
-      ],
-      "curRank": 9,
-      "projRank": 10,
-      "rankShift": -1
-    },
-    {
       "uid": "M258P797q1YUoHoYfTLlEDNDw9b2",
       "name": "Daniel Ortiz",
       "current": 55,
       "median": 141.0,
       "p20": 118,
-      "p80": 162,
-      "mean": 139.6,
-      "winPct": 0.1,
-      "top3Pct": 1.4,
+      "p80": 161,
+      "mean": 139.5,
+      "winPct": 0.0,
+      "top3Pct": 1.5,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -353,19 +321,19 @@
         }
       ],
       "curRank": 16,
-      "projRank": 11,
-      "rankShift": 5
+      "projRank": 10,
+      "rankShift": 6
     },
     {
       "uid": "MumnaJM5KNV5B7angaPgEx6yYGt1",
       "name": "Connor Thorpe",
       "current": 70,
-      "median": 140.0,
-      "p20": 120,
+      "median": 141.0,
+      "p20": 121,
       "p80": 162,
-      "mean": 141.4,
-      "winPct": 0.9,
-      "top3Pct": 5.9,
+      "mean": 141.6,
+      "winPct": 1.0,
+      "top3Pct": 5.8,
       "teamShare": 51,
       "nTeams": 5,
       "nPlayers": 6,
@@ -373,11 +341,11 @@
       "keys": [
         {
           "kind": "team",
-          "id": "france"
+          "id": "switzerland"
         },
         {
           "kind": "team",
-          "id": "switzerland"
+          "id": "france"
         },
         {
           "kind": "team",
@@ -385,51 +353,19 @@
         }
       ],
       "curRank": 10,
-      "projRank": 12,
-      "rankShift": -2
-    },
-    {
-      "uid": "U4EovkPv7FeYoVYRZpqAxR6CUOo2",
-      "name": "Samit Guha",
-      "current": 54,
-      "median": 140.0,
-      "p20": 115,
-      "p80": 162,
-      "mean": 138.6,
-      "winPct": 0.0,
-      "top3Pct": 3.4,
-      "teamShare": 100,
-      "nTeams": 8,
-      "nPlayers": 0,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "norway"
-        },
-        {
-          "kind": "team",
-          "id": "portugal"
-        },
-        {
-          "kind": "team",
-          "id": "argentina"
-        }
-      ],
-      "curRank": 19,
-      "projRank": 13,
-      "rankShift": 6
+      "projRank": 11,
+      "rankShift": -1
     },
     {
       "uid": "b7kCU3JVSCUixm6QA99bLIu2CKE2",
       "name": "Katherine Kwok",
       "current": 80,
-      "median": 140.0,
+      "median": 141.0,
       "p20": 114,
       "p80": 187,
-      "mean": 148.8,
-      "winPct": 5.6,
-      "top3Pct": 18.0,
+      "mean": 148.9,
+      "winPct": 5.9,
+      "top3Pct": 19.5,
       "teamShare": 0,
       "nTeams": 0,
       "nPlayers": 12,
@@ -449,19 +385,83 @@
         }
       ],
       "curRank": 7,
+      "projRank": 12,
+      "rankShift": -5
+    },
+    {
+      "uid": "jy5ChTD9bbYDqcd94VlNKTi4kHV2",
+      "name": "Lisa Jordan",
+      "current": 75,
+      "median": 141.0,
+      "p20": 116,
+      "p80": 170,
+      "mean": 143.5,
+      "winPct": 0.5,
+      "top3Pct": 5.1,
+      "teamShare": 43,
+      "nTeams": 3,
+      "nPlayers": 6,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "team",
+          "id": "england"
+        },
+        {
+          "kind": "team",
+          "id": "brazil"
+        }
+      ],
+      "curRank": 9,
+      "projRank": 13,
+      "rankShift": -4
+    },
+    {
+      "uid": "U4EovkPv7FeYoVYRZpqAxR6CUOo2",
+      "name": "Samit Guha",
+      "current": 54,
+      "median": 139.0,
+      "p20": 114,
+      "p80": 161,
+      "mean": 137.7,
+      "winPct": 0.0,
+      "top3Pct": 3.5,
+      "teamShare": 100,
+      "nTeams": 8,
+      "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "norway"
+        },
+        {
+          "kind": "team",
+          "id": "portugal"
+        },
+        {
+          "kind": "team",
+          "id": "argentina"
+        }
+      ],
+      "curRank": 19,
       "projRank": 14,
-      "rankShift": -7
+      "rankShift": 5
     },
     {
       "uid": "UoQrvoSZY8gpncC1w1TEKsoFUWz1",
       "name": "Peter Gallagher",
       "current": 60,
       "median": 134.0,
-      "p20": 113,
+      "p20": 112,
       "p80": 157,
-      "mean": 135.1,
-      "winPct": 0.9,
-      "top3Pct": 6.4,
+      "mean": 135.0,
+      "winPct": 1.0,
+      "top3Pct": 7.1,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -489,10 +489,10 @@
       "name": "Nick Ransohoff",
       "current": 64,
       "median": 134.0,
-      "p20": 114,
+      "p20": 113,
       "p80": 157,
-      "mean": 135.6,
-      "winPct": 0.6,
+      "mean": 135.1,
+      "winPct": 0.9,
       "top3Pct": 4.1,
       "teamShare": 100,
       "nTeams": 8,
@@ -509,7 +509,7 @@
         },
         {
           "kind": "team",
-          "id": "egypt"
+          "id": "brazil"
         }
       ],
       "curRank": 12,
@@ -522,10 +522,10 @@
       "current": 54,
       "median": 132.0,
       "p20": 106,
-      "p80": 157,
-      "mean": 131.6,
+      "p80": 156,
+      "mean": 131.3,
       "winPct": 0.0,
-      "top3Pct": 0.8,
+      "top3Pct": 1.0,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -544,7 +544,7 @@
       "p80": 145,
       "mean": 124.9,
       "winPct": 0.2,
-      "top3Pct": 1.7,
+      "top3Pct": 1.8,
       "teamShare": 100,
       "nTeams": 9,
       "nPlayers": 0,
@@ -556,7 +556,7 @@
         },
         {
           "kind": "team",
-          "id": "senegal"
+          "id": "croatia"
         },
         {
           "kind": "team",
@@ -574,8 +574,8 @@
       "median": 117.0,
       "p20": 98,
       "p80": 139,
-      "mean": 119.2,
-      "winPct": 0.1,
+      "mean": 119.1,
+      "winPct": 0.0,
       "top3Pct": 1.4,
       "teamShare": 100,
       "nTeams": 8,
@@ -592,7 +592,7 @@
         },
         {
           "kind": "team",
-          "id": "japan"
+          "id": "argentina"
         }
       ],
       "curRank": 15,
@@ -603,12 +603,12 @@
       "uid": "nx4JgoYrM8QyPr6gWQZZhDgQxjm2",
       "name": "Dominic Edwards",
       "current": 59,
-      "median": 110.0,
-      "p20": 68,
-      "p80": 186,
-      "mean": 125.8,
-      "winPct": 4.5,
-      "top3Pct": 16.9,
+      "median": 111.0,
+      "p20": 69,
+      "p80": 187,
+      "mean": 126.8,
+      "winPct": 5.1,
+      "top3Pct": 17.6,
       "teamShare": 14,
       "nTeams": 1,
       "nPlayers": 10,

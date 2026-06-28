@@ -56,7 +56,7 @@ jobs:
       - name: Refresh projections
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/fwc/sa.json
-        run: python scripts/project_standings.py --runs 5000 --seed 2026
+        run: python scripts/project_standings.py --runs 20000 --seed 2026
 
       - name: Commit projections if changed
         run: |
