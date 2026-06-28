@@ -81,8 +81,13 @@
     font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif; }
   .tx-buy  { color: #16a34a; }
   .tx-sell { color: var(--accent); }
+  .tx-sell.elim { color: var(--text-muted); }
+  .tx-sell.elim .tx-name { text-decoration: line-through; }
   .tx-chip .tx-price { color: var(--text-muted); font-weight: 700;
     font-variant-numeric: tabular-nums; }
+  .tx-tag { font-size: 8px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.3px; color: #fff; background: #dc2626;
+    padding: 0 3px; border-radius: 3px; vertical-align: 1px; }
   .tx-none { color: var(--text-muted); font-style: italic; font-weight: 400; }
 
   .empty-state, .locked-state {
@@ -528,19 +533,20 @@
     }
   }
 
-  // Transfer activity: each manager's voluntary transfer-window moves, with the
-  // actual countries/players bought (+) and sold (-). Skips the draft and forced
-  // auto-sells (eliminations) -- this is about strategic transfer activity.
-  // Empty until the first window opens after the group stage (~late June).
+  // Transfer activity: each manager's transfer moves -- countries/players bought
+  // (+), sold (-), and auto-sold on elimination (- "out"). Skips only the draft
+  // and price adjustments. Empty until the first window opens (~late June).
   function renderTransferActivity(users, txs) {
     const byUid = {};
     for (const t of (txs || [])) {
       if (!t.uid || t.round === 'pre') continue;
-      if (['price-adjustment', 'draft', 'draft-update', 'auto-sell-elimination'].includes(t.type)) continue;
+      if (['price-adjustment', 'draft', 'draft-update'].includes(t.type)) continue;
+      const elim = t.type === 'auto-sell-elimination';
       const e = (byUid[t.uid] ||= { buys: [], sells: [] });
-      // tx schema: buys carry boughtAt (price paid), sells carry soldAt (proceeds).
+      // tx schema: buys carry boughtAt (price paid); sells carry soldAt
+      // (proceeds, = the 25% refund for auto-sells).
       for (const b of (t.buys  || [])) e.buys.push({ kind: b.kind, id: b.assetId, price: b.boughtAt });
-      for (const s of (t.sells || [])) e.sells.push({ kind: s.kind, id: s.assetId, price: s.soldAt });
+      for (const s of (t.sells || [])) e.sells.push({ kind: s.kind, id: s.assetId, price: s.soldAt, elim });
     }
 
     const movers = users
@@ -559,26 +565,31 @@
     }
 
     const shortName = (s) => String(s).trim().split(/\s+/).pop();
-    const chip = (kind, id, sign, price) => {
+    const chip = (kind, id, sign, price, elim) => {
       const flag = kind === 'team' ? (teamEmoji[id] || '') : (teamEmoji[playerById[id]?.teamId] || '');
       const name = kind === 'team' ? (teamById[id]?.name || id) : shortName(playerById[id]?.name || id);
-      const cls  = sign === '+' ? 'tx-buy' : 'tx-sell';
+      const cls  = sign === '+' ? 'tx-buy' : ('tx-sell' + (elim ? ' elim' : ''));
       const pr   = (price != null) ? ` <span class="tx-price">$${price}</span>` : '';
-      return `<span class="tx-chip ${cls}">${sign}&nbsp;${flag ? `<span class="flag">${flag}</span>` : ''}${escape(name)}${pr}</span>`;
+      const tag  = elim ? ` <span class="tx-tag">out</span>` : '';
+      return `<span class="tx-chip ${cls}">${sign}&nbsp;${flag ? `<span class="flag">${flag}</span>` : ''}<span class="tx-name">${escape(name)}</span>${pr}${tag}</span>`;
     };
 
     const totalBuys  = movers.reduce((s, m) => s + m.tx.buys.length, 0);
-    const totalSells = movers.reduce((s, m) => s + m.tx.sells.length, 0);
-    const summary = `<div class="card-sub">${movers.length} manager${movers.length === 1 ? '' : 's'} active ·
-      ${totalBuys} buy${totalBuys === 1 ? '' : 's'}, ${totalSells} sale${totalSells === 1 ? '' : 's'}</div>`;
+    const totalSells = movers.reduce((s, m) => s + m.tx.sells.filter(x => !x.elim).length, 0);
+    const totalElim  = movers.reduce((s, m) => s + m.tx.sells.filter(x =>  x.elim).length, 0);
+    const summary = `<div class="card-sub">${movers.length} manager${movers.length === 1 ? '' : 's'} ·
+      ${totalBuys} buy${totalBuys === 1 ? '' : 's'}, ${totalSells} sale${totalSells === 1 ? '' : 's'}${totalElim ? `, ${totalElim} auto-sell${totalElim === 1 ? '' : 's'}` : ''}</div>`;
 
     const rows = movers.map((m, i) => {
       const flag = window.fwc.flagFor(m.u);
       const flagSpan = flag ? `<span class="flag">${flag}</span>` : '';
       const name = window.fwc.nameFor(m.u);
+      const volSells  = m.tx.sells.filter(s => !s.elim);
+      const elimSells = m.tx.sells.filter(s =>  s.elim);
       const chips = [
-        ...m.tx.buys.map(b  => chip(b.kind, b.id, '+', b.price)),
-        ...m.tx.sells.map(s => chip(s.kind, s.id, '−', s.price)),
+        ...m.tx.buys.map(b  => chip(b.kind, b.id, '+', b.price, false)),
+        ...volSells.map(s   => chip(s.kind, s.id, '−', s.price, false)),
+        ...elimSells.map(s  => chip(s.kind, s.id, '−', s.price, true)),
       ].join('');
       const chipsHtml = chips
         ? `<div class="tx-chips">${chips}</div>`
