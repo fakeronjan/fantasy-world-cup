@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T17:36:15.363735+00:00",
+  "generatedAt": "2026-06-28T18:50:43.298464+00:00",
   "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
@@ -12,8 +12,8 @@
       "p20": 182,
       "p80": 236,
       "mean": 209.3,
-      "winPct": 58.8,
-      "top3Pct": 89.8,
+      "winPct": 59.4,
+      "top3Pct": 90.5,
       "teamShare": 37,
       "nTeams": 3,
       "nPlayers": 6,
@@ -29,7 +29,7 @@
         },
         {
           "kind": "player",
-          "id": "3218-argentina"
+          "id": "38101-norway"
         }
       ],
       "curRank": 1,
@@ -44,8 +44,8 @@
       "p20": 146,
       "p80": 196,
       "mean": 171.2,
-      "winPct": 6.7,
-      "top3Pct": 33.9,
+      "winPct": 6.8,
+      "top3Pct": 35.4,
       "teamShare": 54,
       "nTeams": 5,
       "nPlayers": 6,
@@ -77,7 +77,7 @@
       "p80": 188,
       "mean": 165.0,
       "winPct": 6.3,
-      "top3Pct": 31.9,
+      "top3Pct": 32.7,
       "teamShare": 77,
       "nTeams": 8,
       "nPlayers": 2,
@@ -108,8 +108,8 @@
       "p20": 144,
       "p80": 183,
       "mean": 163.9,
-      "winPct": 5.3,
-      "top3Pct": 24.3,
+      "winPct": 5.4,
+      "top3Pct": 25.4,
       "teamShare": 38,
       "nTeams": 3,
       "nPlayers": 5,
@@ -120,49 +120,17 @@
           "id": "netherlands"
         },
         {
-          "kind": "team",
-          "id": "brazil"
-        },
-        {
           "kind": "player",
           "id": "7459-netherlands"
+        },
+        {
+          "kind": "team",
+          "id": "brazil"
         }
       ],
       "curRank": 2,
       "projRank": 4,
       "rankShift": -2
-    },
-    {
-      "uid": "XHZVe2PB3LRGejEg8xjBpsSwGqE2",
-      "name": "Carl H",
-      "current": 89,
-      "median": 156.0,
-      "p20": 139,
-      "p80": 175,
-      "mean": 156.8,
-      "winPct": 1.6,
-      "top3Pct": 13.9,
-      "teamShare": 28,
-      "nTeams": 2,
-      "nPlayers": 9,
-      "keysGoal": "win",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "france"
-        },
-        {
-          "kind": "player",
-          "id": "6486-sweden"
-        },
-        {
-          "kind": "player",
-          "id": "8279-sweden"
-        }
-      ],
-      "curRank": 5,
-      "projRank": 5,
-      "rankShift": 0
     },
     {
       "uid": "wKbTN7lhX8VybKLCQx4UdfE1csm2",
@@ -172,8 +140,8 @@
       "p20": 132,
       "p80": 177,
       "mean": 154.4,
-      "winPct": 2.3,
-      "top3Pct": 17.1,
+      "winPct": 2.4,
+      "top3Pct": 17.9,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -193,8 +161,8 @@
         }
       ],
       "curRank": 11,
-      "projRank": 6,
-      "rankShift": 5
+      "projRank": 5,
+      "rankShift": 6
     },
     {
       "uid": "8bkCEfWUnENleI0OpbE7VCbCGuf1",
@@ -205,7 +173,7 @@
       "p80": 186,
       "mean": 157.6,
       "winPct": 8.9,
-      "top3Pct": 21.9,
+      "top3Pct": 22.6,
       "teamShare": 58,
       "nTeams": 6,
       "nPlayers": 5,
@@ -225,8 +193,8 @@
         }
       ],
       "curRank": 8,
-      "projRank": 7,
-      "rankShift": 1
+      "projRank": 6,
+      "rankShift": 2
     },
     {
       "uid": "mixdmNZGD3YnzSFOJ077AKfQKXL2",
@@ -237,7 +205,7 @@
       "p80": 178,
       "mean": 152.6,
       "winPct": 1.1,
-      "top3Pct": 9.7,
+      "top3Pct": 10.0,
       "teamShare": 53,
       "nTeams": 4,
       "nPlayers": 4,
@@ -257,8 +225,8 @@
         }
       ],
       "curRank": 6,
-      "projRank": 8,
-      "rankShift": -2
+      "projRank": 7,
+      "rankShift": -1
     },
     {
       "uid": "w2UmABKpdKaRJ5FuvNw0iBmKbrf1",
@@ -289,8 +257,8 @@
         }
       ],
       "curRank": 18,
-      "projRank": 9,
-      "rankShift": 9
+      "projRank": 8,
+      "rankShift": 10
     },
     {
       "uid": "M258P797q1YUoHoYfTLlEDNDw9b2",
@@ -301,7 +269,7 @@
       "p80": 161,
       "mean": 139.5,
       "winPct": 0.0,
-      "top3Pct": 1.8,
+      "top3Pct": 2.0,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -321,8 +289,8 @@
         }
       ],
       "curRank": 16,
-      "projRank": 10,
-      "rankShift": 6
+      "projRank": 9,
+      "rankShift": 7
     },
     {
       "uid": "MumnaJM5KNV5B7angaPgEx6yYGt1",
@@ -332,20 +300,20 @@
       "p20": 121,
       "p80": 162,
       "mean": 141.6,
-      "winPct": 1.0,
-      "top3Pct": 6.3,
+      "winPct": 1.1,
+      "top3Pct": 6.7,
       "teamShare": 51,
       "nTeams": 5,
       "nPlayers": 6,
-      "keysGoal": "top3",
+      "keysGoal": "win",
       "keys": [
         {
           "kind": "team",
-          "id": "switzerland"
+          "id": "france"
         },
         {
           "kind": "team",
-          "id": "france"
+          "id": "switzerland"
         },
         {
           "kind": "team",
@@ -353,8 +321,8 @@
         }
       ],
       "curRank": 10,
-      "projRank": 11,
-      "rankShift": -1
+      "projRank": 10,
+      "rankShift": 0
     },
     {
       "uid": "jy5ChTD9bbYDqcd94VlNKTi4kHV2",
@@ -365,7 +333,7 @@
       "p80": 170,
       "mean": 143.5,
       "winPct": 0.5,
-      "top3Pct": 5.3,
+      "top3Pct": 5.7,
       "teamShare": 43,
       "nTeams": 3,
       "nPlayers": 6,
@@ -385,8 +353,8 @@
         }
       ],
       "curRank": 9,
-      "projRank": 12,
-      "rankShift": -3
+      "projRank": 11,
+      "rankShift": -2
     },
     {
       "uid": "U4EovkPv7FeYoVYRZpqAxR6CUOo2",
@@ -397,7 +365,7 @@
       "p80": 161,
       "mean": 137.7,
       "winPct": 0.0,
-      "top3Pct": 4.0,
+      "top3Pct": 4.7,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -417,8 +385,40 @@
         }
       ],
       "curRank": 19,
+      "projRank": 12,
+      "rankShift": 7
+    },
+    {
+      "uid": "XHZVe2PB3LRGejEg8xjBpsSwGqE2",
+      "name": "Carl H",
+      "current": 89,
+      "median": 136.0,
+      "p20": 117,
+      "p80": 158,
+      "mean": 137.8,
+      "winPct": 0.3,
+      "top3Pct": 4.6,
+      "teamShare": 41,
+      "nTeams": 2,
+      "nPlayers": 4,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "player",
+          "id": "3373-france"
+        },
+        {
+          "kind": "team",
+          "id": "netherlands"
+        }
+      ],
+      "curRank": 5,
       "projRank": 13,
-      "rankShift": 6
+      "rankShift": -8
     },
     {
       "uid": "UoQrvoSZY8gpncC1w1TEKsoFUWz1",
@@ -429,7 +429,7 @@
       "p80": 157,
       "mean": 135.0,
       "winPct": 1.0,
-      "top3Pct": 7.4,
+      "top3Pct": 7.7,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -437,11 +437,11 @@
       "keys": [
         {
           "kind": "team",
-          "id": "belgium"
+          "id": "japan"
         },
         {
           "kind": "team",
-          "id": "japan"
+          "id": "belgium"
         },
         {
           "kind": "team",
@@ -461,11 +461,11 @@
       "p80": 157,
       "mean": 135.1,
       "winPct": 1.0,
-      "top3Pct": 4.2,
+      "top3Pct": 4.7,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
-      "keysGoal": "top3",
+      "keysGoal": "win",
       "keys": [
         {
           "kind": "team",
@@ -477,7 +477,7 @@
         },
         {
           "kind": "team",
-          "id": "brazil"
+          "id": "egypt"
         }
       ],
       "curRank": 12,
@@ -525,7 +525,7 @@
       "p80": 155,
       "mean": 131.8,
       "winPct": 0.0,
-      "top3Pct": 1.6,
+      "top3Pct": 1.8,
       "teamShare": 0,
       "nTeams": 0,
       "nPlayers": 9,
@@ -557,7 +557,7 @@
       "p80": 145,
       "mean": 124.9,
       "winPct": 0.2,
-      "top3Pct": 1.8,
+      "top3Pct": 2.1,
       "teamShare": 100,
       "nTeams": 9,
       "nPlayers": 0,
@@ -573,7 +573,7 @@
         },
         {
           "kind": "team",
-          "id": "morocco"
+          "id": "senegal"
         }
       ],
       "curRank": 17,
@@ -621,7 +621,7 @@
       "p80": 187,
       "mean": 126.8,
       "winPct": 5.2,
-      "top3Pct": 18.6,
+      "top3Pct": 18.9,
       "teamShare": 14,
       "nTeams": 1,
       "nPlayers": 10,
