@@ -81,6 +81,8 @@
     font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif; }
   .tx-buy  { color: #16a34a; }
   .tx-sell { color: var(--accent); }
+  .tx-chip .tx-price { color: var(--text-muted); font-weight: 700;
+    font-variant-numeric: tabular-nums; }
   .tx-none { color: var(--text-muted); font-style: italic; font-weight: 400; }
 
   .empty-state, .locked-state {
@@ -536,8 +538,9 @@
       if (!t.uid || t.round === 'pre') continue;
       if (['price-adjustment', 'draft', 'draft-update', 'auto-sell-elimination'].includes(t.type)) continue;
       const e = (byUid[t.uid] ||= { buys: [], sells: [] });
-      for (const b of (t.buys  || [])) e.buys.push({ kind: b.kind, id: b.assetId });
-      for (const s of (t.sells || [])) e.sells.push({ kind: s.kind, id: s.assetId });
+      // tx schema: buys carry boughtAt (price paid), sells carry soldAt (proceeds).
+      for (const b of (t.buys  || [])) e.buys.push({ kind: b.kind, id: b.assetId, price: b.boughtAt });
+      for (const s of (t.sells || [])) e.sells.push({ kind: s.kind, id: s.assetId, price: s.soldAt });
     }
 
     const movers = users
@@ -556,11 +559,12 @@
     }
 
     const shortName = (s) => String(s).trim().split(/\s+/).pop();
-    const chip = (kind, id, sign) => {
+    const chip = (kind, id, sign, price) => {
       const flag = kind === 'team' ? (teamEmoji[id] || '') : (teamEmoji[playerById[id]?.teamId] || '');
       const name = kind === 'team' ? (teamById[id]?.name || id) : shortName(playerById[id]?.name || id);
       const cls  = sign === '+' ? 'tx-buy' : 'tx-sell';
-      return `<span class="tx-chip ${cls}">${sign}&nbsp;${flag ? `<span class="flag">${flag}</span>` : ''}${escape(name)}</span>`;
+      const pr   = (price != null) ? ` <span class="tx-price">$${price}</span>` : '';
+      return `<span class="tx-chip ${cls}">${sign}&nbsp;${flag ? `<span class="flag">${flag}</span>` : ''}${escape(name)}${pr}</span>`;
     };
 
     const totalBuys  = movers.reduce((s, m) => s + m.tx.buys.length, 0);
@@ -573,8 +577,8 @@
       const flagSpan = flag ? `<span class="flag">${flag}</span>` : '';
       const name = window.fwc.nameFor(m.u);
       const chips = [
-        ...m.tx.buys.map(b  => chip(b.kind, b.id, '+')),
-        ...m.tx.sells.map(s => chip(s.kind, s.id, '−')),
+        ...m.tx.buys.map(b  => chip(b.kind, b.id, '+', b.price)),
+        ...m.tx.sells.map(s => chip(s.kind, s.id, '−', s.price)),
       ].join('');
       const chipsHtml = chips
         ? `<div class="tx-chips">${chips}</div>`
