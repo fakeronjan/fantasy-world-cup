@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-30T18:58:11.795171+00:00",
+  "generatedAt": "2026-06-30T21:01:36.451334+00:00",
   "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
@@ -7,13 +7,13 @@
     {
       "uid": "KVS3kfS9SYUapdy7rAT7yrYSzT02",
       "name": "Karlos Abel",
-      "current": 137,
-      "median": 210.0,
-      "p20": 185,
-      "p80": 239,
-      "mean": 212.3,
-      "winPct": 58.1,
-      "top3Pct": 89.5,
+      "current": 143,
+      "median": 216.0,
+      "p20": 191,
+      "p80": 245,
+      "mean": 218.3,
+      "winPct": 64.3,
+      "top3Pct": 93.2,
       "teamShare": 37,
       "nTeams": 3,
       "nPlayers": 6,
@@ -39,13 +39,13 @@
     {
       "uid": "mniYEjmbmod2SGOgtqG1iPjccRh2",
       "name": "Lisette Bruens",
-      "current": 119,
-      "median": 172.0,
-      "p20": 155,
-      "p80": 194,
-      "mean": 174.9,
-      "winPct": 8.1,
-      "top3Pct": 34.2,
+      "current": 125,
+      "median": 178.0,
+      "p20": 161,
+      "p80": 200,
+      "mean": 180.9,
+      "winPct": 9.3,
+      "top3Pct": 41.5,
       "teamShare": 38,
       "nTeams": 3,
       "nPlayers": 5,
@@ -76,8 +76,8 @@
       "p20": 147,
       "p80": 194,
       "mean": 171.0,
-      "winPct": 7.3,
-      "top3Pct": 35.5,
+      "winPct": 5.7,
+      "top3Pct": 33.7,
       "teamShare": 77,
       "nTeams": 8,
       "nPlayers": 2,
@@ -103,13 +103,13 @@
     {
       "uid": "u7bzqSV7V9NMD0kGzp4DsqiFbe33",
       "name": "Niraj Patel",
-      "current": 95,
+      "current": 96,
       "median": 169.0,
       "p20": 146,
       "p80": 196,
       "mean": 171.2,
-      "winPct": 5.5,
-      "top3Pct": 29.2,
+      "winPct": 4.1,
+      "top3Pct": 27.5,
       "teamShare": 54,
       "nTeams": 5,
       "nPlayers": 6,
@@ -140,8 +140,8 @@
       "p20": 129,
       "p80": 189,
       "mean": 160.6,
-      "winPct": 8.7,
-      "top3Pct": 22.1,
+      "winPct": 7.6,
+      "top3Pct": 21.2,
       "teamShare": 58,
       "nTeams": 6,
       "nPlayers": 5,
@@ -153,11 +153,11 @@
         },
         {
           "kind": "player",
-          "id": "8492-united-states"
+          "id": "131040-united-states"
         },
         {
           "kind": "player",
-          "id": "131040-united-states"
+          "id": "145-united-states"
         }
       ],
       "curRank": 7,
@@ -172,8 +172,8 @@
       "p20": 129,
       "p80": 181,
       "mean": 155.6,
-      "winPct": 0.9,
-      "top3Pct": 9.3,
+      "winPct": 0.7,
+      "top3Pct": 8.4,
       "teamShare": 53,
       "nTeams": 4,
       "nPlayers": 4,
@@ -204,8 +204,8 @@
       "p20": 132,
       "p80": 177,
       "mean": 154.4,
-      "winPct": 1.7,
-      "top3Pct": 13.7,
+      "winPct": 1.3,
+      "top3Pct": 12.6,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -236,8 +236,8 @@
       "p20": 122,
       "p80": 173,
       "mean": 147.7,
-      "winPct": 0.2,
-      "top3Pct": 3.4,
+      "winPct": 0.1,
+      "top3Pct": 3.0,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -256,9 +256,9 @@
           "id": "france"
         }
       ],
-      "curRank": 18,
+      "curRank": 19,
       "projRank": 8,
-      "rankShift": 10
+      "rankShift": 11
     },
     {
       "uid": "jy5ChTD9bbYDqcd94VlNKTi4kHV2",
@@ -268,8 +268,8 @@
       "p20": 122,
       "p80": 176,
       "mean": 149.5,
-      "winPct": 0.6,
-      "top3Pct": 6.7,
+      "winPct": 0.4,
+      "top3Pct": 6.1,
       "teamShare": 43,
       "nTeams": 3,
       "nPlayers": 6,
@@ -293,6 +293,38 @@
       "rankShift": -1
     },
     {
+      "uid": "U4EovkPv7FeYoVYRZpqAxR6CUOo2",
+      "name": "Samit Guha",
+      "current": 63,
+      "median": 145.0,
+      "p20": 120,
+      "p80": 167,
+      "mean": 143.7,
+      "winPct": 0.0,
+      "top3Pct": 4.5,
+      "teamShare": 100,
+      "nTeams": 8,
+      "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "norway"
+        },
+        {
+          "kind": "team",
+          "id": "portugal"
+        },
+        {
+          "kind": "team",
+          "id": "argentina"
+        }
+      ],
+      "curRank": 15,
+      "projRank": 10,
+      "rankShift": 5
+    },
+    {
       "uid": "M258P797q1YUoHoYfTLlEDNDw9b2",
       "name": "Daniel Ortiz",
       "current": 60,
@@ -301,7 +333,7 @@
       "p80": 164,
       "mean": 142.5,
       "winPct": 0.0,
-      "top3Pct": 1.7,
+      "top3Pct": 1.4,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -320,8 +352,8 @@
           "id": "argentina"
         }
       ],
-      "curRank": 17,
-      "projRank": 10,
+      "curRank": 18,
+      "projRank": 11,
       "rankShift": 7
     },
     {
@@ -332,8 +364,8 @@
       "p20": 124,
       "p80": 165,
       "mean": 144.6,
-      "winPct": 1.0,
-      "top3Pct": 6.2,
+      "winPct": 0.7,
+      "top3Pct": 5.6,
       "teamShare": 51,
       "nTeams": 5,
       "nPlayers": 6,
@@ -353,8 +385,8 @@
         }
       ],
       "curRank": 10,
-      "projRank": 11,
-      "rankShift": -1
+      "projRank": 12,
+      "rankShift": -2
     },
     {
       "uid": "UoQrvoSZY8gpncC1w1TEKsoFUWz1",
@@ -364,8 +396,8 @@
       "p20": 121,
       "p80": 166,
       "mean": 144.0,
-      "winPct": 1.5,
-      "top3Pct": 9.9,
+      "winPct": 1.1,
+      "top3Pct": 9.1,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -385,40 +417,8 @@
         }
       ],
       "curRank": 12,
-      "projRank": 12,
-      "rankShift": 0
-    },
-    {
-      "uid": "U4EovkPv7FeYoVYRZpqAxR6CUOo2",
-      "name": "Samit Guha",
-      "current": 59,
-      "median": 142.0,
-      "p20": 117,
-      "p80": 164,
-      "mean": 140.7,
-      "winPct": 0.0,
-      "top3Pct": 3.9,
-      "teamShare": 100,
-      "nTeams": 8,
-      "nPlayers": 0,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "norway"
-        },
-        {
-          "kind": "team",
-          "id": "portugal"
-        },
-        {
-          "kind": "team",
-          "id": "argentina"
-        }
-      ],
-      "curRank": 19,
       "projRank": 13,
-      "rankShift": 6
+      "rankShift": -1
     },
     {
       "uid": "XHZVe2PB3LRGejEg8xjBpsSwGqE2",
@@ -428,8 +428,8 @@
       "p20": 123,
       "p80": 164,
       "mean": 143.8,
-      "winPct": 0.4,
-      "top3Pct": 5.2,
+      "winPct": 0.2,
+      "top3Pct": 4.6,
       "teamShare": 41,
       "nTeams": 2,
       "nPlayers": 4,
@@ -460,12 +460,12 @@
       "p20": 119,
       "p80": 163,
       "mean": 141.1,
-      "winPct": 1.0,
-      "top3Pct": 5.3,
+      "winPct": 0.8,
+      "top3Pct": 4.7,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
-      "keysGoal": "win",
+      "keysGoal": "top3",
       "keys": [
         {
           "kind": "team",
@@ -492,8 +492,8 @@
       "p20": 112,
       "p80": 162,
       "mean": 137.3,
-      "winPct": 0.1,
-      "top3Pct": 1.9,
+      "winPct": 0.0,
+      "top3Pct": 1.6,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -505,16 +505,16 @@
         },
         {
           "kind": "team",
-          "id": "spain"
+          "id": "france"
         },
         {
           "kind": "team",
-          "id": "france"
+          "id": "spain"
         }
       ],
-      "curRank": 16,
+      "curRank": 17,
       "projRank": 16,
-      "rankShift": 0
+      "rankShift": 1
     },
     {
       "uid": "oiL1RFojGYXiivwwG55CL2Y25Mf2",
@@ -524,8 +524,8 @@
       "p20": 110,
       "p80": 151,
       "mean": 130.9,
-      "winPct": 0.3,
-      "top3Pct": 2.4,
+      "winPct": 0.2,
+      "top3Pct": 2.0,
       "teamShare": 100,
       "nTeams": 9,
       "nPlayers": 0,
@@ -557,7 +557,7 @@
       "p80": 155,
       "mean": 131.8,
       "winPct": 0.0,
-      "top3Pct": 1.2,
+      "top3Pct": 1.1,
       "teamShare": 0,
       "nTeams": 0,
       "nPlayers": 9,
@@ -565,11 +565,11 @@
       "keys": [
         {
           "kind": "player",
-          "id": "202283-spain"
+          "id": "32570-spain"
         },
         {
           "kind": "player",
-          "id": "32570-spain"
+          "id": "202283-spain"
         },
         {
           "kind": "player",
@@ -589,7 +589,7 @@
       "p80": 142,
       "mean": 122.1,
       "winPct": 0.0,
-      "top3Pct": 1.3,
+      "top3Pct": 1.1,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -605,12 +605,12 @@
         },
         {
           "kind": "team",
-          "id": "argentina"
+          "id": "japan"
         }
       ],
-      "curRank": 15,
+      "curRank": 16,
       "projRank": 19,
-      "rankShift": -4
+      "rankShift": -3
     },
     {
       "uid": "nx4JgoYrM8QyPr6gWQZZhDgQxjm2",
@@ -620,8 +620,8 @@
       "p20": 69,
       "p80": 187,
       "mean": 126.8,
-      "winPct": 4.5,
-      "top3Pct": 17.6,
+      "winPct": 3.5,
+      "top3Pct": 17.2,
       "teamShare": 14,
       "nTeams": 1,
       "nPlayers": 10,
