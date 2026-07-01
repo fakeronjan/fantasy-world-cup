@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-01T04:01:12.189661+00:00",
+  "generatedAt": "2026-07-01T11:43:51.482193+00:00",
   "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
@@ -12,8 +12,8 @@
       "p20": 195,
       "p80": 249,
       "mean": 222.3,
-      "winPct": 67.8,
-      "top3Pct": 93.9,
+      "winPct": 66.9,
+      "top3Pct": 93.3,
       "teamShare": 37,
       "nTeams": 3,
       "nPlayers": 6,
@@ -44,8 +44,8 @@
       "p20": 161,
       "p80": 200,
       "mean": 180.9,
-      "winPct": 7.9,
-      "top3Pct": 37.7,
+      "winPct": 7.6,
+      "top3Pct": 36.4,
       "teamShare": 38,
       "nTeams": 3,
       "nPlayers": 5,
@@ -71,13 +71,13 @@
     {
       "uid": "HTICTtDMQIVjsLo5hn5UOVfUBO62",
       "name": "Amanda Schneider",
-      "current": 97,
+      "current": 98,
       "median": 170.0,
       "p20": 147,
       "p80": 194,
       "mean": 171.0,
-      "winPct": 4.6,
-      "top3Pct": 30.4,
+      "winPct": 4.5,
+      "top3Pct": 29.2,
       "teamShare": 77,
       "nTeams": 8,
       "nPlayers": 2,
@@ -108,8 +108,8 @@
       "p20": 147,
       "p80": 197,
       "mean": 172.2,
-      "winPct": 3.6,
-      "top3Pct": 25.6,
+      "winPct": 3.5,
+      "top3Pct": 24.5,
       "teamShare": 54,
       "nTeams": 5,
       "nPlayers": 6,
@@ -121,11 +121,11 @@
         },
         {
           "kind": "team",
-          "id": "germany"
+          "id": "senegal"
         },
         {
           "kind": "team",
-          "id": "senegal"
+          "id": "germany"
         }
       ],
       "curRank": 6,
@@ -135,13 +135,13 @@
     {
       "uid": "mixdmNZGD3YnzSFOJ077AKfQKXL2",
       "name": "Ronjan Sikdar",
-      "current": 101,
-      "median": 165.0,
-      "p20": 140,
-      "p80": 192,
-      "mean": 166.6,
-      "winPct": 1.7,
-      "top3Pct": 15.4,
+      "current": 105,
+      "median": 168.0,
+      "p20": 143,
+      "p80": 195,
+      "mean": 169.6,
+      "winPct": 2.1,
+      "top3Pct": 17.8,
       "teamShare": 53,
       "nTeams": 4,
       "nPlayers": 4,
@@ -160,20 +160,20 @@
           "id": "145-united-states"
         }
       ],
-      "curRank": 4,
+      "curRank": 3,
       "projRank": 5,
-      "rankShift": -1
+      "rankShift": -2
     },
     {
       "uid": "wKbTN7lhX8VybKLCQx4UdfE1csm2",
       "name": "Harry Brisson",
-      "current": 72,
-      "median": 157.0,
-      "p20": 135,
-      "p80": 180,
-      "mean": 157.4,
-      "winPct": 1.3,
-      "top3Pct": 13.5,
+      "current": 76,
+      "median": 160.0,
+      "p20": 138,
+      "p80": 183,
+      "mean": 160.4,
+      "winPct": 1.7,
+      "top3Pct": 15.6,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -199,13 +199,13 @@
     {
       "uid": "8bkCEfWUnENleI0OpbE7VCbCGuf1",
       "name": "Mariss Mednis",
-      "current": 83,
-      "median": 156.0,
-      "p20": 129,
-      "p80": 189,
-      "mean": 160.6,
-      "winPct": 6.6,
-      "top3Pct": 19.2,
+      "current": 87,
+      "median": 159.0,
+      "p20": 132,
+      "p80": 192,
+      "mean": 163.6,
+      "winPct": 7.1,
+      "top3Pct": 20.6,
       "teamShare": 58,
       "nTeams": 6,
       "nPlayers": 5,
@@ -224,9 +224,9 @@
           "id": "8492-united-states"
         }
       ],
-      "curRank": 8,
+      "curRank": 7,
       "projRank": 7,
-      "rankShift": 1
+      "rankShift": 0
     },
     {
       "uid": "w2UmABKpdKaRJ5FuvNw0iBmKbrf1",
@@ -237,7 +237,7 @@
       "p80": 176,
       "mean": 150.7,
       "winPct": 0.1,
-      "top3Pct": 3.3,
+      "top3Pct": 3.0,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -245,20 +245,20 @@
       "keys": [
         {
           "kind": "team",
-          "id": "brazil"
+          "id": "senegal"
         },
         {
           "kind": "team",
-          "id": "senegal"
+          "id": "brazil"
         },
         {
           "kind": "team",
           "id": "france"
         }
       ],
-      "curRank": 17,
+      "curRank": 19,
       "projRank": 8,
-      "rankShift": 9
+      "rankShift": 11
     },
     {
       "uid": "jy5ChTD9bbYDqcd94VlNKTi4kHV2",
@@ -268,8 +268,8 @@
       "p20": 125,
       "p80": 179,
       "mean": 152.5,
-      "winPct": 0.4,
-      "top3Pct": 5.9,
+      "winPct": 0.3,
+      "top3Pct": 5.4,
       "teamShare": 43,
       "nTeams": 3,
       "nPlayers": 6,
@@ -288,9 +288,9 @@
           "id": "8004-england"
         }
       ],
-      "curRank": 7,
+      "curRank": 8,
       "projRank": 9,
-      "rankShift": -2
+      "rankShift": -1
     },
     {
       "uid": "XHZVe2PB3LRGejEg8xjBpsSwGqE2",
@@ -301,7 +301,7 @@
       "p80": 171,
       "mean": 150.8,
       "winPct": 0.4,
-      "top3Pct": 6.8,
+      "top3Pct": 6.4,
       "teamShare": 41,
       "nTeams": 2,
       "nPlayers": 4,
@@ -320,9 +320,9 @@
           "id": "netherlands"
         }
       ],
-      "curRank": 3,
+      "curRank": 4,
       "projRank": 10,
-      "rankShift": -7
+      "rankShift": -6
     },
     {
       "uid": "U4EovkPv7FeYoVYRZpqAxR6CUOo2",
@@ -333,7 +333,7 @@
       "p80": 170,
       "mean": 146.7,
       "winPct": 0.0,
-      "top3Pct": 5.1,
+      "top3Pct": 4.8,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -357,15 +357,47 @@
       "rankShift": 4
     },
     {
+      "uid": "M258P797q1YUoHoYfTLlEDNDw9b2",
+      "name": "Daniel Ortiz",
+      "current": 64,
+      "median": 147.0,
+      "p20": 124,
+      "p80": 167,
+      "mean": 145.5,
+      "winPct": 0.0,
+      "top3Pct": 1.4,
+      "teamShare": 100,
+      "nTeams": 8,
+      "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "japan"
+        },
+        {
+          "kind": "team",
+          "id": "portugal"
+        },
+        {
+          "kind": "team",
+          "id": "argentina"
+        }
+      ],
+      "curRank": 18,
+      "projRank": 12,
+      "rankShift": 6
+    },
+    {
       "uid": "MumnaJM5KNV5B7angaPgEx6yYGt1",
       "name": "Connor Thorpe",
-      "current": 78,
+      "current": 79,
       "median": 147.0,
       "p20": 127,
       "p80": 168,
       "mean": 147.6,
       "winPct": 0.7,
-      "top3Pct": 5.9,
+      "top3Pct": 5.5,
       "teamShare": 51,
       "nTeams": 5,
       "nPlayers": 6,
@@ -384,8 +416,8 @@
           "id": "morocco"
         }
       ],
-      "curRank": 10,
-      "projRank": 12,
+      "curRank": 11,
+      "projRank": 13,
       "rankShift": -2
     },
     {
@@ -396,8 +428,8 @@
       "p20": 124,
       "p80": 169,
       "mean": 147.0,
-      "winPct": 1.1,
-      "top3Pct": 9.3,
+      "winPct": 1.0,
+      "top3Pct": 8.8,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -417,55 +449,23 @@
         }
       ],
       "curRank": 12,
-      "projRank": 13,
-      "rankShift": -1
-    },
-    {
-      "uid": "M258P797q1YUoHoYfTLlEDNDw9b2",
-      "name": "Daniel Ortiz",
-      "current": 60,
-      "median": 144.0,
-      "p20": 121,
-      "p80": 164,
-      "mean": 142.5,
-      "winPct": 0.0,
-      "top3Pct": 1.0,
-      "teamShare": 100,
-      "nTeams": 8,
-      "nPlayers": 0,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "japan"
-        },
-        {
-          "kind": "team",
-          "id": "portugal"
-        },
-        {
-          "kind": "team",
-          "id": "argentina"
-        }
-      ],
-      "curRank": 19,
       "projRank": 14,
-      "rankShift": 5
+      "rankShift": -2
     },
     {
       "uid": "rVcSCBgxnqZbIkKYLWk6iHSB7LL2",
       "name": "Nick Ransohoff",
-      "current": 78,
-      "median": 143.0,
-      "p20": 122,
-      "p80": 166,
-      "mean": 144.1,
-      "winPct": 0.8,
-      "top3Pct": 4.7,
+      "current": 82,
+      "median": 146.0,
+      "p20": 125,
+      "p80": 169,
+      "mean": 147.1,
+      "winPct": 1.0,
+      "top3Pct": 5.6,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
-      "keysGoal": "top3",
+      "keysGoal": "win",
       "keys": [
         {
           "kind": "team",
@@ -480,20 +480,20 @@
           "id": "egypt"
         }
       ],
-      "curRank": 11,
+      "curRank": 10,
       "projRank": 15,
-      "rankShift": -4
+      "rankShift": -5
     },
     {
       "uid": "aJJO3KVhiiQ8zOVvgtIrCcB0EUC2",
       "name": "Kelsey Barry",
-      "current": 66,
+      "current": 67,
       "median": 141.0,
       "p20": 115,
       "p80": 165,
       "mean": 140.3,
       "winPct": 0.0,
-      "top3Pct": 1.7,
+      "top3Pct": 1.6,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -512,9 +512,9 @@
           "id": "france"
         }
       ],
-      "curRank": 16,
+      "curRank": 17,
       "projRank": 16,
-      "rankShift": 0
+      "rankShift": 1
     },
     {
       "uid": "oiL1RFojGYXiivwwG55CL2Y25Mf2",
@@ -525,7 +525,7 @@
       "p80": 154,
       "mean": 133.9,
       "winPct": 0.2,
-      "top3Pct": 2.2,
+      "top3Pct": 2.0,
       "teamShare": 100,
       "nTeams": 9,
       "nPlayers": 0,
@@ -557,7 +557,7 @@
       "p80": 158,
       "mean": 134.8,
       "winPct": 0.0,
-      "top3Pct": 1.3,
+      "top3Pct": 1.2,
       "teamShare": 0,
       "nTeams": 0,
       "nPlayers": 9,
@@ -583,21 +583,34 @@
     {
       "uid": "ZqKlu7VT1CTulNg0EDqicXNsacq2",
       "name": "Veronica Hernandez",
-      "current": 63,
-      "median": 120.0,
-      "p20": 101,
-      "p80": 142,
-      "mean": 122.1,
+      "current": 68,
+      "median": 123.0,
+      "p20": 104,
+      "p80": 145,
+      "mean": 125.1,
       "winPct": 0.0,
-      "top3Pct": 0.9,
+      "top3Pct": 1.1,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
-      "keysGoal": "none",
-      "keys": [],
-      "curRank": 18,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "croatia"
+        },
+        {
+          "kind": "team",
+          "id": "south-africa"
+        },
+        {
+          "kind": "team",
+          "id": "argentina"
+        }
+      ],
+      "curRank": 16,
       "projRank": 19,
-      "rankShift": -1
+      "rankShift": -3
     },
     {
       "uid": "nx4JgoYrM8QyPr6gWQZZhDgQxjm2",
@@ -607,8 +620,8 @@
       "p20": 69,
       "p80": 187,
       "mean": 126.8,
-      "winPct": 2.9,
-      "top3Pct": 16.2,
+      "winPct": 2.8,
+      "top3Pct": 15.8,
       "teamShare": 14,
       "nTeams": 1,
       "nPlayers": 10,
