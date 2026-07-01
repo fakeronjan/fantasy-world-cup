@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-01T22:02:52.497942+00:00",
+  "generatedAt": "2026-07-01T23:43:59.357851+00:00",
   "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
@@ -7,13 +7,13 @@
     {
       "uid": "KVS3kfS9SYUapdy7rAT7yrYSzT02",
       "name": "Karlos Abel",
-      "current": 162,
-      "median": 234.0,
-      "p20": 209,
-      "p80": 263,
-      "mean": 236.3,
-      "winPct": 70.2,
-      "top3Pct": 96.0,
+      "current": 166,
+      "median": 237.0,
+      "p20": 212,
+      "p80": 266,
+      "mean": 239.3,
+      "winPct": 73.2,
+      "top3Pct": 97.0,
       "teamShare": 37,
       "nTeams": 3,
       "nPlayers": 6,
@@ -44,8 +44,8 @@
       "p20": 172,
       "p80": 211,
       "mean": 191.9,
-      "winPct": 7.2,
-      "top3Pct": 40.1,
+      "winPct": 6.5,
+      "top3Pct": 39.7,
       "teamShare": 38,
       "nTeams": 3,
       "nPlayers": 5,
@@ -71,13 +71,13 @@
     {
       "uid": "u7bzqSV7V9NMD0kGzp4DsqiFbe33",
       "name": "Niraj Patel",
-      "current": 112,
+      "current": 113,
       "median": 184.0,
       "p20": 161,
       "p80": 211,
       "mean": 186.2,
-      "winPct": 4.0,
-      "top3Pct": 31.3,
+      "winPct": 3.4,
+      "top3Pct": 31.1,
       "teamShare": 54,
       "nTeams": 5,
       "nPlayers": 6,
@@ -89,11 +89,11 @@
         },
         {
           "kind": "team",
-          "id": "spain"
+          "id": "senegal"
         },
         {
           "kind": "team",
-          "id": "senegal"
+          "id": "germany"
         }
       ],
       "curRank": 4,
@@ -108,8 +108,8 @@
       "p20": 158,
       "p80": 210,
       "mean": 184.6,
-      "winPct": 2.6,
-      "top3Pct": 23.9,
+      "winPct": 2.3,
+      "top3Pct": 23.5,
       "teamShare": 53,
       "nTeams": 4,
       "nPlayers": 4,
@@ -140,8 +140,8 @@
       "p20": 146,
       "p80": 206,
       "mean": 177.6,
-      "winPct": 7.3,
-      "top3Pct": 23.9,
+      "winPct": 6.9,
+      "top3Pct": 23.8,
       "teamShare": 58,
       "nTeams": 6,
       "nPlayers": 5,
@@ -172,8 +172,8 @@
       "p20": 147,
       "p80": 194,
       "mean": 171.0,
-      "winPct": 1.4,
-      "top3Pct": 19.7,
+      "winPct": 1.2,
+      "top3Pct": 19.5,
       "teamShare": 77,
       "nTeams": 8,
       "nPlayers": 2,
@@ -181,11 +181,11 @@
       "keys": [
         {
           "kind": "team",
-          "id": "spain"
+          "id": "brazil"
         },
         {
           "kind": "team",
-          "id": "brazil"
+          "id": "spain"
         },
         {
           "kind": "team",
@@ -205,7 +205,7 @@
       "p80": 194,
       "mean": 167.5,
       "winPct": 0.4,
-      "top3Pct": 8.0,
+      "top3Pct": 7.8,
       "teamShare": 43,
       "nTeams": 3,
       "nPlayers": 6,
@@ -236,8 +236,8 @@
       "p20": 138,
       "p80": 183,
       "mean": 160.4,
-      "winPct": 0.4,
-      "top3Pct": 9.2,
+      "winPct": 0.3,
+      "top3Pct": 9.1,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -268,7 +268,7 @@
       "p20": 138,
       "p80": 179,
       "mean": 158.6,
-      "winPct": 0.6,
+      "winPct": 0.5,
       "top3Pct": 6.9,
       "teamShare": 51,
       "nTeams": 5,
@@ -295,7 +295,7 @@
     {
       "uid": "w2UmABKpdKaRJ5FuvNw0iBmKbrf1",
       "name": "Rekhmina Babar",
-      "current": 68,
+      "current": 69,
       "median": 155.0,
       "p20": 128,
       "p80": 179,
@@ -320,9 +320,9 @@
           "id": "argentina"
         }
       ],
-      "curRank": 20,
+      "curRank": 17,
       "projRank": 10,
-      "rankShift": 10
+      "rankShift": 7
     },
     {
       "uid": "M258P797q1YUoHoYfTLlEDNDw9b2",
@@ -339,9 +339,41 @@
       "nPlayers": 0,
       "keysGoal": "none",
       "keys": [],
-      "curRank": 17,
+      "curRank": 18,
       "projRank": 11,
-      "rankShift": 6
+      "rankShift": 7
+    },
+    {
+      "uid": "UoQrvoSZY8gpncC1w1TEKsoFUWz1",
+      "name": "Peter Gallagher",
+      "current": 81,
+      "median": 149.0,
+      "p20": 127,
+      "p80": 172,
+      "mean": 150.0,
+      "winPct": 0.4,
+      "top3Pct": 6.1,
+      "teamShare": 100,
+      "nTeams": 10,
+      "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "japan"
+        },
+        {
+          "kind": "team",
+          "id": "belgium"
+        },
+        {
+          "kind": "team",
+          "id": "france"
+        }
+      ],
+      "curRank": 13,
+      "projRank": 12,
+      "rankShift": 1
     },
     {
       "uid": "XHZVe2PB3LRGejEg8xjBpsSwGqE2",
@@ -352,7 +384,7 @@
       "p80": 171,
       "mean": 150.8,
       "winPct": 0.1,
-      "top3Pct": 3.2,
+      "top3Pct": 3.1,
       "teamShare": 41,
       "nTeams": 2,
       "nPlayers": 4,
@@ -372,8 +404,8 @@
         }
       ],
       "curRank": 5,
-      "projRank": 12,
-      "rankShift": -7
+      "projRank": 13,
+      "rankShift": -8
     },
     {
       "uid": "U4EovkPv7FeYoVYRZpqAxR6CUOo2",
@@ -403,41 +435,9 @@
           "id": "portugal"
         }
       ],
-      "curRank": 18,
-      "projRank": 13,
-      "rankShift": 5
-    },
-    {
-      "uid": "UoQrvoSZY8gpncC1w1TEKsoFUWz1",
-      "name": "Peter Gallagher",
-      "current": 77,
-      "median": 146.0,
-      "p20": 124,
-      "p80": 169,
-      "mean": 147.0,
-      "winPct": 0.3,
-      "top3Pct": 5.0,
-      "teamShare": 100,
-      "nTeams": 10,
-      "nPlayers": 0,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "japan"
-        },
-        {
-          "kind": "team",
-          "id": "belgium"
-        },
-        {
-          "kind": "team",
-          "id": "france"
-        }
-      ],
-      "curRank": 13,
+      "curRank": 19,
       "projRank": 14,
-      "rankShift": -1
+      "rankShift": 5
     },
     {
       "uid": "rVcSCBgxnqZbIkKYLWk6iHSB7LL2",
@@ -447,8 +447,8 @@
       "p20": 125,
       "p80": 169,
       "mean": 147.1,
-      "winPct": 0.3,
-      "top3Pct": 2.7,
+      "winPct": 0.2,
+      "top3Pct": 2.6,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -499,7 +499,7 @@
       "p80": 170,
       "mean": 146.8,
       "winPct": 0.0,
-      "top3Pct": 2.0,
+      "top3Pct": 1.9,
       "teamShare": 0,
       "nTeams": 0,
       "nPlayers": 9,
@@ -530,7 +530,7 @@
       "p20": 95,
       "p80": 213,
       "mean": 152.8,
-      "winPct": 5.2,
+      "winPct": 4.7,
       "top3Pct": 20.7,
       "teamShare": 14,
       "nTeams": 1,
@@ -557,13 +557,13 @@
     {
       "uid": "oiL1RFojGYXiivwwG55CL2Y25Mf2",
       "name": "Maggie Chen",
-      "current": 70,
+      "current": 71,
       "median": 133.0,
       "p20": 113,
       "p80": 154,
       "mean": 133.9,
       "winPct": 0.0,
-      "top3Pct": 0.9,
+      "top3Pct": 0.8,
       "teamShare": 100,
       "nTeams": 9,
       "nPlayers": 0,
@@ -588,9 +588,9 @@
       "nPlayers": 0,
       "keysGoal": "none",
       "keys": [],
-      "curRank": 19,
+      "curRank": 20,
       "projRank": 20,
-      "rankShift": -1
+      "rankShift": 0
     }
   ]
 }
