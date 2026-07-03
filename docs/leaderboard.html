@@ -218,9 +218,12 @@
     display: flex; align-items: center; gap: 8px;
   }
   #blueShell .bs-shell {
-    font-size: 20px; display: inline-block;
+    display: inline-block; line-height: 0;
+    transform-origin: 50% 68%;
     animation: bs-wobble 1.1s ease-in-out infinite;
+    filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.35));
   }
+  #blueShell .bs-shell svg { width: 26px; height: 26px; display: block; }
   #blueShell .bs-sub { font-size: 12px; opacity: 0.93; margin-top: 3px; line-height: 1.5; }
   #blueShell .bs-wink { opacity: 0.75; font-style: italic; }
   @keyframes bs-wobble { 0%, 100% { transform: rotate(-9deg) } 50% { transform: rotate(9deg) } }
@@ -902,6 +905,33 @@
   // are actually touched anywhere in the scoring. Triggered off the Monte Carlo
   // win odds (projByUid[uid].winPct), same numbers as the Win % column.
   const BLUE_SHELL_WINPCT = 60;  // favorite's title odds (%) must exceed this to trigger
+  // Original stylized spiny (blue) shell, inline so it's self-contained under the
+  // site CSP and stays crisp at any size. The .bs-shell wrapper animates it.
+  const BLUE_SHELL_SVG = `
+    <svg viewBox="0 0 40 40" role="img" aria-label="blue spiny shell">
+      <defs>
+        <radialGradient id="bsBody" cx="42%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#8fc2ff"/>
+          <stop offset="50%" stop-color="#2f6be0"/>
+          <stop offset="100%" stop-color="#143a9c"/>
+        </radialGradient>
+        <clipPath id="bsClip"><circle cx="20" cy="22" r="15"/></clipPath>
+      </defs>
+      <g fill="#f2f7ff" stroke="#123a8f" stroke-width="1" stroke-linejoin="round">
+        <polygon points="20,1 23.5,11 16.5,11"/>
+        <polygon points="7,4 13.5,11.5 5,13"/>
+        <polygon points="33,4 35,13 26.5,11.5"/>
+        <polygon points="1,17.5 9,14.5 8.5,21"/>
+        <polygon points="39,17.5 31.5,21 31,14.5"/>
+      </g>
+      <circle cx="20" cy="22" r="15" fill="url(#bsBody)" stroke="#0e2f88" stroke-width="1.5"/>
+      <rect x="4" y="26.5" width="32" height="13" fill="#f6f9ff" clip-path="url(#bsClip)"/>
+      <line x1="6" y1="26.5" x2="34" y2="26.5" stroke="#0e2f88" stroke-width="1.1" stroke-linecap="round"/>
+      <g stroke="#bfe0ff" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0.9">
+        <path d="M20,9 V25"/><path d="M11,13 L17,24"/><path d="M29,13 L23,24"/>
+      </g>
+      <ellipse cx="14" cy="14.5" rx="3" ry="2" fill="#dcecff" opacity="0.85"/>
+    </svg>`;
   function renderBlueShell(rows) {
     const el = document.getElementById('blueShell');
     if (!el) return;
@@ -916,7 +946,7 @@
     if (!fav || favPct <= BLUE_SHELL_WINPCT) return;
     const leader = window.fwc.nameFor(fav);
     el.innerHTML = `
-      <div class="bs-head"><span class="bs-shell">&#128309;&#128026;</span>
+      <div class="bs-head"><span class="bs-shell">${BLUE_SHELL_SVG}</span>
         Watch out, ${escape(leader)}! BLUE SHELL incoming!</div>
       <div class="bs-sub">${Math.round(favPct)}% to win makes you the runaway target &ndash; a direct hit is &minus;100 points!!
         <span class="bs-wink">(no points are actually harmed in this bit &#127812;)</span></div>`;
