@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-03T01:18:03.277315+00:00",
+  "generatedAt": "2026-07-03T05:27:20.343791+00:00",
   "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
@@ -12,7 +12,7 @@
       "p20": 213,
       "p80": 267,
       "mean": 240.3,
-      "winPct": 66.7,
+      "winPct": 66.5,
       "top3Pct": 94.9,
       "teamShare": 37,
       "nTeams": 3,
@@ -45,7 +45,7 @@
       "p80": 217,
       "mean": 197.9,
       "winPct": 7.4,
-      "top3Pct": 39.2,
+      "top3Pct": 39.0,
       "teamShare": 38,
       "nTeams": 3,
       "nPlayers": 5,
@@ -77,7 +77,7 @@
       "p80": 221,
       "mean": 196.2,
       "winPct": 5.9,
-      "top3Pct": 36.0,
+      "top3Pct": 35.8,
       "teamShare": 54,
       "nTeams": 5,
       "nPlayers": 6,
@@ -109,7 +109,7 @@
       "p80": 214,
       "mean": 188.6,
       "winPct": 1.9,
-      "top3Pct": 20.2,
+      "top3Pct": 20.1,
       "teamShare": 53,
       "nTeams": 4,
       "nPlayers": 4,
@@ -141,7 +141,7 @@
       "p80": 219,
       "mean": 190.6,
       "winPct": 9.9,
-      "top3Pct": 30.2,
+      "top3Pct": 30.1,
       "teamShare": 58,
       "nTeams": 6,
       "nPlayers": 5,
@@ -167,13 +167,13 @@
     {
       "uid": "HTICTtDMQIVjsLo5hn5UOVfUBO62",
       "name": "Amanda Schneider",
-      "current": 108,
+      "current": 109,
       "median": 179.0,
       "p20": 156,
       "p80": 203,
       "mean": 180.0,
       "winPct": 2.1,
-      "top3Pct": 22.4,
+      "top3Pct": 22.3,
       "teamShare": 77,
       "nTeams": 8,
       "nPlayers": 2,
@@ -192,9 +192,9 @@
           "id": "colombia"
         }
       ],
-      "curRank": 7,
+      "curRank": 6,
       "projRank": 6,
-      "rankShift": 1
+      "rankShift": 0
     },
     {
       "uid": "jy5ChTD9bbYDqcd94VlNKTi4kHV2",
@@ -204,8 +204,8 @@
       "p20": 147,
       "p80": 201,
       "mean": 174.5,
-      "winPct": 0.7,
-      "top3Pct": 8.8,
+      "winPct": 0.6,
+      "top3Pct": 8.7,
       "teamShare": 43,
       "nTeams": 3,
       "nPlayers": 6,
@@ -224,52 +224,20 @@
           "id": "england"
         }
       ],
-      "curRank": 6,
+      "curRank": 7,
       "projRank": 7,
-      "rankShift": -1
-    },
-    {
-      "uid": "wKbTN7lhX8VybKLCQx4UdfE1csm2",
-      "name": "Harry Brisson",
-      "current": 81,
-      "median": 163.0,
-      "p20": 141,
-      "p80": 186,
-      "mean": 163.4,
-      "winPct": 0.3,
-      "top3Pct": 6.6,
-      "teamShare": 100,
-      "nTeams": 10,
-      "nPlayers": 0,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "mexico"
-        },
-        {
-          "kind": "team",
-          "id": "france"
-        },
-        {
-          "kind": "team",
-          "id": "spain"
-        }
-      ],
-      "curRank": 14,
-      "projRank": 8,
-      "rankShift": 6
+      "rankShift": 0
     },
     {
       "uid": "MumnaJM5KNV5B7angaPgEx6yYGt1",
       "name": "Connor Thorpe",
-      "current": 93,
-      "median": 161.0,
-      "p20": 141,
-      "p80": 182,
-      "mean": 161.6,
-      "winPct": 0.4,
-      "top3Pct": 5.4,
+      "current": 97,
+      "median": 164.0,
+      "p20": 144,
+      "p80": 185,
+      "mean": 164.6,
+      "winPct": 0.7,
+      "top3Pct": 6.8,
       "teamShare": 51,
       "nTeams": 5,
       "nPlayers": 6,
@@ -289,8 +257,40 @@
         }
       ],
       "curRank": 10,
+      "projRank": 8,
+      "rankShift": 2
+    },
+    {
+      "uid": "wKbTN7lhX8VybKLCQx4UdfE1csm2",
+      "name": "Harry Brisson",
+      "current": 82,
+      "median": 163.0,
+      "p20": 141,
+      "p80": 186,
+      "mean": 163.4,
+      "winPct": 0.3,
+      "top3Pct": 6.5,
+      "teamShare": 100,
+      "nTeams": 10,
+      "nPlayers": 0,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "mexico"
+        },
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "team",
+          "id": "spain"
+        }
+      ],
+      "curRank": 14,
       "projRank": 9,
-      "rankShift": 1
+      "rankShift": 5
     },
     {
       "uid": "M258P797q1YUoHoYfTLlEDNDw9b2",
@@ -371,7 +371,7 @@
       "p80": 176,
       "mean": 152.7,
       "winPct": 0.0,
-      "top3Pct": 2.1,
+      "top3Pct": 2.0,
       "teamShare": 100,
       "nTeams": 8,
       "nPlayers": 0,
@@ -397,13 +397,13 @@
     {
       "uid": "UoQrvoSZY8gpncC1w1TEKsoFUWz1",
       "name": "Peter Gallagher",
-      "current": 86,
+      "current": 87,
       "median": 152.0,
       "p20": 130,
       "p80": 175,
       "mean": 153.0,
       "winPct": 0.3,
-      "top3Pct": 5.1,
+      "top3Pct": 5.0,
       "teamShare": 100,
       "nTeams": 10,
       "nPlayers": 0,
@@ -435,7 +435,7 @@
       "p80": 172,
       "mean": 151.8,
       "winPct": 0.0,
-      "top3Pct": 2.0,
+      "top3Pct": 1.9,
       "teamShare": 41,
       "nTeams": 2,
       "nPlayers": 4,
