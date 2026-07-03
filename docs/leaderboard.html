@@ -226,6 +226,21 @@
   #blueShell .bs-shell svg { width: 26px; height: 26px; display: block; }
   #blueShell .bs-sub { font-size: 12px; opacity: 0.93; margin-top: 3px; line-height: 1.5; }
   @keyframes bs-wobble { 0%, 100% { transform: rotate(-9deg) } 50% { transform: rotate(9deg) } }
+  /* "dodged with a star" variant (the gag's Saturday payoff) */
+  #blueShell.dodged {
+    color: #4a2e00;
+    background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 55%, #fde68a 100%);
+    border-color: #fff2c0;
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+  }
+  #blueShell.dodged .bs-sub { opacity: 0.9; }
+  #blueShell .bs-star {
+    display: inline-block; line-height: 0;
+    animation: bs-spin 3.5s linear infinite;
+    filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.25));
+  }
+  #blueShell .bs-star svg { width: 28px; height: 28px; display: block; }
+  @keyframes bs-spin { from { transform: rotate(0) } to { transform: rotate(360deg) } }
 
   /* --- time-bounded transfer CTA (group stage → R32 kickoff) --- */
   .transfer-cta {
@@ -935,10 +950,44 @@
       </g>
       <ellipse cx="14" cy="14.5" rx="3" ry="2" fill="#dcecff" opacity="0.85"/>
     </svg>`;
+  // The gag's payoff (Sat Jul 4): Cris V grabbed an invincibility star and
+  // dodged the shell. Gold star, spun by .bs-star. Self-contained SVG.
+  const STAR_SVG = `
+    <svg viewBox="0 0 40 40" role="img" aria-label="invincibility star">
+      <defs>
+        <radialGradient id="stG" cx="42%" cy="35%" r="75%">
+          <stop offset="0%" stop-color="#fff6c2"/>
+          <stop offset="55%" stop-color="#ffd23f"/>
+          <stop offset="100%" stop-color="#f59e0b"/>
+        </radialGradient>
+      </defs>
+      <polygon points="20,2 24.2,14.2 37.1,14.4 26.9,22.2 30.6,34.6 20,27.2 9.4,34.6 13.1,22.2 2.9,14.4 15.8,14.2"
+               fill="url(#stG)" stroke="#c77b0a" stroke-width="1.3" stroke-linejoin="round"/>
+      <circle cx="15" cy="14" r="1.6" fill="#fff" opacity="0.85"/>
+    </svg>`;
   function renderBlueShell(rows) {
     const el = document.getElementById('blueShell');
     if (!el) return;
     el.style.display = 'none';
+    el.classList.remove('dodged');
+
+    // ---- Scripted wrap-up of the blue-shell bit -------------------------
+    // Through Fri Jul 3: the runaway-favorite "incoming" warning (below).
+    // Sat Jul 4: Cris V grabbed a star and DODGED it (gold celebration banner).
+    // Sun Jul 5 onward: the whole bit is retired - nothing shows. (Months are
+    // 0-indexed, so 6 = July; boundaries are local midnight.)
+    const now = new Date();
+    if (now >= new Date(2026, 6, 5)) return;               // Sun Jul 5: gag over
+    if (now >= new Date(2026, 6, 4)) {                      // Sat Jul 4: dodged
+      el.classList.add('dodged');
+      el.innerHTML = `
+        <div class="bs-head"><span class="bs-star">${STAR_SVG}</span>
+          Cris V grabbed a STAR and DODGED the blue shell!</div>
+        <div class="bs-sub">Invincible for now &ndash; the lead lives on &#128526;</div>`;
+      el.style.display = 'block';
+      return;
+    }
+
     if (!rows || !rows.length || !projByUid) return;
     // The rubber-band target = whoever has the highest title odds in this view.
     let fav = null, favPct = -1;
