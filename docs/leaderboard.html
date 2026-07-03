@@ -368,7 +368,8 @@
       simulations. The smaller figure is the middle-60% range (p20&ndash;p80) and
       narrows as more matches finish. <strong>Win %</strong>, <strong>Top 3</strong>, and
       <strong>Top 5</strong> are your odds of finishing first, on the podium, and in the
-      top five. <strong>Keys to win</strong>
+      top five; <strong>Last %</strong> is your odds of the wooden spoon (finishing dead
+      last). <strong>Keys to win</strong>
       are the picks on your roster that swing those odds the most &ndash; root for
       them. Managers with no realistic title path show what to root for to reach the
       podium instead. Projections always assume your current roster.
@@ -387,11 +388,12 @@
           <th class="num">Win %</th>
           <th class="num">Top 3</th>
           <th class="num">Top 5</th>
+          <th class="num">Last %</th>
           <th class="keys-col">Keys to win</th>
         </tr>
       </thead>
       <tbody id="lbBody">
-        <tr><td colspan="9" class="empty-state">Loading…</td></tr>
+        <tr><td colspan="10" class="empty-state">Loading…</td></tr>
       </tbody>
     </table>
     <p class="last-updated" id="lastUpdated"></p>
@@ -630,7 +632,7 @@
     const projLine = proj
       ? `<div class="pm-stats" style="margin-top:4px">&#128200; Projected finish:
            <strong>~${Math.round(proj.median)}</strong> (${proj.p20}&ndash;${proj.p80})
-           · ${proj.winPct}% win · ${proj.top3Pct}% top 3 · ${proj.top5Pct}% top 5 · assumes current roster</div>`
+           · ${proj.winPct}% win · ${proj.top3Pct}% top 3 · ${proj.top5Pct}% top 5 · ${proj.lastPct}% last · assumes current roster</div>`
       : '';
     const keysLine = (proj && proj.keys && proj.keys.length && rostersVisible && catalogReady)
       ? `<div class="pm-stats keys-cell" style="margin-top:4px">&#128081;
@@ -846,7 +848,7 @@
       renderTabs();
       renderFiltered();
     } catch (e) {
-      lbBody.innerHTML = `<tr><td colspan="8" class="empty-state">
+      lbBody.innerHTML = `<tr><td colspan="9" class="empty-state">
         Couldn't load leaderboard: ${escape(e.message)}
       </td></tr>`;
     }
@@ -955,7 +957,7 @@
 
   function renderTable(rows) {
     if (!rows.length) {
-      lbBody.innerHTML = `<tr><td colspan="8" class="empty-state">
+      lbBody.innerHTML = `<tr><td colspan="9" class="empty-state">
         No players yet. Be the first to <a href="./draft.html">draft a roster</a>.
       </td></tr>`;
       return;
@@ -1002,6 +1004,7 @@
       const winCell  = pctCell(proj ? proj.winPct  : null);
       const top3Cell = pctCell(proj ? proj.top3Pct : null);
       const top5Cell = pctCell(proj ? proj.top5Pct : null);
+      const lastCell = pctCell(proj ? proj.lastPct : null);
       const keysCell = rostersVisible ? keysCellHtml(proj)
         : '<span class="proj-na">&ndash;</span>';
       // rank movement arrow
@@ -1022,6 +1025,7 @@
         <td class="num proj-cell">${winCell}</td>
         <td class="num proj-cell">${top3Cell}</td>
         <td class="num proj-cell">${top5Cell}</td>
+        <td class="num proj-cell">${lastCell}</td>
         <td class="keys-cell">${keysCell}</td>
       </tr>`;
     }).join('');

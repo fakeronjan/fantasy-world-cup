@@ -374,6 +374,7 @@ def main():
     win_counts = [0] * len(users)
     top3_counts = [0] * len(users)
     top5_counts = [0] * len(users)
+    last_counts = [0] * len(users)
     # Per-user per-asset future-point sums: overall, and conditioned on the user
     # finishing 1st / top-3 in that same sim. Drives "keys to win": an asset
     # whose future points are markedly higher in the sims where the user wins is
@@ -404,6 +405,7 @@ def main():
             top3_counts[i] += 1
         for i in order[:5]:
             top5_counts[i] += 1
+        last_counts[order[-1]] += 1  # dead last this sim
         for i, contrib in enumerate(run_contrib):
             aa, aw, at3 = asset_all[i], asset_win[i], asset_top3[i]
             is_win, is_t3 = i == winner, i in top3
@@ -468,6 +470,7 @@ def main():
             "winPct": round(100 * win_counts[i] / args.runs, 1),
             "top3Pct": round(100 * top3_counts[i] / args.runs, 1),
             "top5Pct": round(100 * top5_counts[i] / args.runs, 1),
+            "lastPct": round(100 * last_counts[i] / args.runs, 1),
             "teamShare": round(100 * team_spend / tot_spend) if tot_spend else 0,
             "nTeams": n_team, "nPlayers": n_play,
             "keysGoal": keys_goal, "keys": keys,
@@ -491,7 +494,7 @@ def main():
 
     # ---- face-validity readout -------------------------------------------
     print(f"\n{'name':<20}{'cur':>5}{'rk':>3} -> {'med':>5}{'rk':>3}{'shift':>6}"
-          f"{'p20':>6}{'p80':>6}{'win%':>6}{'top3%':>7}{'top5%':>7}  keys")
+          f"{'p20':>6}{'p80':>6}{'win%':>6}{'top3%':>7}{'top5%':>7}{'last%':>7}  keys")
     for r in rows:
         arrow = f"+{r['rankShift']}" if r['rankShift'] > 0 else str(r['rankShift'])
         ktag = "" if r["keysGoal"] == "win" else f"[{r['keysGoal']}] "
@@ -500,7 +503,7 @@ def main():
         print(f"{r['name'][:19]:<20}{r['current']:>5}{r['curRank']:>3} -> "
               f"{r['median']:>5.0f}{r['projRank']:>3}{arrow:>6}"
               f"{r['p20']:>6.0f}{r['p80']:>6.0f}{r['winPct']:>5.1f}%"
-              f"{r['top3Pct']:>6.1f}%{r['top5Pct']:>6.1f}%  {ktag}{knames}")
+              f"{r['top3Pct']:>6.1f}%{r['top5Pct']:>6.1f}%{r['lastPct']:>6.1f}%  {ktag}{knames}")
 
     out = {
         "generatedAt": data_as_of or datetime.now(timezone.utc).isoformat(),
