@@ -225,7 +225,6 @@
   }
   #blueShell .bs-shell svg { width: 26px; height: 26px; display: block; }
   #blueShell .bs-sub { font-size: 12px; opacity: 0.93; margin-top: 3px; line-height: 1.5; }
-  #blueShell .bs-wink { opacity: 0.75; font-style: italic; }
   @keyframes bs-wobble { 0%, 100% { transform: rotate(-9deg) } 50% { transform: rotate(9deg) } }
 
   /* --- time-bounded transfer CTA (group stage → R32 kickoff) --- */
@@ -948,8 +947,7 @@
     el.innerHTML = `
       <div class="bs-head"><span class="bs-shell">${BLUE_SHELL_SVG}</span>
         Watch out, ${escape(leader)}! BLUE SHELL incoming!</div>
-      <div class="bs-sub">${Math.round(favPct)}% to win makes you the runaway target &ndash; a direct hit is -100 points!!
-        <span class="bs-wink">(no points are actually harmed in this bit &#127812;)</span></div>`;
+      <div class="bs-sub">${Math.round(favPct)}% to win makes you the runaway target &ndash; a direct hit is -100 points!! &#128521;</div>`;
     el.style.display = 'block';
   }
 
