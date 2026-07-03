@@ -409,10 +409,16 @@ def render_odds_keys_html(proj: dict, teams_cache: dict, players_cache: dict) ->
     return f"""
   <div style="background:#f8f8f6; border-radius:6px; padding:16px; margin-bottom:16px">
     <div style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px">Title odds &#183; if your current roster plays out</div>
-    <table style="width:100%; border-collapse:collapse; text-align:center"><tr>
-      <td style="width:50%; padding:0 8px"><div style="font-size:26px; font-weight:800; color:#ff6eb4">{_pct_str(proj.get("winPct"))}</div><div style="font-size:11px; color:#888">to win it all</div></td>
-      <td style="width:50%; padding:0 8px; border-left:1px solid #e5e5e5"><div style="font-size:26px; font-weight:800; color:#1a6b8a">{_pct_str(proj.get("top3Pct"))}</div><div style="font-size:11px; color:#888">top-3 finish</div></td>
-    </tr></table>
+    <table style="width:100%; border-collapse:collapse; text-align:center">
+      <tr>
+        <td style="width:50%; padding:6px 8px"><div style="font-size:26px; font-weight:800; color:#ff6eb4">{_pct_str(proj.get("winPct"))}</div><div style="font-size:11px; color:#888">to win it all</div></td>
+        <td style="width:50%; padding:6px 8px; border-left:1px solid #e5e5e5"><div style="font-size:26px; font-weight:800; color:#1a6b8a">{_pct_str(proj.get("top3Pct"))}</div><div style="font-size:11px; color:#888">top-3 finish</div></td>
+      </tr>
+      <tr>
+        <td style="width:50%; padding:6px 8px; border-top:1px solid #e5e5e5"><div style="font-size:26px; font-weight:800; color:#1a6b8a">{_pct_str(proj.get("top5Pct"))}</div><div style="font-size:11px; color:#888">top-5 finish</div></td>
+        <td style="width:50%; padding:6px 8px; border-left:1px solid #e5e5e5; border-top:1px solid #e5e5e5"><div style="font-size:26px; font-weight:800; color:#999">{_pct_str(proj.get("lastPct"))}</div><div style="font-size:11px; color:#888">wooden spoon</div></td>
+      </tr>
+    </table>
     {keys_block}
   </div>"""
 
@@ -420,8 +426,10 @@ def render_odds_keys_html(proj: dict, teams_cache: dict, players_cache: dict) ->
 def _odds_keys_plain(proj: dict, teams_cache: dict, players_cache: dict) -> str:
     if not proj:
         return ""
-    win = _pct_str(proj.get("winPct")).replace("&lt;", "<").replace("&ndash;", "-")
-    top3 = _pct_str(proj.get("top3Pct")).replace("&lt;", "<").replace("&ndash;", "-")
+    def _plain_pct(key):
+        return _pct_str(proj.get(key)).replace("&lt;", "<").replace("&ndash;", "-")
+    win, top3, top5, last = (_plain_pct("winPct"), _plain_pct("top3Pct"),
+                             _plain_pct("top5Pct"), _plain_pct("lastPct"))
     names = []
     for k in (proj.get("keys") or []):
         if k.get("kind") == "team":
@@ -430,7 +438,7 @@ def _odds_keys_plain(proj: dict, teams_cache: dict, players_cache: dict) -> str:
             names.append(((players_cache.get(k["id"]) or {}).get("name") or k["id"]).split()[-1])
     goal = proj.get("keysGoal") or "none"
     label = "Keys to win" if goal == "win" else "Keys to reach top 3" if goal == "top3" else ""
-    line = f"Title odds: {win} to win · {top3} top-3 finish"
+    line = f"Title odds: {win} to win · {top3} top-3 · {top5} top-5 · {last} wooden spoon"
     if names and label:
         line += f"\n{label}: {', '.join(names)}"
     return line
