@@ -202,6 +202,29 @@
     tr:has(.lb-roster) { cursor: pointer; }
   }
 
+  /* --- joke: Mario Kart blue-shell warning for the runaway leader --- */
+  #blueShell {
+    display: none;
+    margin: 0 0 14px;
+    padding: 11px 15px;
+    border-radius: 8px;
+    color: #fff;
+    background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 55%, #3b82f6 100%);
+    border: 2px solid #bfdbfe;
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
+  }
+  #blueShell .bs-head {
+    font-size: 14px; font-weight: 800; letter-spacing: 0.3px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  #blueShell .bs-shell {
+    font-size: 20px; display: inline-block;
+    animation: bs-wobble 1.1s ease-in-out infinite;
+  }
+  #blueShell .bs-sub { font-size: 12px; opacity: 0.93; margin-top: 3px; line-height: 1.5; }
+  #blueShell .bs-wink { opacity: 0.75; font-style: italic; }
+  @keyframes bs-wobble { 0%, 100% { transform: rotate(-9deg) } 50% { transform: rotate(9deg) } }
+
   /* --- time-bounded transfer CTA (group stage → R32 kickoff) --- */
   .transfer-cta {
     background: #fff5fa;
@@ -347,6 +370,8 @@
       them. Managers with no realistic title path show what to root for to reach the
       podium instead. Projections always assume your current roster.
     </p>
+
+    <div id="blueShell"></div>
 
     <table class="data">
       <thead>
@@ -867,8 +892,35 @@
 
   function renderFiltered() {
     const filtered = filterRowsForTab(allRows);
+    renderBlueShell(filtered);
     renderTable(filtered);
     renderChart(filtered);
+  }
+
+  // Just for laughs: Mario Kart rubber-banding. When someone becomes the runaway
+  // title favorite, warn them a blue shell is inbound. PURELY cosmetic - no points
+  // are actually touched anywhere in the scoring. Triggered off the Monte Carlo
+  // win odds (projByUid[uid].winPct), same numbers as the Win % column.
+  const BLUE_SHELL_WINPCT = 60;  // favorite's title odds (%) must exceed this to trigger
+  function renderBlueShell(rows) {
+    const el = document.getElementById('blueShell');
+    if (!el) return;
+    el.style.display = 'none';
+    if (!rows || !rows.length || !projByUid) return;
+    // The rubber-band target = whoever has the highest title odds in this view.
+    let fav = null, favPct = -1;
+    for (const u of rows) {
+      const wp = projByUid[u.uid] ? (projByUid[u.uid].winPct ?? 0) : 0;
+      if (wp > favPct) { favPct = wp; fav = u; }
+    }
+    if (!fav || favPct <= BLUE_SHELL_WINPCT) return;
+    const leader = window.fwc.nameFor(fav);
+    el.innerHTML = `
+      <div class="bs-head"><span class="bs-shell">&#128309;&#128026;</span>
+        Watch out, ${escape(leader)}! BLUE SHELL incoming!</div>
+      <div class="bs-sub">${Math.round(favPct)}% to win makes you the runaway target &ndash; a direct hit is &minus;100 points!!
+        <span class="bs-wink">(no points are actually harmed in this bit &#127812;)</span></div>`;
+    el.style.display = 'block';
   }
 
   function renderTable(rows) {
