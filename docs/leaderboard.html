@@ -299,8 +299,7 @@
     <div id="transferCta" class="transfer-cta" style="display:none">
       <div class="tc-head" id="ctaHead">&#128257; TRANSFER MARKET OPENING SOON: sell underperformers, buy up to 3 new players / countries!</div>
       <div class="tc-body">
-        The market reopens between <strong>every round</strong> (the first window opens
-        after the group stage, Sun&nbsp;Jun&nbsp;28). Knocked-out teams are
+        The market reopens between <strong>every round</strong>. Knocked-out teams are
         <strong>auto-sold for 25% of what you paid</strong>, credited to your balance.
         Selling is free and unlimited; <strong>buys are capped at 3 for the whole
         tournament</strong>. No rush, though: you can <strong>bank your cash and save your
@@ -396,9 +395,10 @@
   // whole users collection). 5 min keeps it fresh-enough at 1/10th the reads.
   const REFRESH_MS = 300_000;
   const ROSTER_BUDGET = 60;   // salary cap; matches transfer.html BUDGET
-  // First Round-of-32 match (official WC2026 schedule). The transfer CTA runs
-  // from now until this moment, then the knockouts are underway.
-  const R32_KICKOFF = new Date('2026-06-28T19:00:00Z');
+  // First match of the round whose transfer window is opening. The CTA runs
+  // from now until this moment, then that round is underway and rosters lock.
+  // Bump this each turnover (group→R32→R16→QF→SF→F) to reactivate the promo.
+  const NEXT_ROUND_KICKOFF = new Date('2026-07-04T17:00:00Z'); // R16 first match
 
   // Palette mirrors the tennis Power Rankings - distinct, color-blind-friendly,
   // keeps the FWC teal + pink at the top of the rotation.
@@ -671,18 +671,18 @@
     }
   }
 
-  // Show the transfer CTA from now until R32 kickoff, then drop it (the
-  // knockouts are underway and rosters lock). Stamps the deadline in local time.
+  // Show the transfer CTA from now until the next round's kickoff, then drop it
+  // (that round is underway and rosters lock). Stamps the deadline in local time.
   function maybeShowTransferCta(gs) {
     const el = document.getElementById('transferCta');
-    if (!el || new Date() >= R32_KICKOFF) return;
+    if (!el || new Date() >= NEXT_ROUND_KICKOFF) return;
     // Keep the headline honest if a window is actually live right now.
     if (gs && gs.state === 'window-open') {
       document.getElementById('ctaHead').innerHTML =
         '&#128257; TRANSFER MARKET IS OPEN: sell underperformers, buy up to 3 new players / countries!';
     }
     document.getElementById('ctaDeadline').textContent =
-      'Round of 32 kicks off ' + R32_KICKOFF.toLocaleString(undefined, {
+      'Round of 16 kicks off ' + NEXT_ROUND_KICKOFF.toLocaleString(undefined, {
         weekday: 'short', month: 'short', day: 'numeric',
         hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
       });
