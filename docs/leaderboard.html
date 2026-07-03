@@ -395,10 +395,6 @@
   // whole users collection). 5 min keeps it fresh-enough at 1/10th the reads.
   const REFRESH_MS = 300_000;
   const ROSTER_BUDGET = 60;   // salary cap; matches transfer.html BUDGET
-  // First match of the round whose transfer window is opening. The CTA runs
-  // from now until this moment, then that round is underway and rosters lock.
-  // Bump this each turnover (group→R32→R16→QF→SF→F) to reactivate the promo.
-  const NEXT_ROUND_KICKOFF = new Date('2026-07-04T17:00:00Z'); // R16 first match
 
   // Palette mirrors the tennis Power Rankings - distinct, color-blind-friendly,
   // keeps the FWC teal + pink at the top of the rotation.
@@ -671,18 +667,36 @@
     }
   }
 
-  // Show the transfer CTA from now until the next round's kickoff, then drop it
-  // (that round is underway and rosters lock). Stamps the deadline in local time.
-  function maybeShowTransferCta(gs) {
+  // Show the transfer CTA advertising the next knockout window, then drop it
+  // once the final round has kicked off. Fully schedule-driven off
+  // config.roundStartsUtc (published by the ingest cron), so it self-activates
+  // at every turnover — group→R32→R16→QF→SF→F — with no per-round edit. Stamps
+  // the upcoming round's kickoff in local time.
+  const KO_ROUND_NAMES = {
+    R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarter-finals',
+    SF: 'Semi-finals', F: 'Final',
+  };
+  async function maybeShowTransferCta(gs) {
     const el = document.getElementById('transferCta');
-    if (!el || new Date() >= NEXT_ROUND_KICKOFF) return;
+    if (!el) return;
+    const schedule = await window.fwc.getRoundSchedule();
+    const now = new Date();
+    // The "upcoming window" is the first knockout round not yet kicked off.
+    let nextRound = null, nextKickoff = null;
+    for (const r of ['R32', 'R16', 'QF', 'SF', 'F']) {
+      if (!schedule[r]) continue;
+      const dt = new Date(schedule[r]);
+      if (dt > now) { nextRound = r; nextKickoff = dt; break; }
+    }
+    if (!nextRound) return; // final has kicked off - nothing left to advertise
     // Keep the headline honest if a window is actually live right now.
     if (gs && gs.state === 'window-open') {
       document.getElementById('ctaHead').innerHTML =
         '&#128257; TRANSFER MARKET IS OPEN: sell underperformers, buy up to 3 new players / countries!';
     }
     document.getElementById('ctaDeadline').textContent =
-      'Round of 16 kicks off ' + NEXT_ROUND_KICKOFF.toLocaleString(undefined, {
+      (KO_ROUND_NAMES[nextRound] || nextRound) + ' kicks off ' +
+      nextKickoff.toLocaleString(undefined, {
         weekday: 'short', month: 'short', day: 'numeric',
         hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
       });
@@ -743,7 +757,7 @@
     // at kickoff.)
     const gs = await window.fwc.getGameState();
     window.fwc.renderStateBanner(document.getElementById('stateBanner'), gs);
-    maybeShowTransferCta(gs);
+    maybeShowTransferCta(gs);  // async; fire-and-forget UI, nothing below depends on it
     const isAdmin = window.fwc.isAdmin(user);
     rostersVisible = (gs.state !== 'pre-kickoff') || isAdmin;
     document.getElementById('rosterNote').style.display =

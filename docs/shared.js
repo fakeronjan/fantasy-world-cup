@@ -227,6 +227,26 @@ async function getScoringWeights() {
   return _weightsCache;
 }
 
+// Knockout round-start schedule (config.roundStartsUtc, published every run by
+// the ingest cron via _fwc_lib.ROUND_FIRST_KICKOFF_UTC). Read once and cached.
+// Falls back to the canonical WC2026 schedule if the field hasn't been written
+// yet, so schedule-driven UI never has to guess a date.
+const ROUND_STARTS_FALLBACK = {
+  R32: '2026-06-28T19:00:00Z', R16: '2026-07-04T17:00:00Z',
+  QF:  '2026-07-09T20:00:00Z', SF:  '2026-07-14T19:00:00Z',
+  F:   '2026-07-19T19:00:00Z',
+};
+let _scheduleCache = null;
+async function getRoundSchedule() {
+  if (_scheduleCache) return _scheduleCache;
+  try {
+    const snap = await getDoc(doc(db, 'config', 'global'));
+    const rs = (snap.exists() && snap.data().roundStartsUtc) || null;
+    _scheduleCache = (rs && Object.keys(rs).length) ? rs : ROUND_STARTS_FALLBACK;
+  } catch { _scheduleCache = ROUND_STARTS_FALLBACK; }
+  return _scheduleCache;
+}
+
 // Itemized points breakdown for a team/player asset doc, using the SAME fields
 // the ingest scores from (winsPlayedIn, cleanSheetsPlayedIn, etc. - NOT the
 // vestigial cleanSheets field). Returns [{label, detail, pts}]. Reconciles to
@@ -356,7 +376,7 @@ function assetMatchLog(asset, kind, matches, w) {
 window.fwc = {
   auth, db,
   signInWithGoogle, signOut, onAuth, isAdmin, nameFor, flagFor,
-  getGameState, renderStateBanner, getScoringWeights, pointsBreakdown,
+  getGameState, renderStateBanner, getScoringWeights, getRoundSchedule, pointsBreakdown,
   getFinishedMatches, assetMatchLog,
   configIsPlaceholder,
   // Re-export Firestore helpers commonly used on pages, so individual pages
