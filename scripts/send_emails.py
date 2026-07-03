@@ -416,7 +416,7 @@ def render_odds_keys_html(proj: dict, teams_cache: dict, players_cache: dict) ->
       </tr>
       <tr>
         <td style="width:50%; padding:6px 8px; border-top:1px solid #e5e5e5"><div style="font-size:26px; font-weight:800; color:#1a6b8a">{_pct_str(proj.get("top5Pct"))}</div><div style="font-size:11px; color:#888">top-5 finish</div></td>
-        <td style="width:50%; padding:6px 8px; border-left:1px solid #e5e5e5; border-top:1px solid #e5e5e5"><div style="font-size:26px; font-weight:800; color:#999">{_pct_str(proj.get("lastPct"))}</div><div style="font-size:11px; color:#888">wooden spoon</div></td>
+        <td style="width:50%; padding:6px 8px; border-left:1px solid #e5e5e5; border-top:1px solid #e5e5e5"><div style="font-size:26px; font-weight:800; color:#999">{_pct_str(proj.get("lastPct"))}</div><div style="font-size:11px; color:#888">last place</div></td>
       </tr>
     </table>
     {keys_block}
@@ -438,7 +438,7 @@ def _odds_keys_plain(proj: dict, teams_cache: dict, players_cache: dict) -> str:
             names.append(((players_cache.get(k["id"]) or {}).get("name") or k["id"]).split()[-1])
     goal = proj.get("keysGoal") or "none"
     label = "Keys to win" if goal == "win" else "Keys to reach top 3" if goal == "top3" else ""
-    line = f"Title odds: {win} to win · {top3} top-3 · {top5} top-5 · {last} wooden spoon"
+    line = f"Title odds: {win} to win · {top3} top-3 · {top5} top-5 · {last} last place"
     if names and label:
         line += f"\n{label}: {', '.join(names)}"
     return line
