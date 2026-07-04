@@ -55,6 +55,7 @@
   tr.eliminated, tr.exited { opacity: 0.5; }
   tr.eliminated .team-cell, tr.exited .team-cell { text-decoration: line-through; }
   .status-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 1px 6px; border-radius: 3px; background: #e5e7eb; color: #555; white-space: nowrap; }
+  .status-badge.active { background: #dcfce7; color: #15803d; }
   .status-badge.out { background: #fee2e2; color: #b91c1c; }
   .status-badge.sold { background: #e5e7eb; color: #555; }
 
@@ -722,7 +723,7 @@
         <td style="font-size:11px; color:var(--text-muted)">${purchasedAt}</td>
         <td class="num">$${bought}</td>
         <td class="num"><strong>${pts}</strong></td>
-        <td>${eliminated ? '<span class="status-badge out">eliminated</span>' : 'active'}</td>
+        <td>${eliminated ? '<span class="status-badge out">eliminated</span>' : '<span class="status-badge active">active</span>'}</td>
       </tr>`;
     }).join('');
 
