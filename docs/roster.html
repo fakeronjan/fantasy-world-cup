@@ -50,15 +50,13 @@
   .kind-player { background: var(--accent); color: #fff; }
 
   /* Consistent "exited pick" convention: grayed + struck, retained pts shown.
-     Used for eliminated picks still in the table AND the Previous picks list. */
-  tr.eliminated { opacity: 0.5; }
-  tr.eliminated .team-cell { text-decoration: line-through; }
-  .exited-pick { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border-row); font-size: 13px; opacity: 0.6; }
-  .exited-pick:last-child { border-bottom: none; }
-  .exited-pick .ep-flag { font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif; font-size: 15px; }
-  .exited-pick .ep-name { flex: 1; text-decoration: line-through; }
-  .exited-pick .ep-pts  { color: #16a34a; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .exited-pick .ep-tag  { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 1px 6px; border-radius: 3px; background: #e5e7eb; color: #555; }
+     Sold- and eliminated-out picks live in the main table now, distinguished
+     by the Status column rather than a separate list. */
+  tr.eliminated, tr.exited { opacity: 0.5; }
+  tr.eliminated .team-cell, tr.exited .team-cell { text-decoration: line-through; }
+  .status-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 1px 6px; border-radius: 3px; background: #e5e7eb; color: #555; white-space: nowrap; }
+  .status-badge.out { background: #fee2e2; color: #b91c1c; }
+  .status-badge.sold { background: #e5e7eb; color: #555; }
 
   .no-roster {
     text-align: center; padding: 48px 24px;
@@ -179,28 +177,16 @@
           <th>Tier</th>
           <th>Bought</th>
           <th class="num">Paid</th>
-          <th class="num">Now</th>
           <th class="num">Points</th>
           <th>Status</th>
         </tr>
       </thead>
       <tbody id="rosterBody">
-        <tr><td colspan="9" style="padding:24px;text-align:center;color:var(--text-muted)">Loading…</td></tr>
+        <tr><td colspan="8" style="padding:24px;text-align:center;color:var(--text-muted)">Loading…</td></tr>
       </tbody>
     </table>
 
     <p class="muted" style="text-align:center;font-size:12px;margin-top:16px" id="footerNote"></p>
-
-    <!-- Previous picks: sold or eliminated, shown grayed/struck with retained points -->
-    <div class="card" id="exitedCard" style="margin-top:16px; display:none">
-      <div style="font-size:11px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; color:var(--bg-header); margin-bottom:4px">
-        Previous picks
-      </div>
-      <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px">
-        Sold or eliminated. You keep the points they earned while you held them.
-      </div>
-      <ul id="exitedList" style="list-style:none; margin:0"></ul>
-    </div>
 
     <!-- Total roster value chart (Stage 3) -->
     <div class="card" id="valueChartCard" style="margin-top:16px; display:none">
@@ -676,9 +662,6 @@
         : pick.assetId;
       const tier    = catalog ? catalog.tier : '?';
       const bought  = pick.purchasePrice;
-      // currentValue + pts will populate once teams/players are seeded
-      // into Firestore and ingest_results.py starts writing point updates.
-      const nowWorth = catalog ? catalog.basePrice : bought;
       const pts = pick.points ?? 0;
       const eliminated = pick.eliminated === true;
       const emoji = catalog
@@ -738,9 +721,41 @@
         <td><span class="tier-badge tier-${tier}">T${tier}</span></td>
         <td style="font-size:11px; color:var(--text-muted)">${purchasedAt}</td>
         <td class="num">$${bought}</td>
-        <td class="num">${eliminated ? '$0' : '$' + nowWorth}</td>
         <td class="num"><strong>${pts}</strong></td>
-        <td>${eliminated ? '<span class="muted">eliminated</span>' : 'active'}</td>
+        <td>${eliminated ? '<span class="status-badge out">eliminated</span>' : 'active'}</td>
+      </tr>`;
+    }).join('');
+
+    // Previous picks (sold / eliminated) merge into the same table, newest exit
+    // first, grayed + struck, with the exit reason + date in the Status column.
+    // Their retained points still count toward Total Points (banked server-side).
+    const exited = [...((userDoc && userDoc.exitedPicks) || [])]
+      .sort((a, b) => String(b.exitAt || '').localeCompare(String(a.exitAt || '')));
+    rosterBody.innerHTML += exited.map(e => {
+      const catalog = getCatalogAsset(e.kind, e.assetId);
+      const name    = catalog
+        ? (e.kind === 'player' ? displayName(catalog) : catalog.name)
+        : e.assetId;
+      const tier    = catalog ? catalog.tier : '?';
+      const paid    = e.purchasePrice ?? 0;
+      const pts     = e.points ?? 0;
+      const emoji   = catalog
+        ? (e.kind === 'team' ? catalog.emoji : teamIdToEmoji[catalog.teamId])
+        : null;
+      const flagImg = flagSpan(emoji);
+      const isElim  = e.exitReason === 'eliminated';
+      const when    = e.exitAt ? shortDate(e.exitAt) : '';
+      const badge   = `<span class="status-badge ${isElim ? 'out' : 'sold'}">${isElim ? 'eliminated' : 'sold'}${when ? ' · ' + when : ''}</span>`;
+      totalP += pts;
+      return `<tr class="asset-row exited" data-kind="${e.kind}" data-id="${escape(e.assetId)}">
+        <td class="rank-cell">–</td>
+        <td class="team-cell">${flagImg}${escape(name)}</td>
+        <td><span class="kind-badge kind-${e.kind}">${e.kind}</span></td>
+        <td><span class="tier-badge tier-${tier}">T${tier}</span></td>
+        <td style="font-size:11px; color:var(--text-muted)">–</td>
+        <td class="num">$${paid}</td>
+        <td class="num"><strong>${pts}</strong></td>
+        <td>${badge}</td>
       </tr>`;
     }).join('');
 
@@ -755,30 +770,6 @@
       footerNote.textContent = 'Scores sync as match results come in (typically every few hours during the tournament), not in real time.';
     } else {
       footerNote.textContent = '';
-    }
-
-    // Previous picks (sold / eliminated): grayed + struck, retained points kept.
-    const exited = (userDoc && userDoc.exitedPicks) || [];
-    const exitedCard = document.getElementById('exitedCard');
-    const exitedList = document.getElementById('exitedList');
-    if (!exited.length) {
-      exitedCard.style.display = 'none';
-    } else {
-      exitedCard.style.display = 'block';
-      exitedList.innerHTML = [...exited]
-        .sort((a, b) => String(b.exitAt || '').localeCompare(String(a.exitAt || '')))
-        .map(e => {
-          const catalog = getCatalogAsset(e.kind, e.assetId);
-          const name = catalog ? (e.kind === 'player' ? displayName(catalog) : catalog.name) : e.assetId;
-          const emoji = catalog ? (e.kind === 'team' ? catalog.emoji : teamIdToEmoji[catalog.teamId]) : '';
-          const tag = e.exitReason === 'eliminated' ? 'out' : 'sold';
-          return `<li class="exited-pick">
-            ${emoji ? `<span class="ep-flag">${emoji}</span>` : ''}
-            <span class="ep-name">${escape(name)}</span>
-            <span class="ep-tag">${tag}</span>
-            <span class="ep-pts">${e.points ?? 0} pts kept</span>
-          </li>`;
-        }).join('');
     }
   }
 
