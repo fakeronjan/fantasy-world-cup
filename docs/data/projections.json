@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-04T08:05:29.246666+00:00",
+  "generatedAt": "2026-07-04T11:51:45.197304+00:00",
   "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
@@ -12,7 +12,7 @@
       "p20": 221,
       "p80": 274,
       "mean": 247.6,
-      "winPct": 84.0,
+      "winPct": 80.2,
       "top3Pct": 98.9,
       "top5Pct": 99.9,
       "lastPct": 0.0,
@@ -39,6 +39,40 @@
       "rankShift": 0
     },
     {
+      "uid": "mixdmNZGD3YnzSFOJ077AKfQKXL2",
+      "name": "Ronjan Sikdar",
+      "current": 126,
+      "median": 193.0,
+      "p20": 166,
+      "p80": 223,
+      "mean": 194.9,
+      "winPct": 7.1,
+      "top3Pct": 40.9,
+      "top5Pct": 67.2,
+      "lastPct": 0.0,
+      "teamShare": 67,
+      "nTeams": 5,
+      "nPlayers": 3,
+      "keysGoal": "win",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "france"
+        },
+        {
+          "kind": "team",
+          "id": "brazil"
+        },
+        {
+          "kind": "player",
+          "id": "3374-france"
+        }
+      ],
+      "curRank": 4,
+      "projRank": 2,
+      "rankShift": 2
+    },
+    {
       "uid": "mniYEjmbmod2SGOgtqG1iPjccRh2",
       "name": "Lisette Bruens",
       "current": 151,
@@ -46,9 +80,9 @@
       "p20": 175,
       "p80": 207,
       "mean": 191.9,
-      "winPct": 2.6,
-      "top3Pct": 40.6,
-      "top5Pct": 66.7,
+      "winPct": 2.5,
+      "top3Pct": 38.5,
+      "top5Pct": 66.2,
       "lastPct": 0.0,
       "teamShare": 33,
       "nTeams": 2,
@@ -69,42 +103,8 @@
         }
       ],
       "curRank": 2,
-      "projRank": 2,
-      "rankShift": 0
-    },
-    {
-      "uid": "mixdmNZGD3YnzSFOJ077AKfQKXL2",
-      "name": "Ronjan Sikdar",
-      "current": 126,
-      "median": 187.0,
-      "p20": 162,
-      "p80": 214,
-      "mean": 188.6,
-      "winPct": 2.2,
-      "top3Pct": 30.2,
-      "top5Pct": 60.9,
-      "lastPct": 0.0,
-      "teamShare": 53,
-      "nTeams": 4,
-      "nPlayers": 4,
-      "keysGoal": "win",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "brazil"
-        },
-        {
-          "kind": "team",
-          "id": "united-states"
-        },
-        {
-          "kind": "player",
-          "id": "145-united-states"
-        }
-      ],
-      "curRank": 4,
       "projRank": 3,
-      "rankShift": 1
+      "rankShift": -1
     },
     {
       "uid": "HTICTtDMQIVjsLo5hn5UOVfUBO62",
@@ -114,9 +114,9 @@
       "p20": 161,
       "p80": 210,
       "mean": 185.9,
-      "winPct": 2.2,
-      "top3Pct": 37.5,
-      "top5Pct": 57.8,
+      "winPct": 2.1,
+      "top3Pct": 35.7,
+      "top5Pct": 57.3,
       "lastPct": 0.0,
       "teamShare": 73,
       "nTeams": 5,
@@ -149,8 +149,8 @@
       "p80": 203,
       "mean": 181.0,
       "winPct": 0.3,
-      "top3Pct": 18.6,
-      "top5Pct": 46.4,
+      "top3Pct": 18.2,
+      "top5Pct": 45.9,
       "lastPct": 0.0,
       "teamShare": 44,
       "nTeams": 2,
@@ -182,9 +182,9 @@
       "p20": 146,
       "p80": 202,
       "mean": 175.3,
-      "winPct": 4.8,
-      "top3Pct": 19.3,
-      "top5Pct": 33.2,
+      "winPct": 4.3,
+      "top3Pct": 19.8,
+      "top5Pct": 33.8,
       "lastPct": 0.2,
       "teamShare": 48,
       "nTeams": 4,
@@ -216,9 +216,9 @@
       "p20": 145,
       "p80": 186,
       "mean": 165.5,
-      "winPct": 0.3,
-      "top3Pct": 8.6,
-      "top5Pct": 21.0,
+      "winPct": 0.2,
+      "top3Pct": 7.0,
+      "top5Pct": 20.1,
       "lastPct": 0.0,
       "teamShare": 48,
       "nTeams": 4,
@@ -227,11 +227,11 @@
       "keys": [
         {
           "kind": "team",
-          "id": "france"
+          "id": "switzerland"
         },
         {
           "kind": "team",
-          "id": "switzerland"
+          "id": "france"
         },
         {
           "kind": "team",
@@ -250,8 +250,8 @@
       "p20": 137,
       "p80": 192,
       "mean": 164.9,
-      "winPct": 0.2,
-      "top3Pct": 5.3,
+      "winPct": 0.1,
+      "top3Pct": 3.8,
       "top5Pct": 18.9,
       "lastPct": 0.0,
       "teamShare": 53,
@@ -285,8 +285,8 @@
       "p80": 188,
       "mean": 165.0,
       "winPct": 0.0,
-      "top3Pct": 9.2,
-      "top5Pct": 22.2,
+      "top3Pct": 8.6,
+      "top5Pct": 22.0,
       "lastPct": 0.1,
       "teamShare": 0,
       "nTeams": 0,
@@ -320,7 +320,7 @@
       "mean": 154.9,
       "winPct": 0.0,
       "top3Pct": 0.6,
-      "top5Pct": 7.4,
+      "top5Pct": 7.2,
       "lastPct": 0.0,
       "teamShare": 100,
       "nTeams": 7,
@@ -339,9 +339,9 @@
       "p20": 131,
       "p80": 179,
       "mean": 155.1,
-      "winPct": 0.1,
-      "top3Pct": 5.1,
-      "top5Pct": 14.7,
+      "winPct": 0.0,
+      "top3Pct": 4.0,
+      "top5Pct": 13.5,
       "lastPct": 2.2,
       "teamShare": 100,
       "nTeams": 6,
@@ -350,11 +350,11 @@
       "keys": [
         {
           "kind": "team",
-          "id": "france"
+          "id": "mexico"
         },
         {
           "kind": "team",
-          "id": "mexico"
+          "id": "france"
         },
         {
           "kind": "team",
@@ -374,8 +374,8 @@
       "p80": 176,
       "mean": 150.9,
       "winPct": 0.0,
-      "top3Pct": 0.3,
-      "top5Pct": 3.2,
+      "top3Pct": 0.1,
+      "top5Pct": 2.5,
       "lastPct": 0.6,
       "teamShare": 100,
       "nTeams": 6,
@@ -395,27 +395,14 @@
       "p80": 169,
       "mean": 145.4,
       "winPct": 0.0,
-      "top3Pct": 1.1,
-      "top5Pct": 5.5,
+      "top3Pct": 0.7,
+      "top5Pct": 4.7,
       "lastPct": 0.1,
       "teamShare": 100,
       "nTeams": 6,
       "nPlayers": 0,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "norway"
-        },
-        {
-          "kind": "team",
-          "id": "france"
-        },
-        {
-          "kind": "team",
-          "id": "portugal"
-        }
-      ],
+      "keysGoal": "none",
+      "keys": [],
       "curRank": 17,
       "projRank": 13,
       "rankShift": 4
@@ -429,8 +416,8 @@
       "p80": 166,
       "mean": 144.3,
       "winPct": 0.0,
-      "top3Pct": 1.9,
-      "top5Pct": 7.5,
+      "top3Pct": 1.6,
+      "top5Pct": 7.1,
       "lastPct": 1.5,
       "teamShare": 100,
       "nTeams": 7,
@@ -447,7 +434,7 @@
         },
         {
           "kind": "team",
-          "id": "france"
+          "id": "canada"
         }
       ],
       "curRank": 12,
@@ -464,7 +451,7 @@
       "mean": 143.1,
       "winPct": 0.0,
       "top3Pct": 0.1,
-      "top5Pct": 0.9,
+      "top5Pct": 0.8,
       "lastPct": 3.2,
       "teamShare": 100,
       "nTeams": 6,
@@ -485,7 +472,7 @@
       "mean": 152.8,
       "winPct": 3.3,
       "top3Pct": 20.3,
-      "top5Pct": 26.7,
+      "top5Pct": 26.8,
       "lastPct": 22.6,
       "teamShare": 14,
       "nTeams": 1,
@@ -518,27 +505,14 @@
       "p80": 160,
       "mean": 137.8,
       "winPct": 0.0,
-      "top3Pct": 1.1,
-      "top5Pct": 4.0,
+      "top3Pct": 0.8,
+      "top5Pct": 3.6,
       "lastPct": 0.0,
       "teamShare": 100,
       "nTeams": 6,
       "nPlayers": 0,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "portugal"
-        },
-        {
-          "kind": "team",
-          "id": "mexico"
-        },
-        {
-          "kind": "team",
-          "id": "egypt"
-        }
-      ],
+      "keysGoal": "none",
+      "keys": [],
       "curRank": 13,
       "projRank": 17,
       "rankShift": -4
@@ -552,27 +526,14 @@
       "p80": 159,
       "mean": 138.7,
       "winPct": 0.0,
-      "top3Pct": 1.0,
-      "top5Pct": 2.9,
+      "top3Pct": 0.6,
+      "top5Pct": 2.4,
       "lastPct": 2.5,
       "teamShare": 36,
       "nTeams": 1,
       "nPlayers": 3,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "team",
-          "id": "france"
-        },
-        {
-          "kind": "player",
-          "id": "3373-france"
-        },
-        {
-          "kind": "player",
-          "id": "202283-spain"
-        }
-      ],
+      "keysGoal": "none",
+      "keys": [],
       "curRank": 9,
       "projRank": 18,
       "rankShift": -9
@@ -587,7 +548,7 @@
       "mean": 115.0,
       "winPct": 0.0,
       "top3Pct": 0.0,
-      "top5Pct": 0.1,
+      "top5Pct": 0.0,
       "lastPct": 29.2,
       "teamShare": 100,
       "nTeams": 4,
