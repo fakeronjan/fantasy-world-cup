@@ -51,6 +51,17 @@ export const ADMIN_UIDS = new Set([
 
 const configIsPlaceholder = FIREBASE_CONFIG.apiKey === "REPLACE_ME";
 
+// Preview gate for the Flag Knockout module. While false, the Flags nav tab AND
+// the flags.html page are visible only to admins, so the contest can be
+// previewed privately. Flip to true (one line) to launch it to everyone.
+const FLAGS_LAUNCHED = false;
+
+function gateFlagsTab(user) {
+  const fl = document.getElementById('flagsLink');
+  if (fl) fl.style.display =
+    (FLAGS_LAUNCHED || (user && ADMIN_UIDS.has(user.uid))) ? '' : 'none';
+}
+
 let app, auth, db;
 if (!configIsPlaceholder) {
   app = initializeApp(FIREBASE_CONFIG);
@@ -79,6 +90,7 @@ async function signOut() {
 function onAuth(callback) {
   if (configIsPlaceholder) {
     // Drive the UI through the placeholder path so the page still renders.
+    gateFlagsTab(null);
     callback(null);
     return () => {};
   }
@@ -90,7 +102,8 @@ function onAuth(callback) {
     const state = await getGameState();
     renderStateBanner(el, state);
   }, 0);
-  return onAuthStateChanged(auth, callback);
+  // Wrap the page callback to also gate the preview-only Flags tab on every page.
+  return onAuthStateChanged(auth, (user) => { gateFlagsTab(user); callback(user); });
 }
 
 function isAdmin(user) {
@@ -378,7 +391,7 @@ window.fwc = {
   signInWithGoogle, signOut, onAuth, isAdmin, nameFor, flagFor,
   getGameState, renderStateBanner, getScoringWeights, getRoundSchedule, pointsBreakdown,
   getFinishedMatches, assetMatchLog,
-  configIsPlaceholder,
+  configIsPlaceholder, flagsLaunched: FLAGS_LAUNCHED,
   // Re-export Firestore helpers commonly used on pages, so individual pages
   // don't have to repeat the import URL.
   doc, getDoc, setDoc,

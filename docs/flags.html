@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flag Knockout · Fantasy World Cup</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .intro { margin-bottom: 16px; }
+  .round-pills { margin-bottom: 16px; }
+
+  /* voting round banner */
+  .vote-status {
+    background: #fef0f7; color: #9d174d; border-radius: 6px;
+    padding: 10px 14px; margin-bottom: 16px; font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .vote-status.closed { background: #f3f4f6; color: #374151; }
+
+  /* matchup grid */
+  .matchups { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .matchup {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .matchup .mtitle { font-size: 11px; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.6px; margin-bottom: 8px; text-align: center; }
+  .pair { display: flex; align-items: stretch; gap: 8px; }
+  .side {
+    flex: 1; border: 2px solid var(--border); border-radius: 8px; padding: 8px;
+    cursor: pointer; text-align: center; background: #fff; transition: border-color .12s, background .12s;
+    display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative;
+  }
+  .side:hover { border-color: var(--bg-header); }
+  .side.picked { border-color: var(--accent); background: #fff6fb; }
+  .side.picked::after {
+    content: "✓ your pick"; position: absolute; top: 4px; right: 6px;
+    font-size: 9px; font-weight: 700; color: var(--accent); letter-spacing: .3px;
+  }
+  .side.disabled { cursor: default; }
+  .side.disabled:hover { border-color: var(--border); }
+  .side.winner { border-color: #16a34a; background: #f0fdf4; }
+  .side.loser { opacity: 0.5; }
+  .side.winner::after { content: "won"; position: absolute; top: 4px; right: 6px;
+    font-size: 9px; font-weight: 700; color: #16a34a; letter-spacing: .3px; }
+  /* Uniform height, natural width - never crop or distort a flag (Nepal,
+     Switzerland etc. aren't 3:2), which matters in a beauty contest. */
+  .flag-img {
+    height: 80px; width: auto; max-width: 100%;
+    border: 1px solid rgba(0,0,0,0.12); border-radius: 4px; display: block;
+  }
+  .side .tname { font-size: 12px; font-weight: 600; line-height: 1.2; }
+  .vs { display: flex; align-items: center; font-size: 11px; font-weight: 700; color: var(--text-muted); }
+
+  /* revealed tally */
+  .tally { margin-top: 8px; }
+  .tally-bar { height: 6px; border-radius: 3px; background: #eee; overflow: hidden; display: flex; }
+  .tally-bar .a { background: var(--bg-header); }
+  .tally-bar .b { background: var(--accent); }
+  .tally-nums { display: flex; justify-content: space-between; font-size: 10px;
+    color: var(--text-muted); margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+  .tbd { color: var(--text-muted); font-size: 12px; font-style: italic; }
+  .byes-note { margin-top: 14px; font-size: 12px; color: var(--text-muted); }
+  .byes-note b { color: var(--text-body); }
+
+  /* champion */
+  .champ-card { text-align: center; padding: 32px 20px; }
+  .champ-card .flag-img { height: 150px; margin: 12px auto; }
+  .champ-card h2 { font-size: 15px; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 1px; }
+  .champ-card .cname { font-size: 30px; font-weight: 800; color: var(--accent); margin-top: 6px; }
+
+  .save-toast {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    background: #16a34a; color: #fff; padding: 8px 16px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  .save-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>FANTASY WORLD CUP</h1>
+  <p class="subtitle">Flag Knockout</p>
+  <p class="user-line" id="userLine"></p>
+</header>
+
+<nav class="site-nav" id="siteNav" style="display:none">
+  <a href="./index.html">Home</a>
+  <a href="./profile.html">Profile</a>
+  <a href="./draft.html" id="draftLink">Draft</a>
+  <a href="./roster.html">My Roster</a>
+  <a href="./leaderboard.html">Leaderboard</a>
+  <a href="./stats.html">Stats</a>
+  <a href="./flags.html" id="flagsLink" class="active" style="display:none">Flags</a>
+  <a href="./transfer.html" id="transferLink">Transfer</a>
+  <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+</nav>
+
+<main>
+  <div id="stateBanner"></div>
+
+  <div id="content"><p class="muted">Loading…</p></div>
+</main>
+
+<div class="save-toast" id="saveToast">Saved</div>
+
+<script type="module">
+import "./shared.js";
+
+const ROUND_LABEL = {
+  wildcard: 'Wildcard', R32: 'Round of 32', R16: 'Round of 16',
+  QF: 'Quarter-finals', SF: 'Semi-finals', F: 'Final',
+};
+const content = document.getElementById('content');
+const toast = document.getElementById('saveToast');
+
+let me = null;         // signed-in user
+let state = null;      // flagContest/state doc
+let myVotes = {};      // gameId -> 'a'|'b' for the current round
+let viewRound = null;  // which round the pills are showing
+
+function flagImg(team, cls = 'flag-img') {
+  if (!team) return '';
+  return `<img class="${cls}" src="./flags/${team.iso}.svg" alt="${team.name} flag" loading="lazy">`;
+}
+
+// ---- data ----------------------------------------------------------------
+async function loadState() {
+  const snap = await window.fwc.getDoc(window.fwc.doc(window.fwc.db, 'flagContest', 'state'));
+  return snap.exists() ? snap.data() : null;
+}
+
+async function loadMyVotes(round) {
+  if (!me || !round) return {};
+  // Single-field equality filter (uid) so no composite index is required;
+  // a user has only a handful of vote docs, so we filter round client-side.
+  const { collection, getDocs, query, where } = await import(
+    "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
+  const q = query(collection(window.fwc.db, 'flagVotes'), where('uid', '==', me.uid));
+  const snap = await getDocs(q);
+  const out = {};
+  snap.forEach(d => { const v = d.data(); if (v.round === round) out[v.gameId] = v.choice; });
+  return out;
+}
+
+async function castVote(gameId, choice) {
+  if (!me || !state || !state.votingOpen) return;
+  const round = state.currentRound;
+  const id = `${round}__${gameId}__${me.uid}`;
+  const { serverTimestamp } = await import(
+    "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
+  await window.fwc.setDoc(window.fwc.doc(window.fwc.db, 'flagVotes', id),
+    { uid: me.uid, round, gameId, choice, ts: serverTimestamp() });
+  myVotes[gameId] = choice;
+  showToast();
+}
+
+function showToast() {
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1200);
+}
+
+// ---- rendering -----------------------------------------------------------
+function render() {
+  if (!state) {
+    content.innerHTML = `<div class="card"><h2>Flag Knockout</h2>
+      <p class="muted">The contest hasn't started yet – check back soon</p></div>`;
+    return;
+  }
+  if (state.status === 'done' && state.champion) renderChampion();
+
+  const rounds = state.roundOrder;
+  const reached = rounds.indexOf(state.currentRound) >= 0
+    ? rounds.indexOf(state.currentRound) : rounds.length - 1;
+  if (viewRound === null) viewRound = state.status === 'done' ? 'F' : state.currentRound;
+
+  const pills = rounds.map(r => {
+    const idx = rounds.indexOf(r);
+    const disabled = idx > reached && state.status !== 'done';
+    return `<button data-round="${r}" class="${r === viewRound ? 'active' : ''}"
+      ${disabled ? 'disabled style="opacity:.4;cursor:not-allowed"' : ''}>${ROUND_LABEL[r]}</button>`;
+  }).join('');
+
+  const intro = state.status === 'done' ? '' : `
+    <div class="intro card">
+      <h2>Flag Knockout 🏳️</h2>
+      <p class="muted">All 48 nations, one bracket, decided by you. Vote for the flag you
+        like better in each matchup – the crowd's pick advances. Results stay hidden until
+        each round closes, so vote your gut.</p>
+    </div>`;
+
+  content.innerHTML =
+    (state.status === 'done' ? content.innerHTML : '') +
+    intro +
+    `<div class="pills round-pills">${pills}</div>` +
+    `<div id="roundBody"></div>`;
+
+  renderRound(viewRound);
+
+  content.querySelectorAll('.round-pills button[data-round]').forEach(b => {
+    b.addEventListener('click', () => { viewRound = b.dataset.round; render(); });
+  });
+}
+
+function renderRound(round) {
+  const body = document.getElementById('roundBody');
+  const rd = state.rounds[round];
+  if (!rd) { body.innerHTML = '<p class="tbd">Not started</p>'; return; }
+
+  const isCurrent = round === state.currentRound && state.status !== 'done';
+  const isOpen = isCurrent && state.votingOpen;
+  const isClosed = state.roundOrder.indexOf(round) < state.roundOrder.indexOf(state.currentRound)
+    || state.status === 'done';
+
+  let banner = '';
+  if (isOpen) banner = `<div class="vote-status">🟢 <div><strong>Voting open · ${ROUND_LABEL[round]}</strong>
+    <span style="opacity:.85;margin-left:6px">· pick a flag in each matchup – tap to vote or change your mind</span></div></div>`;
+  else if (isClosed) banner = `<div class="vote-status closed">📊 <div><strong>${ROUND_LABEL[round]} results</strong>
+    <span style="opacity:.85;margin-left:6px">· the crowd has spoken</span></div></div>`;
+
+  const cards = rd.games.map(g => renderMatchup(g, round, isOpen, isClosed)).join('');
+  const byesNote = round === 'wildcard' && state.byes
+    ? `<div class="byes-note"><b>${state.byes.length} teams drew a bye</b> straight into the Round of 32:
+        ${state.byes.map(t => t.name).join(', ')}</div>` : '';
+
+  body.innerHTML = banner + `<div class="matchups">${cards}</div>` + byesNote;
+
+  if (isOpen) {
+    body.querySelectorAll('.side[data-game]').forEach(el => {
+      el.addEventListener('click', async () => {
+        const gid = el.dataset.game, choice = el.dataset.side;
+        await castVote(gid, choice);
+        // re-mark selection within this matchup
+        el.closest('.pair').querySelectorAll('.side').forEach(s => s.classList.remove('picked'));
+        el.classList.add('picked');
+      });
+    });
+  }
+}
+
+function renderMatchup(g, round, isOpen, isClosed) {
+  const a = g.a, b = g.b;
+  // future-round games may have unresolved slots (feeders)
+  const slot = (team, feeder, side) => {
+    if (!team) return `<div class="side disabled"><div class="tbd">Winner of<br>${feederLabel(feeder)}</div></div>`;
+    let cls = 'side';
+    if (isOpen && myVotes[g.id] === side) cls += ' picked';
+    if (isClosed && g.winner) cls += g.winner.iso === team.iso ? ' winner' : ' loser';
+    const attrs = isOpen ? `data-game="${g.id}" data-side="${side}"` : '';
+    return `<div class="${cls}" ${attrs}>${flagImg(team)}<div class="tname">${team.name}</div></div>`;
+  };
+
+  let tally = '';
+  if (isClosed && g.votesA != null && g.votesB != null) {
+    const total = g.votesA + g.votesB || 1;
+    const pa = Math.round(g.votesA / total * 100), pb = 100 - pa;
+    tally = `<div class="tally">
+      <div class="tally-bar"><span class="a" style="width:${pa}%"></span><span class="b" style="width:${pb}%"></span></div>
+      <div class="tally-nums"><span>${a ? a.name : ''} ${g.votesA} (${pa}%)</span>
+        <span>${pb}% (${g.votesB}) ${b ? b.name : ''}</span></div></div>`;
+  }
+
+  return `<div class="matchup">
+    <div class="pair">
+      ${slot(a, g.aFeeder, 'a')}
+      <div class="vs">VS</div>
+      ${slot(b, g.bFeeder, 'b')}
+    </div>${tally}</div>`;
+}
+
+function feederLabel(feeder) {
+  if (!feeder) return 'TBD';
+  const m = feeder.match(/^wc(\d+)$/);
+  if (m) return `Wildcard ${+m[1] + 1}`;
+  const parts = feeder.split('_');
+  return `${ROUND_LABEL[parts[0].toUpperCase()] || parts[0]} ${+parts[1] + 1}`;
+}
+
+function renderChampion() {
+  const c = state.champion;
+  content.innerHTML = `<div class="card champ-card">
+    <h2>🏆 Best flag in the tournament</h2>
+    ${flagImg(c)}
+    <div class="cname">${c.name}</div>
+  </div>`;
+}
+
+// ---- boot ----------------------------------------------------------------
+window.fwc.onAuth(async (user) => {
+  const nav = document.getElementById('siteNav');
+  const userLine = document.getElementById('userLine');
+  if (!user) {
+    nav.style.display = 'none';
+    content.innerHTML = `<div class="card signin-card"><h2>Flag Knockout</h2>
+      <p>Sign in to vote for the best flag in the World Cup</p>
+      <button class="btn btn-accent" id="signInBtn">Sign in with Google</button></div>`;
+    document.getElementById('signInBtn').addEventListener('click', () => window.fwc.signInWithGoogle());
+    return;
+  }
+  me = user;
+  nav.style.display = 'flex';
+  if (window.fwc.isAdmin(user)) document.getElementById('adminLink').style.display = '';
+  userLine.innerHTML = `${user.displayName || user.email}
+    <button id="signOutBtn">Sign out</button>`;
+  document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
+
+  // Preview gate: until FLAGS_LAUNCHED flips true in shared.js, only admins can
+  // see the contest (even by direct URL). Everyone else gets a "coming soon".
+  if (!window.fwc.flagsLaunched && !window.fwc.isAdmin(user)) {
+    content.innerHTML = `<div class="card"><h2>Flag Knockout 🏳️</h2>
+      <p class="muted">A best-flag-in-the-tournament vote is coming soon – stay tuned</p></div>`;
+    return;
+  }
+
+  try {
+    state = await loadState();
+    if (state && state.votingOpen) myVotes = await loadMyVotes(state.currentRound);
+    render();
+  } catch (e) {
+    console.error(e);
+    content.innerHTML = `<div class="card"><p class="muted">Couldn't load the contest – ${e.message}</p></div>`;
+  }
+});
+</script>
+</body>
+</html>

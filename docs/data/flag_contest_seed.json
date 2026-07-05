@@ -1,0 +1,848 @@
+{
+  "status": "setup",
+  "currentRound": "wildcard",
+  "votingOpen": false,
+  "roundOrder": [
+    "wildcard",
+    "R32",
+    "R16",
+    "QF",
+    "SF",
+    "F"
+  ],
+  "rounds": {
+    "wildcard": {
+      "games": [
+        {
+          "id": "wc0",
+          "a": {
+            "name": "Paraguay",
+            "iso": "py",
+            "emoji": "🇵🇾",
+            "seed": 34
+          },
+          "b": {
+            "name": "Algeria",
+            "iso": "dz",
+            "emoji": "🇩🇿",
+            "seed": 28
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc1",
+          "a": {
+            "name": "Uruguay",
+            "iso": "uy",
+            "emoji": "🇺🇾",
+            "seed": 36
+          },
+          "b": {
+            "name": "Morocco",
+            "iso": "ma",
+            "emoji": "🇲🇦",
+            "seed": 44
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc2",
+          "a": {
+            "name": "Cape Verde Islands",
+            "iso": "cv",
+            "emoji": "",
+            "seed": 38
+          },
+          "b": {
+            "name": "Mexico",
+            "iso": "mx",
+            "emoji": "🇲🇽",
+            "seed": 37
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc3",
+          "a": {
+            "name": "Brazil",
+            "iso": "br",
+            "emoji": "🇧🇷",
+            "seed": 29
+          },
+          "b": {
+            "name": "Saudi Arabia",
+            "iso": "sa",
+            "emoji": "🇸🇦",
+            "seed": 30
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc4",
+          "a": {
+            "name": "Turkey",
+            "iso": "tr",
+            "emoji": "🇹🇷",
+            "seed": 26
+          },
+          "b": {
+            "name": "Ivory Coast",
+            "iso": "ci",
+            "emoji": "",
+            "seed": 27
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc5",
+          "a": {
+            "name": "South Africa",
+            "iso": "za",
+            "emoji": "🇿🇦",
+            "seed": 40
+          },
+          "b": {
+            "name": "Spain",
+            "iso": "es",
+            "emoji": "🇪🇸",
+            "seed": 35
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc6",
+          "a": {
+            "name": "Australia",
+            "iso": "au",
+            "emoji": "🇦🇺",
+            "seed": 25
+          },
+          "b": {
+            "name": "Iran",
+            "iso": "ir",
+            "emoji": "🇮🇷",
+            "seed": 48
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc7",
+          "a": {
+            "name": "Netherlands",
+            "iso": "nl",
+            "emoji": "🇳🇱",
+            "seed": 46
+          },
+          "b": {
+            "name": "New Zealand",
+            "iso": "nz",
+            "emoji": "🇳🇿",
+            "seed": 45
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc8",
+          "a": {
+            "name": "Colombia",
+            "iso": "co",
+            "emoji": "🇨🇴",
+            "seed": 21
+          },
+          "b": {
+            "name": "Tunisia",
+            "iso": "tn",
+            "emoji": "🇹🇳",
+            "seed": 18
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc9",
+          "a": {
+            "name": "Iraq",
+            "iso": "iq",
+            "emoji": "🇮🇶",
+            "seed": 31
+          },
+          "b": {
+            "name": "Portugal",
+            "iso": "pt",
+            "emoji": "🇵🇹",
+            "seed": 19
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc10",
+          "a": {
+            "name": "Uzbekistan",
+            "iso": "uz",
+            "emoji": "🇺🇿",
+            "seed": 47
+          },
+          "b": {
+            "name": "Curaçao",
+            "iso": "cw",
+            "emoji": "🇨🇼",
+            "seed": 42
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc11",
+          "a": {
+            "name": "Panama",
+            "iso": "pa",
+            "emoji": "🇵🇦",
+            "seed": 41
+          },
+          "b": {
+            "name": "Japan",
+            "iso": "jp",
+            "emoji": "🇯🇵",
+            "seed": 39
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc12",
+          "a": {
+            "name": "Senegal",
+            "iso": "sn",
+            "emoji": "🇸🇳",
+            "seed": 20
+          },
+          "b": {
+            "name": "Qatar",
+            "iso": "qa",
+            "emoji": "🇶🇦",
+            "seed": 24
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc13",
+          "a": {
+            "name": "Norway",
+            "iso": "no",
+            "emoji": "🇳🇴",
+            "seed": 22
+          },
+          "b": {
+            "name": "Egypt",
+            "iso": "eg",
+            "emoji": "🇪🇬",
+            "seed": 17
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc14",
+          "a": {
+            "name": "England",
+            "iso": "gb-eng",
+            "emoji": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "seed": 23
+          },
+          "b": {
+            "name": "Austria",
+            "iso": "at",
+            "emoji": "🇦🇹",
+            "seed": 33
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        },
+        {
+          "id": "wc15",
+          "a": {
+            "name": "Canada",
+            "iso": "ca",
+            "emoji": "🇨🇦",
+            "seed": 43
+          },
+          "b": {
+            "name": "Germany",
+            "iso": "de",
+            "emoji": "🇩🇪",
+            "seed": 32
+          },
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false
+        }
+      ]
+    },
+    "R32": {
+      "games": [
+        {
+          "id": "r32_0",
+          "a": {
+            "name": "United States",
+            "iso": "us",
+            "emoji": "🇺🇸",
+            "seed": 1
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc0"
+        },
+        {
+          "id": "r32_1",
+          "a": {
+            "name": "South Korea",
+            "iso": "kr",
+            "emoji": "🇰🇷",
+            "seed": 2
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc1"
+        },
+        {
+          "id": "r32_2",
+          "a": {
+            "name": "Croatia",
+            "iso": "hr",
+            "emoji": "🇭🇷",
+            "seed": 3
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc2"
+        },
+        {
+          "id": "r32_3",
+          "a": {
+            "name": "Ecuador",
+            "iso": "ec",
+            "emoji": "🇪🇨",
+            "seed": 4
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc3"
+        },
+        {
+          "id": "r32_4",
+          "a": {
+            "name": "France",
+            "iso": "fr",
+            "emoji": "🇫🇷",
+            "seed": 5
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc4"
+        },
+        {
+          "id": "r32_5",
+          "a": {
+            "name": "Switzerland",
+            "iso": "ch",
+            "emoji": "🇨🇭",
+            "seed": 6
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc5"
+        },
+        {
+          "id": "r32_6",
+          "a": {
+            "name": "Congo DR",
+            "iso": "cd",
+            "emoji": "",
+            "seed": 7
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc6"
+        },
+        {
+          "id": "r32_7",
+          "a": {
+            "name": "Czechia",
+            "iso": "cz",
+            "emoji": "🇨🇿",
+            "seed": 8
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc7"
+        },
+        {
+          "id": "r32_8",
+          "a": {
+            "name": "Haiti",
+            "iso": "ht",
+            "emoji": "🇭🇹",
+            "seed": 9
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc8"
+        },
+        {
+          "id": "r32_9",
+          "a": {
+            "name": "Sweden",
+            "iso": "se",
+            "emoji": "🇸🇪",
+            "seed": 10
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc9"
+        },
+        {
+          "id": "r32_10",
+          "a": {
+            "name": "Bosnia-Herzegovina",
+            "iso": "ba",
+            "emoji": "",
+            "seed": 11
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc10"
+        },
+        {
+          "id": "r32_11",
+          "a": {
+            "name": "Belgium",
+            "iso": "be",
+            "emoji": "🇧🇪",
+            "seed": 12
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc11"
+        },
+        {
+          "id": "r32_12",
+          "a": {
+            "name": "Scotland",
+            "iso": "gb-sct",
+            "emoji": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+            "seed": 13
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc12"
+        },
+        {
+          "id": "r32_13",
+          "a": {
+            "name": "Jordan",
+            "iso": "jo",
+            "emoji": "🇯🇴",
+            "seed": 14
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc13"
+        },
+        {
+          "id": "r32_14",
+          "a": {
+            "name": "Ghana",
+            "iso": "gh",
+            "emoji": "🇬🇭",
+            "seed": 15
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc14"
+        },
+        {
+          "id": "r32_15",
+          "a": {
+            "name": "Argentina",
+            "iso": "ar",
+            "emoji": "🇦🇷",
+            "seed": 16
+          },
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "bFeeder": "wc15"
+        }
+      ]
+    },
+    "R16": {
+      "games": [
+        {
+          "id": "r16_0",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r32_0",
+          "bFeeder": "r32_1"
+        },
+        {
+          "id": "r16_1",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r32_2",
+          "bFeeder": "r32_3"
+        },
+        {
+          "id": "r16_2",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r32_4",
+          "bFeeder": "r32_5"
+        },
+        {
+          "id": "r16_3",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r32_6",
+          "bFeeder": "r32_7"
+        },
+        {
+          "id": "r16_4",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r32_8",
+          "bFeeder": "r32_9"
+        },
+        {
+          "id": "r16_5",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r32_10",
+          "bFeeder": "r32_11"
+        },
+        {
+          "id": "r16_6",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r32_12",
+          "bFeeder": "r32_13"
+        },
+        {
+          "id": "r16_7",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r32_14",
+          "bFeeder": "r32_15"
+        }
+      ]
+    },
+    "QF": {
+      "games": [
+        {
+          "id": "qf_0",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r16_0",
+          "bFeeder": "r16_1"
+        },
+        {
+          "id": "qf_1",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r16_2",
+          "bFeeder": "r16_3"
+        },
+        {
+          "id": "qf_2",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r16_4",
+          "bFeeder": "r16_5"
+        },
+        {
+          "id": "qf_3",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "r16_6",
+          "bFeeder": "r16_7"
+        }
+      ]
+    },
+    "SF": {
+      "games": [
+        {
+          "id": "sf_0",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "qf_0",
+          "bFeeder": "qf_1"
+        },
+        {
+          "id": "sf_1",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "qf_2",
+          "bFeeder": "qf_3"
+        }
+      ]
+    },
+    "F": {
+      "games": [
+        {
+          "id": "f_0",
+          "a": null,
+          "b": null,
+          "winner": null,
+          "votesA": null,
+          "votesB": null,
+          "closed": false,
+          "aFeeder": "sf_0",
+          "bFeeder": "sf_1"
+        }
+      ]
+    }
+  },
+  "byes": [
+    {
+      "name": "United States",
+      "iso": "us",
+      "emoji": "🇺🇸",
+      "seed": 1
+    },
+    {
+      "name": "South Korea",
+      "iso": "kr",
+      "emoji": "🇰🇷",
+      "seed": 2
+    },
+    {
+      "name": "Croatia",
+      "iso": "hr",
+      "emoji": "🇭🇷",
+      "seed": 3
+    },
+    {
+      "name": "Ecuador",
+      "iso": "ec",
+      "emoji": "🇪🇨",
+      "seed": 4
+    },
+    {
+      "name": "France",
+      "iso": "fr",
+      "emoji": "🇫🇷",
+      "seed": 5
+    },
+    {
+      "name": "Switzerland",
+      "iso": "ch",
+      "emoji": "🇨🇭",
+      "seed": 6
+    },
+    {
+      "name": "Congo DR",
+      "iso": "cd",
+      "emoji": "",
+      "seed": 7
+    },
+    {
+      "name": "Czechia",
+      "iso": "cz",
+      "emoji": "🇨🇿",
+      "seed": 8
+    },
+    {
+      "name": "Haiti",
+      "iso": "ht",
+      "emoji": "🇭🇹",
+      "seed": 9
+    },
+    {
+      "name": "Sweden",
+      "iso": "se",
+      "emoji": "🇸🇪",
+      "seed": 10
+    },
+    {
+      "name": "Bosnia-Herzegovina",
+      "iso": "ba",
+      "emoji": "",
+      "seed": 11
+    },
+    {
+      "name": "Belgium",
+      "iso": "be",
+      "emoji": "🇧🇪",
+      "seed": 12
+    },
+    {
+      "name": "Scotland",
+      "iso": "gb-sct",
+      "emoji": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+      "seed": 13
+    },
+    {
+      "name": "Jordan",
+      "iso": "jo",
+      "emoji": "🇯🇴",
+      "seed": 14
+    },
+    {
+      "name": "Ghana",
+      "iso": "gh",
+      "emoji": "🇬🇭",
+      "seed": 15
+    },
+    {
+      "name": "Argentina",
+      "iso": "ar",
+      "emoji": "🇦🇷",
+      "seed": 16
+    }
+  ],
+  "champion": null,
+  "drawSeed": 20260611
+}

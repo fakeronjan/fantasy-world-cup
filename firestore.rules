@@ -93,5 +93,30 @@ service cloud.firestore {
                     && (beforeKickoff() || transferWindowOpen());
       allow update, delete: if false; // immutable
     }
+
+    // ---- flag knockout (fun side contest) -----------------------------
+    // Bracket state is admin-only write, everyone-read. Winners/tallies are
+    // written into it ONLY when the admin closes a round, which is what makes
+    // results "hidden until close".
+    match /flagContest/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    function flagState() {
+      return get(/databases/$(database)/documents/flagContest/state).data;
+    }
+    // Votes: one doc per user per game (id = "<round>__<gameId>__<uid>"). A user
+    // can read/write only their OWN vote — so nobody can scrape the live tally
+    // mid-round. The admin (via SDK or admin uid) reads all to tally at close.
+    match /flagVotes/{voteId} {
+      allow read: if isAdmin()
+                  || (isSignedIn() && resource.data.uid == request.auth.uid);
+      allow create, update: if isSignedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.choice in ['a', 'b']
+                    && flagState().votingOpen == true
+                    && request.resource.data.round == flagState().currentRound;
+      allow delete: if false;
+    }
   }
 }

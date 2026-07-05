@@ -184,6 +184,7 @@
   <a href="./roster.html">My Roster</a>
   <a href="./leaderboard.html">Leaderboard</a>
   <a href="./stats.html">Stats</a>
+  <a href="./flags.html" id="flagsLink" style="display:none">Flags</a>
   <a href="./transfer.html" id="transferLink">Transfer</a>
   <a href="./admin.html" class="active">Admin</a>
 </nav>
@@ -242,6 +243,21 @@
         </div>
       </section>
     </div>
+
+    <!-- Flag Knockout contest -->
+    <section class="card" style="margin-top:16px">
+      <h2>Flag Knockout 🏳️</h2>
+      <p class="muted" style="font-size:13px; margin-bottom:12px">
+        Fun side contest: managers vote the best flag in a 48-team bracket.
+        Voting is hidden until you close a round. "Close round &amp; advance"
+        tallies every vote, reveals the results, and opens the next round.
+      </p>
+      <p id="flagStatus" style="font-size:13px; margin-bottom:12px">loading…</p>
+      <div class="action-row">
+        <button class="btn" id="flagInitBtn">Initialize / re-seed contest</button>
+        <button class="btn btn-accent" id="flagAdvanceBtn">Close round &amp; advance</button>
+      </div>
+    </section>
 
     <!-- Live config dump -->
     <section class="card" style="margin-top:16px">
@@ -373,6 +389,7 @@
     await loadStateCounts();
     await loadUsers();
     try { await loadGoalEntryData(); } catch (e) { console.error('goal entry load failed', e); }
+    try { await loadFlagStatus(); } catch (e) { console.error('flag status load failed', e); }
   }
 
   async function loadUsers() {
@@ -700,6 +717,118 @@
     if (!r) return;
     patchConfig({ currentRound: r });
   });
+
+  // ---- Flag Knockout contest --------------------------------------------
+  const FLAG_ROUND_LABEL = {
+    wildcard: 'Wildcard', R32: 'Round of 32', R16: 'Round of 16',
+    QF: 'Quarter-finals', SF: 'Semi-finals', F: 'Final', done: 'Complete',
+  };
+  const flagStatusEl = document.getElementById('flagStatus');
+  const flagInitBtn = document.getElementById('flagInitBtn');
+  const flagAdvanceBtn = document.getElementById('flagAdvanceBtn');
+
+  async function loadFlagState() {
+    const snap = await window.fwc.getDoc(window.fwc.doc(window.fwc.db, 'flagContest', 'state'));
+    return snap.exists() ? snap.data() : null;
+  }
+
+  async function countRoundVotes(round) {
+    const { collection, getDocs, query, where } = await import(
+      "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
+    const snap = await getDocs(query(collection(window.fwc.db, 'flagVotes'),
+      where('round', '==', round)));
+    const per = {}; let total = 0;
+    snap.forEach(d => {
+      const v = d.data();
+      per[v.gameId] = per[v.gameId] || { a: 0, b: 0 };
+      if (v.choice === 'a' || v.choice === 'b') { per[v.gameId][v.choice]++; total++; }
+    });
+    return { per, total };
+  }
+
+  async function loadFlagStatus() {
+    try {
+      const st = await loadFlagState();
+      if (!st) { flagStatusEl.innerHTML = '<span class="muted">Not initialized</span>'; return; }
+      if (st.status === 'done') {
+        flagStatusEl.innerHTML = `🏆 <strong>Complete</strong> – champion flag: <strong>${st.champion?.name || '?'}</strong>`;
+        return;
+      }
+      const { total } = await countRoundVotes(st.currentRound);
+      const nGames = (st.rounds[st.currentRound]?.games || []).length;
+      flagStatusEl.innerHTML = `Round: <strong>${FLAG_ROUND_LABEL[st.currentRound] || st.currentRound}</strong>
+        · voting ${st.votingOpen ? '<span class="accent-text">OPEN</span>' : 'CLOSED'}
+        · ${nGames} matchups · <strong>${total}</strong> votes cast this round`;
+    } catch (e) {
+      flagStatusEl.innerHTML = `<span class="muted">status error: ${e.message}</span>`;
+    }
+  }
+
+  async function initFlagContest() {
+    if (!confirm('Initialize the Flag Knockout from the seed bracket?\n\n' +
+      'This OVERWRITES any current contest state and restarts at the Wildcard round. ' +
+      'Only do this before launch.')) return;
+    try {
+      const seed = await (await fetch('./data/flag_contest_seed.json')).json();
+      seed.status = 'active';
+      seed.votingOpen = true;
+      seed.currentRound = 'wildcard';
+      await window.fwc.setDoc(window.fwc.doc(window.fwc.db, 'flagContest', 'state'), seed);
+      showToast('Flag Knockout initialized · Wildcard round open');
+      loadFlagStatus();
+    } catch (e) { showToast('Init failed: ' + e.message, true); }
+  }
+
+  async function closeFlagRound() {
+    try {
+      const st = await loadFlagState();
+      if (!st) return showToast('Contest not initialized', true);
+      if (st.status === 'done') return showToast('Contest already complete', true);
+      const round = st.currentRound;
+      const label = FLAG_ROUND_LABEL[round] || round;
+      const { per, total } = await countRoundVotes(round);
+      if (!confirm(`Close the ${label} round?\n\n${total} votes cast. This reveals the ` +
+        `results, advances winners, and opens the next round. Cannot be undone.`)) return;
+
+      const games = st.rounds[round].games;
+      // Tally each game; tie -> lower seed number advances.
+      const winnerOf = {};
+      for (const g of games) {
+        const va = per[g.id]?.a || 0, vb = per[g.id]?.b || 0;
+        let win;
+        if (va > vb) win = g.a;
+        else if (vb > va) win = g.b;
+        else win = (g.a.seed <= g.b.seed) ? g.a : g.b; // deterministic tie-break
+        g.votesA = va; g.votesB = vb; g.winner = win; g.closed = true;
+        winnerOf[g.id] = win;
+      }
+
+      const idx = st.roundOrder.indexOf(round);
+      const nextRound = st.roundOrder[idx + 1];
+      if (round === 'F') {
+        st.champion = games[0].winner;
+        st.status = 'done';
+        st.currentRound = 'done';
+        st.votingOpen = false;
+      } else {
+        // Fill next round's slots from this round's winners (feeder refs).
+        for (const ng of st.rounds[nextRound].games) {
+          if (ng.aFeeder && winnerOf[ng.aFeeder]) ng.a = winnerOf[ng.aFeeder];
+          if (ng.bFeeder && winnerOf[ng.bFeeder]) ng.b = winnerOf[ng.bFeeder];
+        }
+        st.currentRound = nextRound;
+        st.votingOpen = true;
+      }
+      await window.fwc.setDoc(window.fwc.doc(window.fwc.db, 'flagContest', 'state'), st);
+      showToast(round === 'F'
+        ? `🏆 Champion: ${st.champion?.name}`
+        : `${label} closed · ${FLAG_ROUND_LABEL[nextRound]} now open`);
+      loadFlagStatus();
+    } catch (e) { showToast('Close failed: ' + e.message, true); }
+  }
+
+  flagInitBtn.addEventListener('click', initFlagContest);
+  flagAdvanceBtn.addEventListener('click', closeFlagRound);
 
   // ---- recent ingested matches (read-only) ------------------------------
 
