@@ -414,12 +414,14 @@ async function renderFlagPromo(targetEl, user) {
   if (!st || !flagsVisibleTo(user, st)) { targetEl.innerHTML = ''; return; }
   let msg, sub;
   if (st.status === 'done' && st.champion) {
-    msg = `🏆 ${st.champion.name} was crowned best flag`; sub = 'See how the bracket played out';
+    msg = `🏆 ${st.champion.name} has the best flag in the world`;
+    sub = 'See how the Flag Knockout bracket played out';
   } else if (st.votingOpen) {
-    msg = `🗳️ ${_FLAG_RL[st.currentRound] || 'Voting'} is LIVE`;
-    sub = 'Out of the pool? Get your votes in before the round closes';
+    msg = "Vote: what's the best flag in the world?";
+    sub = `Flag Knockout · ${_FLAG_RL[st.currentRound] || 'voting'} is LIVE – out of the pool? get your votes in`;
   } else {
-    msg = '🏳️ Flag Knockout'; sub = 'Results are in - see who advanced';
+    msg = "Vote: what's the best flag in the world?";
+    sub = 'Flag Knockout · results are in – see which flags advanced';
   }
   const preview = (!st.launched && isAdmin(user))
     ? '<span class="fp-preview">preview</span>' : '';

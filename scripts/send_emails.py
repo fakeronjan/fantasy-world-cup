@@ -465,13 +465,14 @@ def _flag_promo_parts(fs: dict | None) -> tuple[str, str]:
         return "", ""
     champ = fs.get("champion") or {}
     if fs.get("status") == "done" and champ:
-        return (f"&#127942; {escape_html(champ.get('name', '?'))} was crowned best flag",
-                "See how the bracket played out")
+        return (f"&#127942; {escape_html(champ.get('name', '?'))} has the best flag in the world",
+                "See how the Flag Knockout bracket played out")
     if fs.get("votingOpen"):
-        rn = _FLAG_RL.get(fs.get("currentRound"), "Voting")
-        return (f"&#128499;&#65039; {escape_html(rn)} voting is LIVE",
-                "Out of the pool? Get your votes in before the round closes")
-    return ("&#127987;&#65039; Flag Knockout", "Results are in, see who advanced")
+        rn = _FLAG_RL.get(fs.get("currentRound"), "voting")
+        return ("&#127987;&#65039; Vote: what's the best flag in the world?",
+                f"Flag Knockout - {escape_html(rn)} is LIVE, out of the pool? get your votes in")
+    return ("&#127987;&#65039; Vote: what's the best flag in the world?",
+            "Flag Knockout - results are in, see which flags advanced")
 
 
 def render_flag_promo_html(fs: dict | None) -> str:
@@ -491,10 +492,10 @@ def _flag_promo_plain(fs: dict | None) -> str:
     if not head:
         return ""
     # Strip HTML entities (emoji etc.) and collapse whitespace for plain text.
+    # The sub already carries the "Flag Knockout" brand, so no prefix needed.
     import re as _re
     clean = _re.sub(r"\s+", " ", _re.sub(r"&#\d+;|&\w+;", "", head)).strip()
-    prefix = "" if clean.lower().startswith("flag knockout") else "Flag Knockout: "
-    return f"{prefix}{clean} - {sub}\n{FLAGS_URL}"
+    return f"{clean} - {sub}\n{FLAGS_URL}"
 
 
 def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[dict],
