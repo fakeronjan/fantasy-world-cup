@@ -265,6 +265,7 @@
         Launch flips the contest live for all managers at once – nav tab, page, and the
         promos on other pages + emails. No redeploy needed. Preview privately first; launch
         when you're happy.</p>
+      <div id="flagScoreboard" style="margin-top:14px"></div>
     </section>
 
     <!-- Live config dump -->
@@ -767,6 +768,8 @@
   }
 
   async function loadFlagStatus() {
+    const scoreEl = document.getElementById('flagScoreboard');
+    if (scoreEl) scoreEl.innerHTML = '';
     try {
       const st = await loadFlagState();
       if (!st) { flagStatusEl.innerHTML = '<span class="muted">Not initialized</span>'; return; }
@@ -777,14 +780,40 @@
         flagStatusEl.innerHTML = `${launch} · 🏆 <strong>Complete</strong> – champion: <strong>${st.champion?.name || '?'}</strong>`;
         return;
       }
-      const { total } = await countRoundVotes(st.currentRound);
-      const nGames = (st.rounds[st.currentRound]?.games || []).length;
+      const { per, total } = await countRoundVotes(st.currentRound);
+      const games = st.rounds[st.currentRound]?.games || [];
+      // Distinct voters this round + league size for turnout.
+      const voters = new Set();
+      Object.values(per).forEach(g => { (g.a || []).forEach(u => voters.add(u)); (g.b || []).forEach(u => voters.add(u)); });
+      const nManagers = Object.keys(await loadUserPoints()).length;
       flagStatusEl.innerHTML = `${launch} · Round: <strong>${FLAG_ROUND_LABEL[st.currentRound] || st.currentRound}</strong>
         · voting ${st.votingOpen ? '<span class="accent-text">OPEN</span>' : 'CLOSED'}
-        · ${nGames} matchups · <strong>${total}</strong> votes cast this round`;
+        · <strong>${voters.size}</strong>/${nManagers} managers voted · ${total} votes cast`;
+      renderFlagScoreboard(scoreEl, games, per);
     } catch (e) {
       flagStatusEl.innerHTML = `<span class="muted">status error: ${e.message}</span>`;
     }
+  }
+
+  // Live per-matchup vote counts for the current round (admin-only view; the
+  // public reveal still waits for close). Names are trusted seed data.
+  function renderFlagScoreboard(el, games, per) {
+    if (!el || !games.length) return;
+    const rows = games.map(g => {
+      const a = (per[g.id]?.a || []).length, b = (per[g.id]?.b || []).length;
+      const aw = a >= b ? 'font-weight:700' : 'color:#999';
+      const bw = b >= a ? 'font-weight:700' : 'color:#999';
+      return `<tr style="border-bottom:1px solid var(--border-row)">
+        <td style="padding:3px 6px; text-align:right; ${aw}">${g.a?.name || '?'}</td>
+        <td style="padding:3px 6px; text-align:right; width:28px; ${aw}">${a}</td>
+        <td style="padding:3px 4px; text-align:center; color:#bbb; width:18px">–</td>
+        <td style="padding:3px 6px; width:28px; ${bw}">${b}</td>
+        <td style="padding:3px 6px; ${bw}">${g.b?.name || '?'}</td>
+        <td style="padding:3px 6px; text-align:right; color:#888; font-size:11px; width:56px">${a + b} votes</td>
+      </tr>`;
+    }).join('');
+    el.innerHTML = `<div style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px">This round · live matchup counts (admin only)</div>
+      <table style="width:100%; font-size:12px; border-collapse:collapse; font-variant-numeric:tabular-nums">${rows}</table>`;
   }
 
   async function initFlagContest() {
