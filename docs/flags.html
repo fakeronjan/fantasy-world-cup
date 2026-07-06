@@ -59,6 +59,8 @@
   .tally-bar .b { background: var(--accent); }
   .tally-nums { display: flex; justify-content: space-between; font-size: 10px;
     color: var(--text-muted); margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .tb-note { margin-top: 4px; font-size: 10px; font-style: italic; color: var(--accent);
+    text-align: center; }
 
   .tbd { color: var(--text-muted); font-size: 12px; font-style: italic; }
   .byes-note { margin-top: 14px; font-size: 12px; color: var(--text-muted); }
@@ -189,7 +191,9 @@ function render() {
       <h2>Flag Knockout 🏳️</h2>
       <p class="muted">All 48 nations, one bracket, decided by you. Vote for the flag you
         like better in each matchup – the crowd's pick advances. Results stay hidden until
-        each round closes, so vote your gut.</p>
+        each round closes, so vote your gut. Ties are broken by the combined fantasy score
+        of each flag's voters, so a pick backed by the league leaders carries a little extra
+        weight.</p>
     </div>`;
 
   content.innerHTML =
@@ -257,10 +261,14 @@ function renderMatchup(g, round, isOpen, isClosed) {
   if (isClosed && g.votesA != null && g.votesB != null) {
     const total = g.votesA + g.votesB || 1;
     const pa = Math.round(g.votesA / total * 100), pb = 100 - pa;
+    const tbNote = g.tiebreak === 'points'
+      ? `<div class="tb-note">Tied on votes – decided by voters' combined fantasy score</div>`
+      : g.tiebreak === 'seed'
+      ? `<div class="tb-note">Tied on votes and voter score – decided by seed</div>` : '';
     tally = `<div class="tally">
       <div class="tally-bar"><span class="a" style="width:${pa}%"></span><span class="b" style="width:${pb}%"></span></div>
       <div class="tally-nums"><span>${a ? a.name : ''} ${g.votesA} (${pa}%)</span>
-        <span>${pb}% (${g.votesB}) ${b ? b.name : ''}</span></div></div>`;
+        <span>${pb}% (${g.votesB}) ${b ? b.name : ''}</span></div>${tbNote}</div>`;
   }
 
   return `<div class="matchup">

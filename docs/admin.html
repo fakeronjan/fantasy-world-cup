@@ -732,6 +732,8 @@
     return snap.exists() ? snap.data() : null;
   }
 
+  // Returns per[gameId] = { a: [uid,...], b: [uid,...] } so we can both count
+  // votes AND, on a tie, sum each side's voters' fantasy points.
   async function countRoundVotes(round) {
     const { collection, getDocs, query, where } = await import(
       "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
@@ -740,10 +742,20 @@
     const per = {}; let total = 0;
     snap.forEach(d => {
       const v = d.data();
-      per[v.gameId] = per[v.gameId] || { a: 0, b: 0 };
-      if (v.choice === 'a' || v.choice === 'b') { per[v.gameId][v.choice]++; total++; }
+      per[v.gameId] = per[v.gameId] || { a: [], b: [] };
+      if (v.choice === 'a' || v.choice === 'b') { per[v.gameId][v.choice].push(v.uid); total++; }
     });
     return { per, total };
+  }
+
+  // uid -> fantasy leaderboard score (users/{uid}.totalPoints), for tiebreaks.
+  async function loadUserPoints() {
+    const { collection, getDocs } = await import(
+      "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
+    const snap = await getDocs(collection(window.fwc.db, 'users'));
+    const m = {};
+    snap.forEach(d => { m[d.id] = d.data().totalPoints || 0; });
+    return m;
   }
 
   async function loadFlagStatus() {
@@ -790,16 +802,28 @@
       if (!confirm(`Close the ${label} round?\n\n${total} votes cast. This reveals the ` +
         `results, advances winners, and opens the next round. Cannot be undone.`)) return;
 
+      // Voter fantasy scores, for the tiebreak (only fetched/used on a vote tie).
+      const ptsByUid = await loadUserPoints();
+      const sumPts = uids => uids.reduce((s, u) => s + (ptsByUid[u] || 0), 0);
+
       const games = st.rounds[round].games;
-      // Tally each game; tie -> lower seed number advances.
+      // Winner = most votes. Tie -> combined fantasy score of each side's voters.
+      // Still tied (e.g. both sides on 0) -> lower seed number, deterministic.
       const winnerOf = {};
       for (const g of games) {
-        const va = per[g.id]?.a || 0, vb = per[g.id]?.b || 0;
-        let win;
+        const av = per[g.id]?.a || [], bv = per[g.id]?.b || [];
+        const va = av.length, vb = bv.length;
+        let win, tiebreak = null;
         if (va > vb) win = g.a;
         else if (vb > va) win = g.b;
-        else win = (g.a.seed <= g.b.seed) ? g.a : g.b; // deterministic tie-break
+        else {
+          const sa = sumPts(av), sb = sumPts(bv);
+          if (sa > sb) { win = g.a; tiebreak = 'points'; }
+          else if (sb > sa) { win = g.b; tiebreak = 'points'; }
+          else { win = (g.a.seed <= g.b.seed) ? g.a : g.b; tiebreak = 'seed'; }
+        }
         g.votesA = va; g.votesB = vb; g.winner = win; g.closed = true;
+        g.tiebreak = tiebreak;   // null unless the vote count was tied
         winnerOf[g.id] = win;
       }
 
