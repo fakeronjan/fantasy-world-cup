@@ -71,12 +71,61 @@
   .byes-note { margin-top: 14px; font-size: 12px; color: var(--text-muted); }
   .byes-note b { color: var(--text-body); }
 
-  /* champion */
-  .champ-card { text-align: center; padding: 32px 20px; }
-  .champ-card .flag-img { height: 150px; margin: 12px auto; }
-  .champ-card h2 { font-size: 15px; color: var(--text-muted); text-transform: uppercase;
-    letter-spacing: 1px; }
-  .champ-card .cname { font-size: 30px; font-weight: 800; color: var(--accent); margin-top: 6px; }
+  /* colorful hero */
+  .flag-hero {
+    position: relative; overflow: hidden; border-radius: 12px; margin-bottom: 16px;
+    padding: 26px 22px; color: #fff; text-align: center;
+    background: linear-gradient(120deg, #1a6b8a 0%, #6d28d9 38%, #ff6eb4 68%, #f59e0b 100%);
+    box-shadow: 0 6px 22px rgba(109,40,217,0.22);
+  }
+  /* faint confetti blobs */
+  .flag-hero::before, .flag-hero::after {
+    content: ""; position: absolute; border-radius: 50%; opacity: 0.25; pointer-events: none;
+  }
+  .flag-hero::before { width: 160px; height: 160px; background: #fde047; top: -60px; right: -30px; }
+  .flag-hero::after  { width: 130px; height: 130px; background: #22d3ee; bottom: -55px; left: -25px; }
+  .flag-hero .fh-inner { position: relative; z-index: 1; }
+  .fh-kicker { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    opacity: 0.9; }
+  .fh-title { font-size: 34px; font-weight: 900; letter-spacing: 2px; line-height: 1.05;
+    margin: 4px 0 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+  .fh-sub { font-size: 13px; opacity: 0.95; font-weight: 600; }
+  .fh-cta {
+    display: inline-block; margin-top: 14px; padding: 8px 18px; border-radius: 999px;
+    background: rgba(255,255,255,0.95); color: #6d28d9; font-weight: 800; font-size: 13px;
+    letter-spacing: 0.3px; box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  }
+  .fh-cta.pulse { animation: fhpulse 1.8s ease-in-out infinite; }
+  @keyframes fhpulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  .fh-progress { margin-top: 12px; display: flex; gap: 6px; justify-content: center; }
+  .fh-progress span { width: 22px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.35); }
+  .fh-progress span.done { background: #fde047; }
+  .fh-progress span.now  { background: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.4); }
+
+  /* festive accent stripe on matchup cards */
+  .matchup { position: relative; }
+  .matchup::before {
+    content: ""; position: absolute; top: -1px; left: -1px; right: -1px; height: 3px;
+    background: linear-gradient(90deg, #1a6b8a, #6d28d9, #ff6eb4, #f59e0b);
+    border-radius: 8px 8px 0 0;
+  }
+
+  /* champion celebration */
+  .champ-card {
+    text-align: center; padding: 40px 20px; color: #fff; border: none; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #6d28d9 0%, #ff6eb4 55%, #f59e0b 100%);
+    box-shadow: 0 8px 26px rgba(109,40,217,0.28);
+  }
+  .champ-card .confetti { position: absolute; top: 10px; left: 0; right: 0; text-align: center;
+    pointer-events: none; font-size: 18px; letter-spacing: 10px; opacity: 0.55; }
+  .champ-card .champ-inner { position: relative; z-index: 1; }
+  .champ-card .flag-img { height: 168px; margin: 14px auto; border: 3px solid rgba(255,255,255,0.85);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+  .champ-card h2 { font-size: 13px; color: rgba(255,255,255,0.9); text-transform: uppercase;
+    letter-spacing: 2px; }
+  .champ-card .cname { font-size: 36px; font-weight: 900; color: #fff; margin-top: 6px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+  .champ-card .csub { font-size: 12px; opacity: 0.9; margin-top: 6px; }
 
   .save-toast {
     position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
@@ -171,6 +220,27 @@ function showToast() {
 }
 
 // ---- rendering -----------------------------------------------------------
+function heroFor() {
+  const rounds = state.roundOrder;
+  const ri = rounds.indexOf(state.currentRound);
+  const pips = rounds.map((r, i) =>
+    `<span class="${i < ri ? 'done' : (i === ri ? 'now' : '')}"></span>`).join('');
+  let cta, pulse = '';
+  if (state.votingOpen) {
+    cta = `🗳️ ${ROUND_LABEL[state.currentRound]} is LIVE – out of the pool? get your votes in below`;
+    pulse = 'pulse';
+  } else {
+    cta = `✅ ${ROUND_LABEL[state.currentRound]} is settled – see who survived`;
+  }
+  return `<div class="flag-hero"><div class="fh-inner">
+    <div class="fh-kicker">🏳️ The People's Bracket · World Cup 2026</div>
+    <div class="fh-title">FLAG KNOCKOUT</div>
+    <div class="fh-sub">48 flags enter. One gets crowned. You decide.</div>
+    <div class="fh-cta ${pulse}">${cta}</div>
+    <div class="fh-progress">${pips}</div>
+  </div></div>`;
+}
+
 function render() {
   if (!state) {
     content.innerHTML = `<div class="card"><h2>Flag Knockout</h2>
@@ -191,19 +261,14 @@ function render() {
       ${disabled ? 'disabled style="opacity:.4;cursor:not-allowed"' : ''}>${ROUND_LABEL[r]}</button>`;
   }).join('');
 
-  const intro = state.status === 'done' ? '' : `
-    <div class="intro card">
-      <h2>Flag Knockout 🏳️</h2>
-      <p class="muted">All 48 nations, one bracket, decided by you. Vote for the flag you
-        like better in each matchup – the crowd's pick advances. Results stay hidden until
-        each round closes, so vote your gut. Ties are broken by the combined fantasy score
-        of each flag's voters, so a pick backed by the league leaders carries a little extra
-        weight.</p>
-    </div>`;
+  const header = state.status === 'done' ? '' : heroFor() + `
+    <p class="muted" style="text-align:center;font-size:12px;margin:-4px 0 14px">
+      Vote the flag you like better in each matchup · results hidden until the round closes ·
+      ties broken by voters' combined fantasy score</p>`;
 
   content.innerHTML =
     (state.status === 'done' ? content.innerHTML : '') +
-    intro +
+    header +
     `<div class="pills round-pills">${pills}</div>` +
     `<div id="roundBody"></div>`;
 
@@ -225,8 +290,8 @@ function renderRound(round) {
     || state.status === 'done';
 
   let banner = '';
-  if (isOpen) banner = `<div class="vote-status">🟢 <div><strong>Voting open · ${ROUND_LABEL[round]}</strong>
-    <span style="opacity:.85;margin-left:6px">· tap a flag to vote, change anytime until close – if a matchup ties on votes, it goes to the flag whose voters have the higher combined fantasy score</span></div></div>`;
+  if (isOpen) banner = `<div class="vote-status">🗳️ <div><strong>${ROUND_LABEL[round]} voting is LIVE – get your votes in</strong>
+    <span style="opacity:.85;margin-left:6px">· tap a flag, change anytime until the round closes · ties go to the flag whose voters have the higher combined fantasy score</span></div></div>`;
   else if (isClosed) banner = `<div class="vote-status closed">📊 <div><strong>${ROUND_LABEL[round]} results</strong>
     <span style="opacity:.85;margin-left:6px">· the crowd has spoken</span></div></div>`;
 
@@ -300,9 +365,13 @@ function feederLabel(feeder) {
 function renderChampion() {
   const c = state.champion;
   content.innerHTML = `<div class="card champ-card">
-    <h2>🏆 Best flag in the tournament</h2>
-    ${flagImg(c)}
-    <div class="cname">${c.name}</div>
+    <div class="confetti">🎉 🎊 ✨ 🥳 🎉 🎊 ✨ 🥳 🎉 🎊</div>
+    <div class="champ-inner">
+      <h2>🏆 Best flag in the tournament</h2>
+      ${flagImg(c)}
+      <div class="cname">${c.name}</div>
+      <div class="csub">crowned by the people · 48 flags, one winner</div>
+    </div>
   </div>`;
 }
 
