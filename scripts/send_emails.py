@@ -444,10 +444,64 @@ def _odds_keys_plain(proj: dict, teams_cache: dict, players_cache: dict) -> str:
     return line
 
 
+FLAGS_URL = SITE_URL + "flags.html"
+_FLAG_RL = {"wildcard": "Wildcard", "R32": "Round of 32", "R16": "Round of 16",
+            "QF": "Quarter-finals", "SF": "Semi-finals", "F": "Final"}
+
+
+def load_flag_state(db) -> dict | None:
+    """Flag Knockout state, or None if not initialized / unreadable."""
+    try:
+        d = db.collection("flagContest").document("state").get()
+        return d.to_dict() if d.exists else None
+    except Exception:
+        return None
+
+
+def _flag_promo_parts(fs: dict | None) -> tuple[str, str]:
+    """(headline, subtext) for the flag promo, or ('','') if it shouldn't show.
+    Only shows once the contest is launched (same gate as the website)."""
+    if not fs or not fs.get("launched"):
+        return "", ""
+    champ = fs.get("champion") or {}
+    if fs.get("status") == "done" and champ:
+        return (f"&#127942; {escape_html(champ.get('name', '?'))} was crowned best flag",
+                "See how the bracket played out")
+    if fs.get("votingOpen"):
+        rn = _FLAG_RL.get(fs.get("currentRound"), "Voting")
+        return (f"&#128499;&#65039; {escape_html(rn)} voting is LIVE",
+                "Out of the pool? Get your votes in before the round closes")
+    return ("&#127987;&#65039; Flag Knockout", "Results are in, see who advanced")
+
+
+def render_flag_promo_html(fs: dict | None) -> str:
+    head, sub = _flag_promo_parts(fs)
+    if not head:
+        return ""
+    return f'''
+  <div style="background:#6d28d9; background:linear-gradient(120deg,#1a6b8a,#6d28d9 45%,#ff6eb4 80%,#f59e0b); border-radius:8px; padding:16px; margin-bottom:16px; color:#fff">
+    <div style="font-size:15px; font-weight:800">{head}</div>
+    <div style="font-size:13px; opacity:0.95; margin-top:3px">{sub}</div>
+    <div style="margin-top:12px"><a href="{FLAGS_URL}" style="background:#fff; color:#6d28d9; padding:9px 16px; border-radius:999px; text-decoration:none; font-weight:800; font-size:13px">Vote in the Flag Knockout &rarr;</a></div>
+  </div>'''
+
+
+def _flag_promo_plain(fs: dict | None) -> str:
+    head, sub = _flag_promo_parts(fs)
+    if not head:
+        return ""
+    # Strip HTML entities (emoji etc.) and collapse whitespace for plain text.
+    import re as _re
+    clean = _re.sub(r"\s+", " ", _re.sub(r"&#\d+;|&\w+;", "", head)).strip()
+    prefix = "" if clean.lower().startswith("flag knockout") else "Flag Knockout: "
+    return f"{prefix}{clean} - {sub}\n{FLAGS_URL}"
+
+
 def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[dict],
                       roster: list[dict],
                       teams_cache: dict, players_cache: dict,
-                      proj: dict = None, game_state: dict = None) -> tuple[str, str, str]:
+                      proj: dict = None, game_state: dict = None,
+                      flag_promo_html: str = "", flag_promo_plain: str = "") -> tuple[str, str, str]:
     """Returns (subject, html_body, plain_text_body)."""
     name  = name_for(user)
     flag  = flag_for(user)
@@ -483,7 +537,7 @@ def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[d
       <span style="font-size:18px; color:#666; font-weight:600">· {pts} pts{delta_str}</span>
     </div>
   </div>
-
+  {flag_promo_html}
   {odds_keys_block}
   {cta_block}
   {matches_block}
@@ -510,7 +564,7 @@ def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[d
 Hi {name},
 
 Your standing: {'#' + str(rank) if rank else 'unranked'} · {pts} pts{delta_str}
-{(odds_keys_plain + chr(10)) if odds_keys_plain else ''}{(cta_plain + chr(10)) if cta_plain else ''}
+{(flag_promo_plain + chr(10)) if flag_promo_plain else ''}{(odds_keys_plain + chr(10)) if odds_keys_plain else ''}{(cta_plain + chr(10)) if cta_plain else ''}
 Yesterday: {(', '.join(f"{m['round']} {m['team1Name']} {m.get('score1','?')}-{m.get('score2','?')} {m['team2Name']}" for m in today_matches)) if today_matches else 'no matches'}
 
 Your roster ({len(roster)} picks):
@@ -525,7 +579,8 @@ Manage emails: {PROFILE_URL}
 def render_round_recap_html(user: dict, leaderboard: list[dict], round_name: str,
                               roster: list[dict] = None,
                               teams_cache: dict = None, players_cache: dict = None,
-                              proj: dict = None, game_state: dict = None) -> tuple[str, str, str]:
+                              proj: dict = None, game_state: dict = None,
+                              flag_promo_html: str = "", flag_promo_plain: str = "") -> tuple[str, str, str]:
     """Round-end recap email. Lighter content than daily; emphasis on the
     completed round + the freshly-opened transfer window."""
     name = name_for(user)
@@ -559,7 +614,7 @@ def render_round_recap_html(user: dict, leaderboard: list[dict], round_name: str
       <span style="font-size:18px; color:#666; font-weight:600">· {pts} pts</span>
     </div>
   </div>
-
+  {flag_promo_html}
   {odds_keys_block}
   {cta_block}
   {roster_block}
@@ -580,7 +635,7 @@ Hi {name},
 {round_name} is in the books. Eliminated picks have been auto-sold. The next transfer window is OPEN.
 
 Your standing: {'#' + str(rank) if rank else 'unranked'} · {pts} pts
-{(odds_keys_plain + chr(10)) if odds_keys_plain else ''}
+{(flag_promo_plain + chr(10)) if flag_promo_plain else ''}{(odds_keys_plain + chr(10)) if odds_keys_plain else ''}
 Top 5: {' · '.join(f"{i+1}. {name_for(u)} ({int(u.get('totalPoints') or 0)})" for i, u in enumerate(leaderboard[:5]))}
 
 Transfer page: {TRANSFER_URL}
@@ -674,6 +729,11 @@ def main():
 
     # Transfer-window state (mirrors the site) + per-user title odds / keys.
     game_state = load_game_state(db)
+    flag_state = load_flag_state(db)                       # Flag Knockout promo (shared across users)
+    flag_promo_html = render_flag_promo_html(flag_state)
+    flag_promo_plain = _flag_promo_plain(flag_state)
+    if flag_promo_html:
+        print("Flag Knockout promo: ON (contest launched)")
     proj_by_uid = load_projections()
     print(f"Game state: {game_state.get('state')} ({game_state.get('round')}); "
           f"projections for {len(proj_by_uid)} users")
@@ -704,12 +764,14 @@ def main():
                 u, all_users, today_matches,
                 roster, teams_cache, players_cache,
                 proj=proj, game_state=game_state,
+                flag_promo_html=flag_promo_html, flag_promo_plain=flag_promo_plain,
             )
         else:
             subject, html, plain = render_round_recap_html(
                 u, all_users, args.round_name,
                 roster=roster, teams_cache=teams_cache, players_cache=players_cache,
                 proj=proj, game_state=game_state,
+                flag_promo_html=flag_promo_html, flag_promo_plain=flag_promo_plain,
             )
 
         if args.dry_run:
