@@ -325,6 +325,7 @@
 
 <main>
   <div id="stateBanner"></div>
+  <div id="flagPromo"></div>
   <section class="card signin-card" id="signinCard" style="display:none">
     <h2>Sign in to view the leaderboard</h2>
     <p>You need to sign in with Google.</p>
@@ -783,6 +784,7 @@
   }
 
   window.fwc.onAuth(async (user) => {
+    window.fwc.renderFlagPromo(document.getElementById('flagPromo'), user);
     currentUser = user;
     if (!user) {
       signinCard.style.display = 'block';

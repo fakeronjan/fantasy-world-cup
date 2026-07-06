@@ -51,15 +51,31 @@ export const ADMIN_UIDS = new Set([
 
 const configIsPlaceholder = FIREBASE_CONFIG.apiKey === "REPLACE_ME";
 
-// Preview gate for the Flag Knockout module. While false, the Flags nav tab AND
-// the flags.html page are visible only to admins, so the contest can be
-// previewed privately. Flip to true (one line) to launch it to everyone.
-const FLAGS_LAUNCHED = false;
-
-function gateFlagsTab(user) {
+// Flag Knockout launch gate. The single source of truth is the boolean
+// `flagContest/state.launched` (toggled from the Admin panel - no redeploy).
+// While it's false, the Flags nav tab, the flags.html page, and every promo are
+// visible ONLY to admins, so the contest can be previewed privately. Flip it on
+// and everything (web + emails) turns on for everyone at once.
+let _flagStateCache;   // undefined = not fetched; null = no doc / not signed in
+async function getFlagState() {
+  if (_flagStateCache !== undefined) return _flagStateCache;
+  if (configIsPlaceholder) return (_flagStateCache = null);
+  try {
+    const snap = await getDoc(doc(db, 'flagContest', 'state'));
+    _flagStateCache = snap.exists() ? snap.data() : null;
+  } catch { _flagStateCache = null; }
+  return _flagStateCache;
+}
+function flagsVisibleTo(user, st) {
+  return !!(user && ADMIN_UIDS.has(user.uid)) || !!(st && st.launched);
+}
+async function gateFlagsTab(user) {
   const fl = document.getElementById('flagsLink');
-  if (fl) fl.style.display =
-    (FLAGS_LAUNCHED || (user && ADMIN_UIDS.has(user.uid))) ? '' : 'none';
+  if (!fl) return;
+  // Admins see the tab immediately; others only once the contest is launched.
+  if (user && ADMIN_UIDS.has(user.uid)) { fl.style.display = ''; return; }
+  const st = await getFlagState();
+  fl.style.display = flagsVisibleTo(user, st) ? '' : 'none';
 }
 
 let app, auth, db;
@@ -385,13 +401,42 @@ function assetMatchLog(asset, kind, matches, w) {
   return rows;
 }
 
+// Colorful cross-promo banner for the Flag Knockout, dropped onto other pages
+// (roster/leaderboard/transfer). Renders into targetEl only when the contest is
+// visible to this viewer (launched, or admin previewing). CTA is state-aware.
+const _FLAG_RL = {
+  wildcard: 'Wildcard', R32: 'Round of 32', R16: 'Round of 16',
+  QF: 'Quarter-finals', SF: 'Semi-finals', F: 'Final',
+};
+async function renderFlagPromo(targetEl, user) {
+  if (!targetEl) return;
+  const st = await getFlagState();
+  if (!st || !flagsVisibleTo(user, st)) { targetEl.innerHTML = ''; return; }
+  let msg, sub;
+  if (st.status === 'done' && st.champion) {
+    msg = `🏆 ${st.champion.name} was crowned best flag`; sub = 'See how the bracket played out';
+  } else if (st.votingOpen) {
+    msg = `🗳️ ${_FLAG_RL[st.currentRound] || 'Voting'} is LIVE`;
+    sub = 'Out of the pool? Get your votes in before the round closes';
+  } else {
+    msg = '🏳️ Flag Knockout'; sub = 'Results are in - see who advanced';
+  }
+  const preview = (!st.launched && isAdmin(user))
+    ? '<span class="fp-preview">preview</span>' : '';
+  targetEl.innerHTML = `<a class="flag-promo" href="./flags.html">
+    <span class="fp-emoji">🏳️</span>
+    <span class="fp-text"><span class="fp-msg">${msg}${preview}</span>
+      <span class="fp-sub">${sub}</span></span>
+    <span class="fp-cta">Vote →</span></a>`;
+}
+
 // Expose to non-module scripts on the page if needed.
 window.fwc = {
   auth, db,
   signInWithGoogle, signOut, onAuth, isAdmin, nameFor, flagFor,
   getGameState, renderStateBanner, getScoringWeights, getRoundSchedule, pointsBreakdown,
   getFinishedMatches, assetMatchLog,
-  configIsPlaceholder, flagsLaunched: FLAGS_LAUNCHED,
+  configIsPlaceholder, getFlagState, renderFlagPromo,
   // Re-export Firestore helpers commonly used on pages, so individual pages
   // don't have to repeat the import URL.
   doc, getDoc, setDoc,

@@ -1,5 +1,6 @@
 {
   "status": "setup",
+  "launched": false,
   "currentRound": "wildcard",
   "votingOpen": false,
   "roundOrder": [

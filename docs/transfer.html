@@ -173,6 +173,7 @@
 
 <main>
   <div id="stateBanner"></div>
+  <div id="flagPromo"></div>
   <section class="card signin-card" id="signinCard" style="display:none">
     <h2>Sign in to make transfers</h2>
     <button class="btn" id="signInBtn">Sign in with Google</button>
@@ -329,6 +330,7 @@
   signInBtn.addEventListener('click', () => window.fwc.signInWithGoogle());
 
   window.fwc.onAuth(async (user) => {
+    window.fwc.renderFlagPromo(document.getElementById('flagPromo'), user);
     currentUser = user;
     if (!user) {
       signinCard.style.display = 'block';

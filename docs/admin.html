@@ -257,6 +257,14 @@
         <button class="btn" id="flagInitBtn">Initialize / re-seed contest</button>
         <button class="btn btn-accent" id="flagAdvanceBtn">Close round &amp; advance</button>
       </div>
+      <div class="action-row">
+        <button class="btn" id="flagLaunchBtn">🚀 Launch to everyone</button>
+        <button class="btn" id="flagUnlaunchBtn">Unlaunch (hide from users)</button>
+      </div>
+      <p class="muted" style="font-size:12px; margin-top:8px">
+        Launch flips the contest live for all managers at once – nav tab, page, and the
+        promos on other pages + emails. No redeploy needed. Preview privately first; launch
+        when you're happy.</p>
     </section>
 
     <!-- Live config dump -->
@@ -762,13 +770,16 @@
     try {
       const st = await loadFlagState();
       if (!st) { flagStatusEl.innerHTML = '<span class="muted">Not initialized</span>'; return; }
+      const launch = st.launched
+        ? '<span class="accent-text">LAUNCHED · live to all</span>'
+        : '<span class="muted">preview only · admins</span>';
       if (st.status === 'done') {
-        flagStatusEl.innerHTML = `🏆 <strong>Complete</strong> – champion flag: <strong>${st.champion?.name || '?'}</strong>`;
+        flagStatusEl.innerHTML = `${launch} · 🏆 <strong>Complete</strong> – champion: <strong>${st.champion?.name || '?'}</strong>`;
         return;
       }
       const { total } = await countRoundVotes(st.currentRound);
       const nGames = (st.rounds[st.currentRound]?.games || []).length;
-      flagStatusEl.innerHTML = `Round: <strong>${FLAG_ROUND_LABEL[st.currentRound] || st.currentRound}</strong>
+      flagStatusEl.innerHTML = `${launch} · Round: <strong>${FLAG_ROUND_LABEL[st.currentRound] || st.currentRound}</strong>
         · voting ${st.votingOpen ? '<span class="accent-text">OPEN</span>' : 'CLOSED'}
         · ${nGames} matchups · <strong>${total}</strong> votes cast this round`;
     } catch (e) {
@@ -852,8 +863,23 @@
     } catch (e) { showToast('Close failed: ' + e.message, true); }
   }
 
+  async function setFlagLaunched(val) {
+    try {
+      const st = await loadFlagState();
+      if (!st) return showToast('Initialize the contest first', true);
+      if (val && !confirm('Launch the Flag Knockout to ALL managers now?\n\n' +
+        'The tab, page, on-site promos, and email promo go live for everyone.')) return;
+      await window.fwc.setDoc(window.fwc.doc(window.fwc.db, 'flagContest', 'state'),
+        { launched: val }, { merge: true });
+      showToast(val ? '🚀 Flag Knockout is LIVE to everyone' : 'Flag Knockout hidden (preview only)');
+      loadFlagStatus();
+    } catch (e) { showToast('Launch toggle failed: ' + e.message, true); }
+  }
+
   flagInitBtn.addEventListener('click', initFlagContest);
   flagAdvanceBtn.addEventListener('click', closeFlagRound);
+  document.getElementById('flagLaunchBtn').addEventListener('click', () => setFlagLaunched(true));
+  document.getElementById('flagUnlaunchBtn').addEventListener('click', () => setFlagLaunched(false));
 
   // ---- recent ingested matches (read-only) ------------------------------
 

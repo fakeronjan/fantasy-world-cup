@@ -116,6 +116,7 @@
 
 <main>
   <div id="stateBanner"></div>
+  <div id="flagPromo"></div>
   <!-- Signed-out -->
   <section class="card signin-card" id="signinCard" style="display:none">
     <h2>Sign in to view your roster</h2>
@@ -443,6 +444,7 @@
   }
 
   window.fwc.onAuth(async (user) => {
+    window.fwc.renderFlagPromo(document.getElementById('flagPromo'), user);
     if (!user) {
       signinCard.style.display = 'block';
       noRoster.style.display = 'none';

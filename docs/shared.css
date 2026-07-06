@@ -238,6 +238,28 @@ input[type="text"]:focus, input[type="search"]:focus, select:focus {
   color: var(--bg-header);
 }
 
+/* ---------- flag knockout cross-promo ---------- */
+.flag-promo {
+  display: flex; align-items: center; gap: 12px; text-decoration: none;
+  background: linear-gradient(120deg, #1a6b8a 0%, #6d28d9 45%, #ff6eb4 80%, #f59e0b 100%);
+  color: #fff; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+  box-shadow: 0 3px 14px rgba(109,40,217,0.20);
+}
+.flag-promo:hover { text-decoration: none; filter: brightness(1.06); }
+.flag-promo .fp-emoji { font-size: 26px; line-height: 1; }
+.flag-promo .fp-text { flex: 1; display: flex; flex-direction: column; line-height: 1.25; }
+.flag-promo .fp-msg { font-weight: 800; font-size: 14px; }
+.flag-promo .fp-sub { font-size: 12px; opacity: 0.92; }
+.flag-promo .fp-cta {
+  background: rgba(255,255,255,0.95); color: #6d28d9; font-weight: 800; font-size: 13px;
+  padding: 6px 14px; border-radius: 999px; white-space: nowrap;
+}
+.flag-promo .fp-preview {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px;
+  background: rgba(0,0,0,0.25); padding: 1px 6px; border-radius: 4px; margin-left: 6px;
+  vertical-align: middle; font-weight: 700;
+}
+
 /* ---------- helpers ---------- */
 .muted { color: var(--text-muted); }
 .accent-text { color: var(--accent); font-weight: 700; }

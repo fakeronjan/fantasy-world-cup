@@ -106,6 +106,7 @@ def build_bracket(teams):
 
     return {
         'status': 'setup',
+        'launched': False,   # gates web tab/page/promos + emails; admin toggles it
         'currentRound': 'wildcard',
         'votingOpen': False,
         'roundOrder': ['wildcard', 'R32', 'R16', 'QF', 'SF', 'F'],

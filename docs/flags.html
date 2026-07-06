@@ -394,16 +394,15 @@ window.fwc.onAuth(async (user) => {
     <button id="signOutBtn">Sign out</button>`;
   document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
 
-  // Preview gate: until FLAGS_LAUNCHED flips true in shared.js, only admins can
-  // see the contest (even by direct URL). Everyone else gets a "coming soon".
-  if (!window.fwc.flagsLaunched && !window.fwc.isAdmin(user)) {
-    content.innerHTML = `<div class="card"><h2>Flag Knockout 🏳️</h2>
-      <p class="muted">A best-flag-in-the-tournament vote is coming soon – stay tuned</p></div>`;
-    return;
-  }
-
   try {
     state = await loadState();
+    // Preview gate: until state.launched is set (from the Admin panel), only
+    // admins can see the contest, even by direct URL. Others get "coming soon".
+    if (!(state && state.launched) && !window.fwc.isAdmin(user)) {
+      content.innerHTML = `<div class="card"><h2>Flag Knockout 🏳️</h2>
+        <p class="muted">A best-flag-in-the-tournament vote is coming soon – stay tuned</p></div>`;
+      return;
+    }
     if (state && state.votingOpen) myVotes = await loadMyVotes(state.currentRound);
     render();
   } catch (e) {
