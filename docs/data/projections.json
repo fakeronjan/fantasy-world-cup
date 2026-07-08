@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-08T11:17:41.112909+00:00",
+  "generatedAt": "2026-07-08T13:05:17.461083+00:00",
   "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
@@ -8,17 +8,17 @@
       "uid": "KVS3kfS9SYUapdy7rAT7yrYSzT02",
       "name": "Karlos Abel",
       "current": 223,
-      "median": 284.0,
-      "p20": 260,
-      "p80": 312,
-      "mean": 286.4,
-      "winPct": 97.6,
+      "median": 292.0,
+      "p20": 266,
+      "p80": 320,
+      "mean": 293.4,
+      "winPct": 98.2,
       "top3Pct": 100.0,
       "top5Pct": 100.0,
       "lastPct": 0.0,
-      "teamShare": 41,
+      "teamShare": 37,
       "nTeams": 3,
-      "nPlayers": 5,
+      "nPlayers": 6,
       "keysGoal": "win",
       "keys": [
         {
@@ -27,11 +27,11 @@
         },
         {
           "kind": "player",
-          "id": "3218-argentina"
+          "id": "202283-spain"
         },
         {
-          "kind": "team",
-          "id": "belgium"
+          "kind": "player",
+          "id": "32570-spain"
         }
       ],
       "curRank": 1,
@@ -250,7 +250,7 @@
       "p20": 128,
       "p80": 244,
       "mean": 184.4,
-      "winPct": 2.3,
+      "winPct": 1.7,
       "top3Pct": 34.1,
       "top5Pct": 44.7,
       "lastPct": 0.1,
