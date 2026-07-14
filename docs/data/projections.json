@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-14T15:57:01.434296+00:00",
+  "generatedAt": "2026-07-14T17:19:48.192909+00:00",
   "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
@@ -47,8 +47,8 @@
       "p80": 227,
       "mean": 218.1,
       "winPct": 0.0,
-      "top3Pct": 60.0,
-      "top5Pct": 90.0,
+      "top3Pct": 61.7,
+      "top5Pct": 92.7,
       "lastPct": 0.0,
       "teamShare": 0,
       "nTeams": 0,
@@ -73,8 +73,8 @@
       "p80": 236,
       "mean": 212.9,
       "winPct": 0.0,
-      "top3Pct": 43.3,
-      "top5Pct": 90.5,
+      "top3Pct": 47.4,
+      "top5Pct": 93.2,
       "lastPct": 0.0,
       "teamShare": 70,
       "nTeams": 3,
@@ -107,8 +107,8 @@
       "p80": 228,
       "mean": 204.5,
       "winPct": 0.0,
-      "top3Pct": 25.0,
-      "top5Pct": 63.3,
+      "top3Pct": 26.1,
+      "top5Pct": 67.2,
       "lastPct": 0.0,
       "teamShare": 58,
       "nTeams": 2,
@@ -137,8 +137,8 @@
       "p80": 267,
       "mean": 208.9,
       "winPct": 1.2,
-      "top3Pct": 38.6,
-      "top5Pct": 50.5,
+      "top3Pct": 38.8,
+      "top5Pct": 51.7,
       "lastPct": 0.0,
       "teamShare": 14,
       "nTeams": 1,
@@ -163,40 +163,6 @@
       "rankShift": 4
     },
     {
-      "uid": "b7kCU3JVSCUixm6QA99bLIu2CKE2",
-      "name": "Katherine Kwok",
-      "current": 152,
-      "median": 189.0,
-      "p20": 171,
-      "p80": 210,
-      "mean": 190.9,
-      "winPct": 0.0,
-      "top3Pct": 12.0,
-      "top5Pct": 33.8,
-      "lastPct": 0.0,
-      "teamShare": 0,
-      "nTeams": 0,
-      "nPlayers": 6,
-      "keysGoal": "top3",
-      "keys": [
-        {
-          "kind": "player",
-          "id": "202283-spain"
-        },
-        {
-          "kind": "player",
-          "id": "32570-spain"
-        },
-        {
-          "kind": "player",
-          "id": "7884-spain"
-        }
-      ],
-      "curRank": 7,
-      "projRank": 6,
-      "rankShift": 1
-    },
-    {
       "uid": "u7bzqSV7V9NMD0kGzp4DsqiFbe33",
       "name": "Niraj Patel",
       "current": 162,
@@ -205,8 +171,8 @@
       "p80": 212,
       "mean": 193.1,
       "winPct": 0.0,
-      "top3Pct": 1.3,
-      "top5Pct": 21.4,
+      "top3Pct": 2.3,
+      "top5Pct": 27.4,
       "lastPct": 0.0,
       "teamShare": 64,
       "nTeams": 2,
@@ -220,15 +186,11 @@
         {
           "kind": "player",
           "id": "177522-france"
-        },
-        {
-          "kind": "player",
-          "id": "8004-england"
         }
       ],
       "curRank": 6,
-      "projRank": 7,
-      "rankShift": -1
+      "projRank": 6,
+      "rankShift": 0
     },
     {
       "uid": "HTICTtDMQIVjsLo5hn5UOVfUBO62",
@@ -239,8 +201,8 @@
       "p80": 210,
       "mean": 191.4,
       "winPct": 0.0,
-      "top3Pct": 18.8,
-      "top5Pct": 36.7,
+      "top3Pct": 21.2,
+      "top5Pct": 39.9,
       "lastPct": 0.0,
       "teamShare": 72,
       "nTeams": 2,
@@ -261,8 +223,42 @@
         }
       ],
       "curRank": 5,
+      "projRank": 7,
+      "rankShift": -2
+    },
+    {
+      "uid": "b7kCU3JVSCUixm6QA99bLIu2CKE2",
+      "name": "Katherine Kwok",
+      "current": 152,
+      "median": 174.0,
+      "p20": 160,
+      "p80": 195,
+      "mean": 177.3,
+      "winPct": 0.0,
+      "top3Pct": 1.0,
+      "top5Pct": 12.4,
+      "lastPct": 0.0,
+      "teamShare": 0,
+      "nTeams": 0,
+      "nPlayers": 4,
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "player",
+          "id": "3373-france"
+        },
+        {
+          "kind": "player",
+          "id": "3374-france"
+        },
+        {
+          "kind": "player",
+          "id": "71-france"
+        }
+      ],
+      "curRank": 7,
       "projRank": 8,
-      "rankShift": -3
+      "rankShift": -1
     },
     {
       "uid": "wKbTN7lhX8VybKLCQx4UdfE1csm2",
@@ -273,14 +269,27 @@
       "p80": 195,
       "mean": 174.8,
       "winPct": 0.0,
-      "top3Pct": 0.7,
-      "top5Pct": 10.1,
+      "top3Pct": 1.1,
+      "top5Pct": 11.1,
       "lastPct": 0.0,
       "teamShare": 80,
       "nTeams": 3,
       "nPlayers": 1,
-      "keysGoal": "none",
-      "keys": [],
+      "keysGoal": "top3",
+      "keys": [
+        {
+          "kind": "team",
+          "id": "argentina"
+        },
+        {
+          "kind": "team",
+          "id": "spain"
+        },
+        {
+          "kind": "player",
+          "id": "3218-argentina"
+        }
+      ],
       "curRank": 11,
       "projRank": 9,
       "rankShift": 2
@@ -295,7 +304,7 @@
       "mean": 172.2,
       "winPct": 0.0,
       "top3Pct": 0.0,
-      "top5Pct": 1.2,
+      "top5Pct": 1.1,
       "lastPct": 0.0,
       "teamShare": 38,
       "nTeams": 1,
@@ -357,8 +366,8 @@
       "p80": 184,
       "mean": 163.8,
       "winPct": 0.0,
-      "top3Pct": 0.2,
-      "top5Pct": 2.5,
+      "top3Pct": 0.3,
+      "top5Pct": 3.1,
       "lastPct": 0.0,
       "teamShare": 37,
       "nTeams": 1,
