@@ -56,6 +56,19 @@ ROUND_NAMES = {
 # (UTC-4); a fixed offset is fine for the tournament window and avoids a tz dep.
 EASTERN = timezone(timedelta(hours=-4))
 
+ROSTER_BUDGET = 60  # salary cap; matches leaderboard.html / transfer.html
+
+
+def budget_remaining(u: dict) -> int:
+    """Unspent budget, mirroring leaderboard.html's cash-on-hand calc: the
+    stored currentBudget (tracks auto-sell refunds) falling back to the cap
+    minus currently-held purchase prices."""
+    if u.get("currentBudget") is not None:
+        return int(u["currentBudget"])
+    held = sum(int(p.get("purchasePrice") or 0)
+               for p in (u.get("roster") or []) if p.get("currentlyHeld") is not False)
+    return ROSTER_BUDGET - held
+
 
 def _to_dt(v):
     """Coerce a Firestore timestamp (admin SDK datetime) or ISO string to an
@@ -327,50 +340,72 @@ def render_footer_html() -> str:
   <p style="font-size:10px; color:#bbb; margin-top:6px">Sent {sent}</p>"""
 
 
-def render_transfer_cta_html(gs: dict) -> str:
+def render_transfer_cta_html(gs: dict, budget: int = 0) -> str:
     """Time-aware transfer-market CTA mirroring the leaderboard's states:
     OPEN now (with the closing deadline) vs opening soon vs pre-kickoff draft.
-    Returns '' when there's nothing to act on (tournament done / unknown)."""
+    Returns '' when there's nothing to act on (tournament done / unknown).
+    When the user is carrying unspent budget during an actionable window,
+    the CTA leads with that dollar figure instead of burying it."""
     state = (gs or {}).get("state")
     rn = ROUND_NAMES.get(gs.get("round"), gs.get("round")) if gs else ""
     if state == "window-open":
         closes = _fmt_dt(gs.get("closesAt"))
         deadline = (f'<div style="font-size:11px; color:#9d174d; margin-top:10px; font-weight:600">'
                     f'&#9201; Window closes {closes}</div>') if closes else ""
+        if budget > 0:
+            headline = f"&#128257; Transfer market is OPEN &mdash; you have ${budget} to spend"
+            body = (f'<strong style="color:#9d174d">${budget} of your budget is sitting unused.</strong> '
+                    f'That\'s pure upside left on the table &ndash; spend it on up to <strong>3</strong> new '
+                    f'players / countries for the {escape_html(rn)} before the window closes.')
+        else:
+            headline = "&#128257; Transfer market is OPEN"
+            body = f'Sell underperformers and buy up to <strong>3</strong> new players / countries for the {escape_html(rn)}.'
         return f"""
   <div style="background:#fff5fa; border:1px solid #ff6eb4; border-radius:6px; padding:16px; margin-bottom:16px">
-    <div style="font-size:13px; font-weight:800; color:#9d174d; text-transform:uppercase; letter-spacing:0.5px">&#128257; Transfer market is OPEN</div>
-    <div style="font-size:13px; color:#444; margin-top:6px">Sell underperformers and buy up to <strong>3</strong> new players / countries for the {escape_html(rn)}.</div>
-    <div style="margin-top:12px"><a href="{TRANSFER_URL}" style="background:#ff6eb4; color:#fff; padding:9px 16px; border-radius:4px; text-decoration:none; font-weight:700; font-size:13px">Make transfers &rarr;</a></div>
+    <div style="font-size:13px; font-weight:800; color:#9d174d; text-transform:uppercase; letter-spacing:0.5px">{headline}</div>
+    <div style="font-size:13px; color:#444; margin-top:6px">{body}</div>
+    <div style="margin-top:12px"><a href="{TRANSFER_URL}" style="background:#ff6eb4; color:#fff; padding:9px 16px; border-radius:4px; text-decoration:none; font-weight:700; font-size:13px">{'Spend your $' + str(budget) + ' &rarr;' if budget > 0 else 'Make transfers &rarr;'}</a></div>
     {deadline}
   </div>"""
     if state in ("round-in-progress", "transition-settling"):
+        budget_line = (f'<div style="font-size:12px; color:#9d174d; margin-top:6px; font-weight:700">'
+                        f'&#128176; You\'ll be sitting on ${budget} unspent when it reopens &ndash; have your targets picked out.</div>'
+                        ) if budget > 0 else ""
         return f"""
   <div style="background:#f8f8f6; border:1px solid #ddd; border-radius:6px; padding:16px; margin-bottom:16px">
     <div style="font-size:13px; font-weight:800; color:#1a6b8a; text-transform:uppercase; letter-spacing:0.5px">&#128257; Transfer market opening soon</div>
     <div style="font-size:13px; color:#444; margin-top:6px">Rosters are locked during the {escape_html(rn)}. The market reopens once the round finishes &ndash; line up your moves now.</div>
+    {budget_line}
     <div style="margin-top:12px"><a href="{TRANSFER_URL}" style="background:#1a6b8a; color:#fff; padding:9px 16px; border-radius:4px; text-decoration:none; font-weight:700; font-size:13px">Preview the market &rarr;</a></div>
   </div>"""
     if state == "pre-kickoff":
+        body = (f'You still have <strong style="color:#075985">${budget}</strong> of your budget unspent &ndash; fill out your roster before kickoff.'
+                 if budget > 0 else "Lock in your roster before kickoff.")
         return f"""
   <div style="background:#e0f2fe; border:1px solid #7dd3fc; border-radius:6px; padding:16px; margin-bottom:16px">
     <div style="font-size:13px; font-weight:800; color:#075985; text-transform:uppercase; letter-spacing:0.5px">&#9203; Draft window open</div>
-    <div style="font-size:13px; color:#444; margin-top:6px">Lock in your roster before kickoff.</div>
+    <div style="font-size:13px; color:#444; margin-top:6px">{body}</div>
     <div style="margin-top:12px"><a href="{SITE_URL}draft.html" style="background:#075985; color:#fff; padding:9px 16px; border-radius:4px; text-decoration:none; font-weight:700; font-size:13px">Draft your team &rarr;</a></div>
   </div>"""
     return ""
 
 
-def _transfer_cta_plain(gs: dict) -> str:
+def _transfer_cta_plain(gs: dict, budget: int = 0) -> str:
     state = (gs or {}).get("state")
     rn = ROUND_NAMES.get(gs.get("round"), gs.get("round")) if gs else ""
     if state == "window-open":
         closes = _fmt_dt(gs.get("closesAt"))
         tail = f" Closes {closes}." if closes else ""
+        if budget > 0:
+            return (f"TRANSFER MARKET OPEN: you have ${budget} sitting unspent - that's points left on "
+                     f"the table. Spend it (up to 3 new picks) for the {rn}.{tail} {TRANSFER_URL}")
         return f"TRANSFER MARKET OPEN: buy up to 3 new picks for the {rn}.{tail} {TRANSFER_URL}"
     if state in ("round-in-progress", "transition-settling"):
-        return f"Transfer market opens after the {rn}. Line up your moves: {TRANSFER_URL}"
+        tail = f" You'll have ${budget} unspent when it reopens - have your targets ready." if budget > 0 else ""
+        return f"Transfer market opens after the {rn}.{tail} Line up your moves: {TRANSFER_URL}"
     if state == "pre-kickoff":
+        if budget > 0:
+            return f"Draft window open - you still have ${budget} unspent, fill out your roster: {SITE_URL}draft.html"
         return f"Draft window open - lock in your roster: {SITE_URL}draft.html"
     return ""
 
@@ -458,37 +493,41 @@ def load_flag_state(db) -> dict | None:
         return None
 
 
-def _flag_promo_parts(fs: dict | None) -> tuple[str, str]:
-    """(headline, subtext) for the flag promo, or ('','') if it shouldn't show.
-    Only shows once the contest is launched (same gate as the website)."""
+def _flag_promo_parts(fs: dict | None) -> tuple[str, str, str]:
+    """(headline, subtext, cta_label) for the flag promo, or ('','','') if it
+    shouldn't show. Only shows once the contest is launched (same gate as the
+    website). CTA label is state-aware so a done contest never says "Vote"."""
     if not fs or not fs.get("launched"):
-        return "", ""
+        return "", "", ""
     champ = fs.get("champion") or {}
     if fs.get("status") == "done" and champ:
         return (f"&#127942; {escape_html(champ.get('name', '?'))} has the best flag in the world",
-                "See how the Flag Knockout bracket played out")
+                "See how the Flag Knockout bracket played out",
+                "See the results &rarr;")
     if fs.get("votingOpen"):
         rn = _FLAG_RL.get(fs.get("currentRound"), "voting")
         return ("&#127987;&#65039; Vote: what's the best flag in the world?",
-                f"Flag Knockout - {escape_html(rn)} is LIVE, out of the pool? get your votes in")
+                f"Flag Knockout - {escape_html(rn)} is LIVE, out of the pool? get your votes in",
+                "Vote in the Flag Knockout &rarr;")
     return ("&#127987;&#65039; Vote: what's the best flag in the world?",
-            "Flag Knockout - results are in, see which flags advanced")
+            "Flag Knockout - results are in, see which flags advanced",
+            "See the results &rarr;")
 
 
 def render_flag_promo_html(fs: dict | None) -> str:
-    head, sub = _flag_promo_parts(fs)
+    head, sub, cta = _flag_promo_parts(fs)
     if not head:
         return ""
     return f'''
   <div style="background:#6d28d9; background:linear-gradient(120deg,#1a6b8a,#6d28d9 45%,#ff6eb4 80%,#f59e0b); border-radius:8px; padding:16px; margin-bottom:16px; color:#fff">
     <div style="font-size:15px; font-weight:800">{head}</div>
     <div style="font-size:13px; opacity:0.95; margin-top:3px">{sub}</div>
-    <div style="margin-top:12px"><a href="{FLAGS_URL}" style="background:#fff; color:#6d28d9; padding:9px 16px; border-radius:999px; text-decoration:none; font-weight:800; font-size:13px">Vote in the Flag Knockout &rarr;</a></div>
+    <div style="margin-top:12px"><a href="{FLAGS_URL}" style="background:#fff; color:#6d28d9; padding:9px 16px; border-radius:999px; text-decoration:none; font-weight:800; font-size:13px">{cta}</a></div>
   </div>'''
 
 
 def _flag_promo_plain(fs: dict | None) -> str:
-    head, sub = _flag_promo_parts(fs)
+    head, sub, cta = _flag_promo_parts(fs)
     if not head:
         return ""
     # Strip HTML entities (emoji etc.) and collapse whitespace for plain text.
@@ -512,16 +551,19 @@ def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[d
     rank  = next((i + 1 for i, u in enumerate(leaderboard) if u["uid"] == user["uid"]), None)
 
     delta_str = f" (+{gain})" if gain > 0 else ""
+    budget = budget_remaining(user)
 
     subject_parts = ["Fantasy WC", datetime.utcnow().strftime("%b %d")]
     if rank: subject_parts.append(f"Rank #{rank}{delta_str}")
+    if budget > 0 and (game_state or {}).get("state") == "window-open":
+        subject_parts.append(f"${budget} unspent!")
     subject = " · ".join(subject_parts)
 
     matches_block      = render_today_matches_html(today_matches, players_cache)
     picks_today_block  = render_picks_today_html(roster, today_matches, teams_cache, players_cache)
     roster_block       = render_roster_html(roster, teams_cache, players_cache)
     leaderboards_block = render_leaderboards_html(user, leaderboard)
-    cta_block          = render_transfer_cta_html(game_state or {})
+    cta_block          = render_transfer_cta_html(game_state or {}, budget)
     odds_keys_block    = render_odds_keys_html(proj, teams_cache, players_cache)
 
     html = f"""<!DOCTYPE html>
@@ -559,7 +601,7 @@ def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[d
         for p in roster
     )
     odds_keys_plain = _odds_keys_plain(proj, teams_cache, players_cache)
-    cta_plain = _transfer_cta_plain(game_state or {})
+    cta_plain = _transfer_cta_plain(game_state or {}, budget)
     plain = f"""Fantasy World Cup · {datetime.utcnow().strftime("%A, %B %d")}
 
 Hi {name},
@@ -589,15 +631,18 @@ def render_round_recap_html(user: dict, leaderboard: list[dict], round_name: str
     pts  = int(user.get("totalPoints") or 0)
     rank = next((i + 1 for i, u in enumerate(leaderboard) if u["uid"] == user["uid"]), None)
 
+    budget = budget_remaining(user)
     subject = f"Fantasy WC · {round_name} complete · transfer window OPEN"
+    if budget > 0:
+        subject += f" · ${budget} unspent!"
 
     leaderboards_block = render_leaderboards_html(user, leaderboard)
     roster_block = render_roster_html(roster or [], teams_cache or {}, players_cache or {}) if roster is not None else ""
     odds_keys_block = render_odds_keys_html(proj, teams_cache or {}, players_cache or {})
     # A round recap fires when the window opens, so the CTA renders OPEN; fall
     # back to a synthetic window-open state if we couldn't read config.
-    cta_block = render_transfer_cta_html(game_state or {"state": "window-open",
-                                                        "round": user.get("_round")})
+    gs_for_cta = game_state or {"state": "window-open", "round": user.get("_round")}
+    cta_block = render_transfer_cta_html(gs_for_cta, budget)
 
     html = f"""<!DOCTYPE html>
 <html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; max-width:600px; margin:0 auto; padding:24px; color:#1a1a1a">
@@ -629,6 +674,7 @@ def render_round_recap_html(user: dict, leaderboard: list[dict], round_name: str
 </body></html>"""
 
     odds_keys_plain = _odds_keys_plain(proj, teams_cache or {}, players_cache or {})
+    cta_plain = _transfer_cta_plain(gs_for_cta, budget)
     plain = f"""{round_name} complete.
 
 Hi {name},
@@ -636,7 +682,7 @@ Hi {name},
 {round_name} is in the books. Eliminated picks have been auto-sold. The next transfer window is OPEN.
 
 Your standing: {'#' + str(rank) if rank else 'unranked'} · {pts} pts
-{(flag_promo_plain + chr(10)) if flag_promo_plain else ''}{(odds_keys_plain + chr(10)) if odds_keys_plain else ''}
+{(flag_promo_plain + chr(10)) if flag_promo_plain else ''}{(odds_keys_plain + chr(10)) if odds_keys_plain else ''}{(cta_plain + chr(10)) if cta_plain else ''}
 Top 5: {' · '.join(f"{i+1}. {name_for(u)} ({int(u.get('totalPoints') or 0)})" for i, u in enumerate(leaderboard[:5]))}
 
 Transfer page: {TRANSFER_URL}

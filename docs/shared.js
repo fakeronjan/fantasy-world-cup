@@ -194,7 +194,7 @@ function renderStateBanner(targetEl, state) {
   } else if (state.state === 'transition-settling') {
     bg = '#fef3c7'; color = '#92400e'; icon = '⚙️';
     title = `Round transition in progress · ${ROUND_NAMES[state.round] || state.round}`;
-    sub = `Results and modeling are settling — transfers reopen shortly.`;
+    sub = `Results and modeling are settling - transfers reopen shortly.`;
   } else if (state.state === 'window-open') {
     bg = '#fef0f7'; color = '#9d174d'; icon = '🟢';
     title = `Transfer window OPEN · ${ROUND_NAMES[state.round] || state.round}`;
@@ -412,16 +412,19 @@ async function renderFlagPromo(targetEl, user) {
   if (!targetEl) return;
   const st = await getFlagState();
   if (!st || !flagsVisibleTo(user, st)) { targetEl.innerHTML = ''; return; }
-  let msg, sub;
+  let msg, sub, cta;
   if (st.status === 'done' && st.champion) {
     msg = `🏆 ${st.champion.name} has the best flag in the world`;
     sub = 'See how the Flag Knockout bracket played out';
+    cta = 'See results →';
   } else if (st.votingOpen) {
     msg = "Vote: what's the best flag in the world?";
     sub = `Flag Knockout · ${_FLAG_RL[st.currentRound] || 'voting'} is LIVE – out of the pool? get your votes in`;
+    cta = 'Vote →';
   } else {
     msg = "Vote: what's the best flag in the world?";
     sub = 'Flag Knockout · results are in – see which flags advanced';
+    cta = 'See results →';
   }
   const preview = (!st.launched && isAdmin(user))
     ? '<span class="fp-preview">preview</span>' : '';
@@ -429,7 +432,7 @@ async function renderFlagPromo(targetEl, user) {
     <span class="fp-emoji">🏳️</span>
     <span class="fp-text"><span class="fp-msg">${msg}${preview}</span>
       <span class="fp-sub">${sub}</span></span>
-    <span class="fp-cta">Vote →</span></a>`;
+    <span class="fp-cta">${cta}</span></a>`;
 }
 
 // Expose to non-module scripts on the page if needed.
