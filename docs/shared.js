@@ -428,8 +428,11 @@ async function renderFlagPromo(targetEl, user) {
   }
   const preview = (!st.launched && isAdmin(user))
     ? '<span class="fp-preview">preview</span>' : '';
+  const icon = (st.status === 'done' && st.champion)
+    ? `<img class="fp-flag-img" src="./flags/${st.champion.iso}.svg" alt="${st.champion.name} flag">`
+    : '<span class="fp-emoji">🏳️</span>';
   targetEl.innerHTML = `<a class="flag-promo" href="./flags.html">
-    <span class="fp-emoji">🏳️</span>
+    ${icon}
     <span class="fp-text"><span class="fp-msg">${msg}${preview}</span>
       <span class="fp-sub">${sub}</span></span>
     <span class="fp-cta">${cta}</span></a>`;
