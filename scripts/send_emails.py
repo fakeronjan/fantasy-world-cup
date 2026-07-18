@@ -44,6 +44,7 @@ SITE_URL = "https://fakeronjan.github.io/fantasy-world-cup/"
 PROFILE_URL = SITE_URL + "profile.html"
 LEADERBOARD_URL = SITE_URL + "leaderboard.html"
 TRANSFER_URL = SITE_URL + "transfer.html"
+ARCHIVE_URL = SITE_URL + "archive-2026.html"
 
 PROJECTIONS_PATH = Path(__file__).resolve().parent.parent / "docs" / "data" / "projections.json"
 
@@ -323,18 +324,27 @@ def render_today_matches_html(today_matches: list[dict], players_cache: dict) ->
     return f'<h3 style="margin:24px 0 6px; font-size:14px; color:#1a6b8a">Yesterday\'s results</h3><ul style="padding-left:18px; margin:0">{items}</ul>'
 
 
-def render_footer_html() -> str:
+def render_footer_html(is_final: bool = False) -> str:
     """Email footer whose LAST line is a per-send timestamp. Gmail threads our
     daily emails (same sender + constant 'Fantasy WC' subject prefix) and
     collapses any identical trailing block behind its 'trim repeated content'
     toggle - which was hiding the leaderboard + the previously-static footer. A
     unique final line makes every email's trailing block distinct, so there's
-    nothing for Gmail to collapse."""
+    nothing for Gmail to collapse.
+
+    is_final=True is the Final recap, which bypasses the opt-in check (goes
+    to every user who played, not just emailNotificationsEnabled=True) - the
+    normal "you opted in" line would be false for anyone who didn't opt in."""
     sent = datetime.now(timezone.utc).astimezone(EASTERN).strftime("%b %-d, %Y at %-I:%M %p ET")
+    reason = (
+        "You're getting this because you played Fantasy World Cup 2026 - thanks for playing!"
+        if is_final else
+        "You're getting this because you opted into Fantasy WC emails on your profile."
+    )
     return f"""
   <hr style="margin:32px 0; border:none; border-top:1px solid #ddd">
   <p style="font-size:11px; color:#888">
-    You're getting this because you opted into Fantasy WC emails on your profile.
+    {reason}
     <a href="{PROFILE_URL}" style="color:#1a6b8a">Manage email preferences</a>.
   </p>
   <p style="font-size:10px; color:#bbb; margin-top:6px">Sent {sent}</p>"""
@@ -537,6 +547,166 @@ def _flag_promo_plain(fs: dict | None) -> str:
     return f"{clean} - {sub}\n{FLAGS_URL}"
 
 
+_TIEBREAK_NOTE = {
+    "points": "Tied on votes - decided by voters' combined fantasy score.",
+    "seed":   "Tied on votes and voter score - decided by seed.",
+}
+
+
+def _flag_final_matchup(fs: dict) -> tuple[dict, dict, int, int, str] | None:
+    """(winner, runner_up, winner_pct, loser_pct, tiebreak_note) for the Flag
+    Knockout final, or None if the final game isn't recorded (e.g. contest
+    never launched). tiebreak_note is '' unless the vote was tied."""
+    games = ((fs.get("rounds") or {}).get("F") or {}).get("games") or []
+    g = games[0] if games else None
+    if not g or g.get("votesA") is None or g.get("votesB") is None:
+        return None
+    a, b = g.get("a") or {}, g.get("b") or {}
+    va, vb = g.get("votesA", 0), g.get("votesB", 0)
+    total = va + vb or 1
+    pa = round(va / total * 100)
+    a_won = (g.get("winner") or {}).get("name") == a.get("name")
+    winner, runner_up = (a, b) if a_won else (b, a)
+    winner_pct = pa if a_won else 100 - pa
+    tiebreak_note = _TIEBREAK_NOTE.get(g.get("tiebreak") or "", "")
+    return winner, runner_up, winner_pct, 100 - winner_pct, tiebreak_note
+
+
+def _flag_emoji(team: dict) -> str:
+    """team['emoji'] when present, else computed from the ISO code (each
+    letter -> its Unicode regional-indicator symbol). Several Flag Knockout
+    entries (e.g. Congo DR, Cape Verde Islands) have an empty stored emoji,
+    so this is the reliable path rather than trusting the field alone."""
+    e = (team.get("emoji") or "").strip()
+    if e:
+        return e
+    iso = (team.get("iso") or "").strip().upper()
+    if len(iso) != 2 or not iso.isalpha():
+        return ""
+    return "".join(chr(0x1F1E6 + ord(c) - ord("A")) for c in iso)
+
+
+def render_flag_results_html(fs: dict | None) -> str:
+    """Full Flag Knockout results (champion + final matchup), inline in the
+    email - not just a teaser link. Only for the finished contest."""
+    if not fs or not fs.get("launched") or fs.get("status") != "done":
+        return ""
+    champ = fs.get("champion") or {}
+    if not champ:
+        return ""
+    matchup = _flag_final_matchup(fs)
+    final_line = ""
+    if matchup:
+        _, runner_up, winner_pct, loser_pct, tiebreak_note = matchup
+        note_html = f' {escape_html(tiebreak_note)}' if tiebreak_note else ''
+        final_line = (f'<div style="font-size:13px; opacity:0.95; margin-top:8px">'
+                      f'Beat {escape_html(runner_up.get("name", "?"))} in the final, '
+                      f'{winner_pct}%-{loser_pct}% of the vote.{note_html}</div>')
+    return f'''
+  <div style="background:#6d28d9; background:linear-gradient(120deg,#1a6b8a,#6d28d9 45%,#ff6eb4 80%,#f59e0b); border-radius:8px; padding:16px; margin-bottom:16px; color:#fff">
+    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; opacity:0.9">Flag Knockout results</div>
+    <div style="font-size:20px; font-weight:800; margin-top:4px">{_flag_emoji(champ)} {escape_html(champ.get("name", "?"))}</div>
+    <div style="font-size:13px; opacity:0.95; margin-top:2px">crowned best flag in the world &ndash; 48 flags entered, one champion</div>
+    {final_line}
+    <div style="margin-top:12px"><a href="{FLAGS_URL}" style="color:#fff; text-decoration:underline; font-size:12px; opacity:0.9">See the full bracket &rarr;</a></div>
+  </div>'''
+
+
+def _flag_results_plain(fs: dict | None) -> str:
+    if not fs or not fs.get("launched") or fs.get("status") != "done":
+        return ""
+    champ = fs.get("champion") or {}
+    if not champ:
+        return ""
+    matchup = _flag_final_matchup(fs)
+    final_line = ""
+    if matchup:
+        _, runner_up, winner_pct, loser_pct, tiebreak_note = matchup
+        note = f" {tiebreak_note}" if tiebreak_note else ""
+        final_line = f"Beat {runner_up.get('name', '?')} in the final, {winner_pct}%-{loser_pct}% of the vote.{note}\n"
+    return (f"FLAG KNOCKOUT RESULTS\n"
+            f"Champion: {champ.get('name', '?')} - crowned best flag in the world (48 entered, one champion)\n"
+            f"{final_line}Full bracket: {FLAGS_URL}")
+
+
+def _flag_round_matchups(fs: dict, round_key: str) -> list[dict]:
+    """Completed matchups for one round: [{a, b, winner, votesA, votesB,
+    tiebreak_note}, ...]. Skips any game whose votes aren't recorded yet."""
+    games = ((fs.get("rounds") or {}).get(round_key) or {}).get("games") or []
+    out = []
+    for g in games:
+        if g.get("votesA") is None or g.get("votesB") is None:
+            continue
+        out.append({
+            "a": g.get("a") or {}, "b": g.get("b") or {},
+            "winner": g.get("winner") or {},
+            "votesA": g.get("votesA", 0), "votesB": g.get("votesB", 0),
+            "tiebreak_note": _TIEBREAK_NOTE.get(g.get("tiebreak") or "", ""),
+        })
+    return out
+
+
+_BRACKET_ROUND_LABEL = {"SF": "Semifinal", "F": "Final"}
+
+
+def render_flag_bracket_html(fs: dict | None) -> str:
+    """Semifinal + Final bracket summary with flag emoji - the deeper recap
+    (beyond just the champion callout above) that goes lower in the Final
+    email. Emoji rather than the ./flags/*.svg images the site uses: those
+    are remote images that depend on the recipient's mail client loading
+    them at all."""
+    if not fs or not fs.get("launched") or fs.get("status") != "done":
+        return ""
+    round_matchups = [(r, _flag_round_matchups(fs, r)) for r in ("SF", "F")]
+    round_matchups = [(r, ms) for r, ms in round_matchups if ms]
+    if not round_matchups:
+        return ""
+
+    def side_cell(team: dict, votes: int, won: bool) -> str:
+        name_style = "font-weight:800; color:#1a6b8a" if won else "color:#999"
+        check = " &#10003;" if won else ""
+        return (f'<td style="padding:8px 6px; text-align:center; width:33%; vertical-align:top">'
+                f'<div style="font-size:30px; line-height:1">{_flag_emoji(team)}</div>'
+                f'<div style="font-size:11px; margin-top:4px; {name_style}">{escape_html(team.get("name", "?"))}{check}</div>'
+                f'<div style="font-size:10px; color:#aaa">{votes} vote{"s" if votes != 1 else ""}</div></td>')
+
+    rows = ""
+    for round_key, matchups in round_matchups:
+        rows += (f'<tr><td colspan="3" style="padding:10px 0 4px; font-size:10px; font-weight:700; '
+                 f'text-transform:uppercase; letter-spacing:0.5px; color:#aaa">{_BRACKET_ROUND_LABEL[round_key]}</td></tr>')
+        for m in matchups:
+            a, b, winner = m["a"], m["b"], m["winner"]
+            a_won = winner.get("name") == a.get("name")
+            note = (f'<div style="font-size:10px; color:#aaa; padding:0 6px 10px; text-align:center">{escape_html(m["tiebreak_note"])}</div>'
+                    if m["tiebreak_note"] else "")
+            rows += (f'<tr>{side_cell(a, m["votesA"], a_won)}'
+                     f'<td style="padding:8px 2px; text-align:center; color:#ccc; font-size:11px; font-weight:700; vertical-align:middle">VS</td>'
+                     f'{side_cell(b, m["votesB"], not a_won)}</tr>'
+                     f'<tr><td colspan="3">{note}</td></tr>')
+
+    return f'''
+  <h3 style="margin:24px 0 6px; font-size:14px; color:#1a6b8a">Flag Knockout bracket</h3>
+  <table style="width:100%; border-collapse:collapse; margin-bottom:8px">{rows}</table>'''
+
+
+def _flag_bracket_plain(fs: dict | None) -> str:
+    if not fs or not fs.get("launched") or fs.get("status") != "done":
+        return ""
+    round_matchups = [(r, _flag_round_matchups(fs, r)) for r in ("SF", "F")]
+    round_matchups = [(r, ms) for r, ms in round_matchups if ms]
+    if not round_matchups:
+        return ""
+    lines = ["FLAG KNOCKOUT BRACKET"]
+    for round_key, matchups in round_matchups:
+        lines.append(f"{_BRACKET_ROUND_LABEL[round_key].upper()}:")
+        for m in matchups:
+            a, b, winner = m["a"], m["b"], m["winner"]
+            note = f" ({m['tiebreak_note']})" if m["tiebreak_note"] else ""
+            lines.append(f"  {a.get('name', '?')} ({m['votesA']}) vs {b.get('name', '?')} ({m['votesB']}) "
+                          f"- {winner.get('name', '?')} advances{note}")
+    return "\n".join(lines)
+
+
 def render_daily_html(user: dict, leaderboard: list[dict], today_matches: list[dict],
                       roster: list[dict],
                       teams_cache: dict, players_cache: dict,
@@ -623,21 +793,82 @@ def render_round_recap_html(user: dict, leaderboard: list[dict], round_name: str
                               roster: list[dict] = None,
                               teams_cache: dict = None, players_cache: dict = None,
                               proj: dict = None, game_state: dict = None,
-                              flag_promo_html: str = "", flag_promo_plain: str = "") -> tuple[str, str, str]:
+                              flag_promo_html: str = "", flag_promo_plain: str = "",
+                              flag_bracket_html: str = "", flag_bracket_plain: str = "") -> tuple[str, str, str]:
     """Round-end recap email. Lighter content than daily; emphasis on the
-    completed round + the freshly-opened transfer window."""
+    completed round + the freshly-opened transfer window - UNLESS round_name
+    is "Final", in which case this is the one-time tournament-closing send:
+    no transfer CTA (there's no next window), a real "thanks for playing"
+    line, the champion, and a link to the permanent 2026 archive instead of
+    the live leaderboard."""
+    is_final = (round_name == "Final")
     name = name_for(user)
     flag = flag_for(user)
     pts  = int(user.get("totalPoints") or 0)
     rank = next((i + 1 for i, u in enumerate(leaderboard) if u["uid"] == user["uid"]), None)
+
+    leaderboards_block = render_leaderboards_html(user, leaderboard)
+    roster_block = render_roster_html(roster or [], teams_cache or {}, players_cache or {}) if roster is not None else ""
+
+    if is_final:
+        champ = next((t for t in (teams_cache or {}).values() if t.get("finalRound") == "W"), None)
+        champ_name = champ.get("name") if champ else None
+        subject = f"Fantasy WC · Tournament complete{' - ' + champ_name + ' win it all!' if champ_name else '!'}"
+        intro = (f'<strong>{escape_html(champ_name)} are 2026 World Cup Champions</strong> - and that\'s a wrap on '
+                  f'the fantasy tournament too.' if champ_name else '<strong>The tournament is complete.</strong>') \
+            + ' Thanks for playing!'
+        html = f"""<!DOCTYPE html>
+<html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; max-width:600px; margin:0 auto; padding:24px; color:#1a1a1a">
+  <h1 style="color:#1a6b8a; font-size:22px; letter-spacing:1px; margin:0 0 4px">🏆 TOURNAMENT COMPLETE</h1>
+  <p style="color:#888; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin:0 0 24px">{datetime.utcnow().strftime("%A, %B %d")}</p>
+
+  <p style="font-size:15px; margin:0 0 16px">Hi {flag}{(" " if flag else "")}{escape_html(name)},</p>
+
+  <p style="font-size:15px; margin:0 0 16px">{intro}</p>
+
+  <div style="background:#f8f8f6; border-radius:6px; padding:16px; margin-bottom:16px">
+    <div style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px">Your final standing</div>
+    <div style="font-size:32px; font-weight:800; color:#ff6eb4">
+      {'#' + str(rank) if rank else 'unranked'}
+      <span style="font-size:18px; color:#666; font-weight:600">· {pts} pts</span>
+    </div>
+  </div>
+  {roster_block}
+  {leaderboards_block}
+  {flag_promo_html}
+  {flag_bracket_html}
+
+  <p style="margin-top:32px">
+    <a href="{ARCHIVE_URL}" style="background:#1a6b8a; color:#fff; padding:10px 18px; border-radius:4px; text-decoration:none; font-weight:600; font-size:13px">See the full 2026 archive &rarr;</a>
+  </p>
+
+  {render_footer_html(is_final=True)}
+</body></html>"""
+
+        intro_plain = (f"{champ_name} are 2026 World Cup Champions - and that's a wrap on the fantasy tournament too."
+                        if champ_name else "The tournament is complete.") + " Thanks for playing!"
+        plain = f"""TOURNAMENT COMPLETE.
+
+Hi {name},
+
+{intro_plain}
+
+Your final standing: {'#' + str(rank) if rank else 'unranked'} · {pts} pts
+
+Top 5: {' · '.join(f"{i+1}. {name_for(u)} ({int(u.get('totalPoints') or 0)})" for i, u in enumerate(leaderboard[:5]))}
+{(chr(10) + flag_promo_plain + chr(10)) if flag_promo_plain else ''}{(chr(10) + flag_bracket_plain + chr(10)) if flag_bracket_plain else ''}
+2026 archive: {ARCHIVE_URL}
+
+You're getting this because you played Fantasy World Cup 2026 - thanks for playing!
+Manage email preferences: {PROFILE_URL}
+"""
+        return subject, html, plain
 
     budget = budget_remaining(user)
     subject = f"Fantasy WC · {round_name} complete · transfer window OPEN"
     if budget > 0:
         subject += f" · ${budget} unspent!"
 
-    leaderboards_block = render_leaderboards_html(user, leaderboard)
-    roster_block = render_roster_html(roster or [], teams_cache or {}, players_cache or {}) if roster is not None else ""
     odds_keys_block = render_odds_keys_html(proj, teams_cache or {}, players_cache or {})
     # A round recap fires when the window opens, so the CTA renders OPEN; fall
     # back to a synthetic window-open state if we couldn't read config.
@@ -781,6 +1012,17 @@ def main():
     flag_promo_plain = _flag_promo_plain(flag_state)
     if flag_promo_html:
         print("Flag Knockout promo: ON (contest launched)")
+
+    # The Final recap embeds the actual Flag Knockout RESULTS inline (champion
+    # + final matchup tally), not just the teaser link every other email uses -
+    # falls back to the teaser if the flag contest isn't done yet. It also adds
+    # a Final Four bracket summary (with real flag images) further down.
+    flag_bracket_html = flag_bracket_plain = ""
+    if args.mode == "round" and args.round_name == "Final":
+        flag_promo_html = render_flag_results_html(flag_state) or flag_promo_html
+        flag_promo_plain = _flag_results_plain(flag_state) or flag_promo_plain
+        flag_bracket_html = render_flag_bracket_html(flag_state)
+        flag_bracket_plain = _flag_bracket_plain(flag_state)
     proj_by_uid = load_projections()
     print(f"Game state: {game_state.get('state')} ({game_state.get('round')}); "
           f"projections for {len(proj_by_uid)} users")
@@ -788,6 +1030,13 @@ def main():
     only = (args.only or "").strip().lower()
     if only:
         print(f"TEST MODE: sending only to {only} (opt-in check bypassed)")
+
+    # The Final recap is the one-time closing summary - everyone who played
+    # should see it, not just users who opted into the routine daily digest.
+    # Mid-tournament round-recaps (R32/R16/QF/SF) stay opt-in-gated.
+    bypass_optin = (args.mode == "round" and args.round_name == "Final")
+    if bypass_optin:
+        print("Final recap: opt-in check bypassed - sending to every user with an email on file")
 
     n_sent = n_skipped = n_failed = 0
     for u in all_users:
@@ -797,7 +1046,7 @@ def main():
                 n_skipped += 1
                 continue
         else:
-            if not u.get("emailNotificationsEnabled"):
+            if not bypass_optin and not u.get("emailNotificationsEnabled"):
                 n_skipped += 1
                 continue
             if not u.get("email"):
@@ -819,6 +1068,7 @@ def main():
                 roster=roster, teams_cache=teams_cache, players_cache=players_cache,
                 proj=proj, game_state=game_state,
                 flag_promo_html=flag_promo_html, flag_promo_plain=flag_promo_plain,
+                flag_bracket_html=flag_bracket_html, flag_bracket_plain=flag_bracket_plain,
             )
 
         if args.dry_run:

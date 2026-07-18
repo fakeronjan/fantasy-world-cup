@@ -169,6 +169,7 @@
   <a href="./transfer.html" class="active">Transfer</a>
   <a href="./flags.html" id="flagsLink" style="display:none">Flags</a>
   <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+  <a href="./archive-2026.html" id="archiveLink" style="display:none">2026 Archive</a>
 </nav>
 
 <main>
@@ -272,6 +273,7 @@
   const transferUI  = document.getElementById('transferUI');
   const siteNav     = document.getElementById('siteNav');
   const adminLink   = document.getElementById('adminLink');
+  const archiveLink = document.getElementById('archiveLink');
   const signInBtn   = document.getElementById('signInBtn');
   const windowBanner = document.getElementById('windowBanner');
   const portfolioList = document.getElementById('portfolioList');
@@ -345,6 +347,7 @@
     signinCard.style.display = 'none';
     transferUI.style.display = 'block';
     if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+    if ((await window.fwc.getGameState()).state === 'done') archiveLink.style.display = '';
 
     await loadEverything();
   });
@@ -364,8 +367,8 @@
     windowBanner.classList.toggle('transition', inTransition);
     if (inTransition) {
       windowBanner.textContent = open
-        ? `⚠️ TRANSITION STATE — transfers are LIVE, but the round just turned over. In the rare event of a bracket/scoring error, transfers made now may be reverted. Trade with that in mind.`
-        : `⚙️ Round transition in progress — results and modeling are settling. Transfers reopen shortly; nothing you stage now is saved yet.`;
+        ? `⚠️ TRANSITION STATE - transfers are LIVE, but the round just turned over. In the rare event of a bracket/scoring error, transfers made now may be reverted. Trade with that in mind.`
+        : `⚙️ Round transition in progress - results and modeling are settling. Transfers reopen shortly; nothing you stage now is saved yet.`;
     } else {
       windowBanner.textContent = open
         ? `Transfer window is OPEN. Make changes and click "Save" to commit. (Current round: ${configDoc.currentRound || '?'})`

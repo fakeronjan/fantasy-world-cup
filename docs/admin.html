@@ -187,6 +187,7 @@
   <a href="./transfer.html" id="transferLink">Transfer</a>
   <a href="./flags.html" id="flagsLink" style="display:none">Flags</a>
   <a href="./admin.html" class="active">Admin</a>
+  <a href="./archive-2026.html" id="archiveLink" style="display:none">2026 Archive</a>
 </nav>
 
 <main>
@@ -333,6 +334,7 @@
   const accessDenied = document.getElementById('accessDenied');
   const adminUI      = document.getElementById('adminUI');
   const siteNav      = document.getElementById('siteNav');
+  const archiveLink  = document.getElementById('archiveLink');
   const deniedTitle  = document.getElementById('deniedTitle');
   const deniedMsg    = document.getElementById('deniedMsg');
   const signInBtn    = document.getElementById('signInBtn');
@@ -388,6 +390,7 @@
     accessDenied.style.display = 'none';
     adminUI.style.display = 'block';
     siteNav.style.display = 'flex';
+    if ((await window.fwc.getGameState()).state === 'done') archiveLink.style.display = '';
     await loadAll();
   });
 

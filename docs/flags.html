@@ -153,6 +153,7 @@
   <a href="./transfer.html" id="transferLink">Transfer</a>
   <a href="./flags.html" id="flagsLink" class="active" style="display:none">Flags</a>
   <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+  <a href="./archive-2026.html" id="archiveLink" style="display:none">2026 Archive</a>
 </nav>
 
 <main>
@@ -390,6 +391,7 @@ window.fwc.onAuth(async (user) => {
   me = user;
   nav.style.display = 'flex';
   if (window.fwc.isAdmin(user)) document.getElementById('adminLink').style.display = '';
+  if ((await window.fwc.getGameState()).state === 'done') document.getElementById('archiveLink').style.display = '';
   userLine.innerHTML = `${user.displayName || user.email}
     <button id="signOutBtn">Sign out</button>`;
   document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());

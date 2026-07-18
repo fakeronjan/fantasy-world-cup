@@ -221,6 +221,7 @@
   <a href="./transfer.html" id="transferLink">Transfer</a>
   <a href="./flags.html" id="flagsLink" style="display:none">Flags</a>
   <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+  <a href="./archive-2026.html" id="archiveLink" style="display:none">2026 Archive</a>
 </nav>
 
 <main>
@@ -326,6 +327,7 @@
   const setupNotice     = document.getElementById('setupNotice');
   const siteNav         = document.getElementById('siteNav');
   const adminLink       = document.getElementById('adminLink');
+  const archiveLink     = document.getElementById('archiveLink');
   const ctaRow          = document.getElementById('ctaRow');
 
   await new Promise(r => requestAnimationFrame(r));
@@ -342,6 +344,7 @@
     if (user) {
       siteNav.style.display = 'flex';
       if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+      if ((await window.fwc.getGameState()).state === 'done') archiveLink.style.display = '';
 
       // Load Firestore user doc (for current leagueNickname)
       try {

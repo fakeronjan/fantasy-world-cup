@@ -209,6 +209,7 @@
   <a href="./transfer.html" id="transferLink">Transfer</a>
   <a href="./flags.html" id="flagsLink" style="display:none">Flags</a>
   <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+  <a href="./archive-2026.html" id="archiveLink" style="display:none">2026 Archive</a>
 </nav>
 
 <main>
@@ -430,6 +431,7 @@
   const draftUI     = document.getElementById('draftUI');
   const siteNav     = document.getElementById('siteNav');
   const adminLink   = document.getElementById('adminLink');
+  const archiveLink = document.getElementById('archiveLink');
   const signInBtn   = document.getElementById('signInBtn');
   const tabPills    = document.getElementById('tabPills');
   const searchBox   = document.getElementById('searchBox');
@@ -509,6 +511,7 @@
       signinCard.style.display = 'none';
       draftUI.style.display = 'block';
       if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+      if (gs.state === 'done') archiveLink.style.display = '';
       if (!teams.length) await loadData();
       refreshFilterDropdowns();
       render();

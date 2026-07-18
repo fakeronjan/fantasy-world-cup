@@ -117,6 +117,7 @@
   <a href="./transfer.html" id="transferLink">Transfer</a>
   <a href="./flags.html" id="flagsLink" style="display:none">Flags</a>
   <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+  <a href="./archive-2026.html" id="archiveLink" style="display:none">2026 Archive</a>
 </nav>
 
 <main>
@@ -197,6 +198,7 @@
   const profileView     = document.getElementById('profileView');
   const siteNav         = document.getElementById('siteNav');
   const adminLink       = document.getElementById('adminLink');
+  const archiveLink     = document.getElementById('archiveLink');
   const signInBtn       = document.getElementById('signInBtn');
   const nicknameInput   = document.getElementById('nicknameInput');
   const saveNicknameBtn = document.getElementById('saveNicknameBtn');
@@ -316,6 +318,7 @@
     document.getElementById('signOutBtn').addEventListener('click', () => window.fwc.signOut());
     siteNav.style.display = 'flex';
     if (window.fwc.isAdmin(user)) adminLink.style.display = '';
+    if ((await window.fwc.getGameState()).state === 'done') archiveLink.style.display = '';
     signinCard.style.display = 'none';
     profileView.style.display = 'block';
 

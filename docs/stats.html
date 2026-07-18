@@ -167,6 +167,7 @@
   <a href="./transfer.html" id="transferLink">Transfer</a>
   <a href="./flags.html" id="flagsLink" style="display:none">Flags</a>
   <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+  <a href="./archive-2026.html" id="archiveLink" style="display:none">2026 Archive</a>
 </nav>
 
 <main>
@@ -264,6 +265,7 @@
   const statsView   = document.getElementById('statsView');
   const siteNav     = document.getElementById('siteNav');
   const adminLink   = document.getElementById('adminLink');
+  const archiveLink = document.getElementById('archiveLink');
   const adminNote   = document.getElementById('adminNote');
   const signInBtn   = document.getElementById('signInBtn');
   const lockedCard  = document.getElementById('lockedCard');
@@ -350,6 +352,7 @@
     if (window.fwc.isAdmin(user)) adminLink.style.display = '';
 
     const gs = await window.fwc.getGameState();
+    if (gs.state === 'done') archiveLink.style.display = '';
     window.fwc.renderStateBanner(document.getElementById('stateBanner'), gs);
 
     const isPre = gs.state === 'pre-kickoff';
@@ -471,7 +474,7 @@
   function renderRows(host, rows, { mode, denom, kind, collapseTo }) {
     if (!rows.length) {
       const msg = (mode === 'pts' || mode === 'value')
-        ? 'No points scored yet — check back after the first match.'
+        ? 'No points scored yet - check back after the first match.'
         : 'No picks yet.';
       host.innerHTML = `<div class="list-empty">${msg}</div>`;
       return;
@@ -479,7 +482,7 @@
     const maxPts = Math.max(0, ...rows.map(r => r.pts));
     const maxVal = Math.max(0, ...rows.map(r => r.value || 0));
     if (mode === 'pts' && maxPts === 0) {
-      host.innerHTML = `<div class="list-empty">No points scored yet — check back after the first match.</div>`;
+      host.innerHTML = `<div class="list-empty">No points scored yet - check back after the first match.</div>`;
       return;
     }
     const ptLabel = (n) => `${n} pt${n === 1 ? '' : 's'}`;
@@ -559,7 +562,7 @@
 
     if (!movers.length) {
       transferList.innerHTML = `<div class="list-empty">
-        No transfers yet — windows open after the group stage (~late June).
+        No transfers yet - windows open after the group stage (~late June).
         Each manager gets ${BUYS_CAP} buys for the whole tournament.
       </div>`;
       return;

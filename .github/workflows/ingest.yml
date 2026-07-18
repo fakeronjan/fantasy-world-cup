@@ -13,6 +13,14 @@ name: ingest-live-results
 #     Generate with:
 #       base64 -i fantasy-world-cup-2026-firebase-adminsdk-fbsvc-*.json | pbcopy
 #     Then paste into the secret.
+#
+# End-of-tournament: the moment ingest_results.py sees the Final finish, it
+# writes a frozen stats archive to docs/archive/2026/ (see scripts/archive_stats.py).
+# The first run that commits that archive also dispatches email_digest.yml's
+# Final round-recap and then DISABLES both this workflow and email_digest.yml
+# via the GitHub API - no more scheduled (or manual!) runs until someone
+# `gh workflow enable`'s them again. That's intentional: disabling a workflow
+# blocks workflow_dispatch too, not just the schedule.
 
 on:
   schedule:
@@ -23,9 +31,11 @@ jobs:
   ingest:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    # Needed so the projections step can commit docs/data/projections.json back.
+    # contents:write lets the projections/archive steps commit back; actions:write
+    # lets the end-of-tournament step dispatch + disable workflows via `gh`.
     permissions:
       contents: write
+      actions: write
     steps:
       - uses: actions/checkout@v7
 
@@ -69,6 +79,36 @@ jobs:
             git commit -m "Update projections [skip ci]"
             git push
           fi
+
+      # Fires exactly once - the run where ingest_results.py first writes
+      # docs/archive/2026/ (the Final just finished). `git status --porcelain`
+      # on that path IS the "did we just archive for the first time" signal.
+      - name: Commit archive if newly created
+        id: archive
+        run: |
+          if git status --porcelain docs/archive/2026/ | grep -q .; then
+            git config user.name  "fwc-ingest-bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add docs/archive/2026/
+            git commit -m "Archive final 2026 tournament stats"
+            git push
+            echo "just_archived=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "just_archived=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Dispatch BEFORE disabling: disabling only blocks future triggers, the
+      # run just queued here is unaffected. Disable email_digest.yml first,
+      # ingest.yml (this workflow) last - safe, since disabling a workflow
+      # doesn't cancel the run currently disabling it.
+      - name: Trigger Final recap email + disable both crons
+        if: steps.archive.outputs.just_archived == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run email_digest.yml -f mode=round -f round_name=Final
+          gh workflow disable email_digest.yml
+          gh workflow disable ingest.yml
 
       - name: Clean up credentials
         if: always()

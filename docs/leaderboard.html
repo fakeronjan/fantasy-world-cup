@@ -321,6 +321,7 @@
   <a href="./transfer.html" id="transferLink">Transfer</a>
   <a href="./flags.html" id="flagsLink" style="display:none">Flags</a>
   <a href="./admin.html" id="adminLink" style="display:none">Admin</a>
+  <a href="./archive-2026.html" id="archiveLink" style="display:none">2026 Archive</a>
 </nav>
 
 <main>
@@ -458,6 +459,7 @@
   const lbView      = document.getElementById('lbView');
   const siteNav     = document.getElementById('siteNav');
   const adminLink   = document.getElementById('adminLink');
+  const archiveLink = document.getElementById('archiveLink');
   const signInBtn   = document.getElementById('signInBtn');
   const lbBody      = document.getElementById('lbBody');
   const lastUpdated = document.getElementById('lastUpdated');
@@ -718,7 +720,7 @@
   // Show the transfer CTA advertising the next knockout window, then drop it
   // once the final round has kicked off. Fully schedule-driven off
   // config.roundStartsUtc (published by the ingest cron), so it self-activates
-  // at every turnover — group→R32→R16→QF→SF→F — with no per-round edit. Stamps
+  // at every turnover - group→R32→R16→QF→SF→F - with no per-round edit. Stamps
   // the upcoming round's kickoff in local time.
   const KO_ROUND_NAMES = {
     R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarter-finals',
@@ -805,6 +807,7 @@
     // Admins get a preview. (Recomputed once on load; a refresh reveals them
     // at kickoff.)
     const gs = await window.fwc.getGameState();
+    if (gs.state === 'done') archiveLink.style.display = '';
     window.fwc.renderStateBanner(document.getElementById('stateBanner'), gs);
     maybeShowTransferCta(gs);  // async; fire-and-forget UI, nothing below depends on it
     const isAdmin = window.fwc.isAdmin(user);

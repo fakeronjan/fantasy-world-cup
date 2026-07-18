@@ -585,6 +585,15 @@ def maybe_transition_round(db, cfg: dict) -> str | None:
             "transferWindowOpen":  False,
         }, merge=True)
         print(f"  Tournament complete - currentRound=done, window closed")
+        # One-time season archive. File existence IS the guard - if it's
+        # already there (a prior cron tick already built it), skip. The
+        # calling workflow turns "did docs/archive/2026/ change just now"
+        # into the signal for the Final-recap-email + cron-disable steps.
+        archive_meta = Path("docs/archive/2026/meta.json")
+        if not archive_meta.exists():
+            from archive_stats import build_archive
+            build_archive(db)
+            print("  Wrote season archive to docs/archive/2026/")
         return nxt
 
     # The current round is over, but we can only reprice once the NEXT round's

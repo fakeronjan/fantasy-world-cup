@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 Archive · Fantasy World Cup 2026</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .champion-card {
+    background: linear-gradient(120deg,#1a6b8a,#6d28d9 45%,#ff6eb4 80%,#f59e0b);
+    border-radius: 8px; padding: 20px; margin-bottom: 16px; color: #fff;
+  }
+  .champion-card .cc-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+    opacity: 0.9;
+  }
+  .champion-card .cc-name { font-size: 22px; font-weight: 800; margin-top: 4px; }
+
+  /* Specificity note: shared.css's `table.data .rank-cell` rule (1 type + 2
+     classes) outranks a plain `.rank-cell.podium-N` (2 classes) - so these
+     need the `table.data` prefix too, or the muted default silently wins. */
+  table.data .rank-cell.podium-1 { color: #b91c1c; }
+  table.data .rank-cell.podium-2 { color: #6b7280; }
+  table.data .rank-cell.podium-3 { color: #92400e; }
+
+  .lb-roster {
+    margin-top: 5px;
+    display: flex; flex-wrap: wrap; gap: 3px 8px;
+    font-size: 11px; line-height: 1.45;
+  }
+  .lb-roster .rp {
+    display: inline-flex; align-items: center; gap: 3px;
+    white-space: nowrap;
+  }
+  .lb-roster .rp.team   { color: var(--bg-header); font-weight: 600; }
+  .lb-roster .rp.player { color: var(--accent); }
+  .lb-roster .rp-flag {
+    font-size: 12px;
+    font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;
+  }
+  .lb-roster .rp-pts {
+    margin-left: 3px;
+    font-size: 9px; font-weight: 700;
+    vertical-align: super;
+    color: var(--text-muted);
+  }
+  .lb-roster .rp-pts.scoring { color: #16a34a; }
+  .lb-roster .rp.rp-exited { opacity: 0.6; }
+  .lb-roster .rp.rp-elim .rp-xname { text-decoration: line-through; }
+  .lb-roster .rp-tag {
+    font-size: 8px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.3px; border-radius: 3px; padding: 1px 3px; margin-left: 3px;
+  }
+  .lb-roster .rp-tag.out  { color: #fff; background: #dc2626; }
+  .lb-roster .rp-tag.sold { color: var(--text-muted); background: var(--border-row); }
+
+  .archive-note {
+    font-size: 12px; color: var(--text-muted); margin: 0 0 16px; line-height: 1.55;
+  }
+  .empty-state { text-align: center; padding: 48px 24px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>2026 ARCHIVE</h1>
+  <p class="subtitle">Final standings, frozen the moment the tournament ended</p>
+</header>
+
+<nav class="site-nav" id="siteNav">
+  <a href="./index.html">Home</a>
+  <a href="./leaderboard.html">Leaderboard</a>
+  <a href="./archive-2026.html" class="active">2026 Archive</a>
+</nav>
+
+<main>
+  <div id="championCard"></div>
+  <p class="archive-note">
+    This is a frozen snapshot taken when the Final concluded - it never changes,
+    even if the live app is reused for a future tournament.
+  </p>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Manager</th>
+        <th class="num">Points</th>
+      </tr>
+    </thead>
+    <tbody id="archBody">
+      <tr><td colspan="3" class="empty-state">Loading&hellip;</td></tr>
+    </tbody>
+  </table>
+</main>
+
+<script>
+  const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+
+  async function loadArchive() {
+    const archBody = document.getElementById('archBody');
+    try {
+      const [meta, leaderboard, teams, players, seedTeams] = await Promise.all([
+        ...['meta', 'leaderboard', 'teams', 'players'].map(f =>
+          fetch(`./archive/2026/${f}.json`).then(r => r.json())),
+        fetch('./data/seed_teams.json').then(r => r.json()),
+      ]);
+
+      const teamById = Object.fromEntries(teams.map(t => [t.id, t]));
+      const playerById = Object.fromEntries(players.map(p => [p.id, p]));
+      const teamEmoji = Object.fromEntries(seedTeams.map(t => [t.id, t.emoji || '']));
+
+      renderChampion(meta, teamEmoji);
+      renderTable(leaderboard, teamById, playerById, teamEmoji);
+    } catch (e) {
+      archBody.innerHTML = `<tr><td colspan="3" class="empty-state">
+        Couldn't load the archive: ${escape(e.message)}
+      </td></tr>`;
+    }
+  }
+
+  function renderChampion(meta, teamEmoji) {
+    const el = document.getElementById('championCard');
+    if (!meta.championTeamName) return;
+    const emoji = teamEmoji[meta.championTeamId] || '';
+    el.innerHTML = `
+      <div class="champion-card">
+        <div class="cc-eyebrow">2026 World Cup Champion</div>
+        <div class="cc-name">${emoji ? emoji + ' ' : ''}${escape(meta.championTeamName)}</div>
+      </div>`;
+  }
+
+  function rosterLineHtml(roster, exited) {
+    const held = (roster || []).filter(p => p && p.currentlyHeld !== false);
+    const exitedArr = exited || [];
+    if (!held.length && !exitedArr.length) return '';
+    const chip = (kind, flag, label, pts) =>
+      `<span class="rp ${kind}">${flag ? `<span class="rp-flag">${flag}</span>` : ''}${escape(label)}` +
+      `<span class="rp-pts${pts > 0 ? ' scoring' : ''}">${pts}</span></span>`;
+    const exitedChip = (e, flag, label) => {
+      const pts = e.points ?? 0;
+      const elim = e.exitReason === 'eliminated';
+      return `<span class="rp rp-exited ${elim ? 'rp-elim' : 'rp-sold'} ${e.kind}">` +
+        `${flag ? `<span class="rp-flag">${flag}</span>` : ''}` +
+        `<span class="rp-xname">${escape(label)}</span>` +
+        `<span class="rp-tag ${elim ? 'out' : 'sold'}">${elim ? 'out' : 'sold'}</span>` +
+        `<span class="rp-pts${pts > 0 ? ' scoring' : ''}">${pts}</span></span>`;
+    };
+    const chips = [
+      ...held.map(p => chip(p.kind, p._flag, p._label, p.points ?? 0)),
+      ...exitedArr.map(e => exitedChip(e, e._flag, e._label)),
+    ];
+    return `<div class="lb-roster">${chips.join('')}</div>`;
+  }
+
+  function renderTable(rows, teamById, playerById, teamEmoji) {
+    const archBody = document.getElementById('archBody');
+    if (!rows.length) {
+      archBody.innerHTML = `<tr><td colspan="3" class="empty-state">No archived standings yet.</td></tr>`;
+      return;
+    }
+    const labelFor = (kind, id) => kind === 'team'
+      ? (teamById[id]?.name || id) : (playerById[id]?.name || id);
+    const flagFor = (kind, id) => kind === 'team'
+      ? (teamEmoji[id] || '') : (teamEmoji[playerById[id]?.teamId] || '');
+
+    archBody.innerHTML = rows.map((u, i) => {
+      const rank = i + 1;
+      const podiumClass = rank <= 3 ? `podium-${rank}` : '';
+      const flagSpan = u.countryFlag
+        ? `<span style="font-size:16px; margin-right:6px; font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">${u.countryFlag}</span>`
+        : '';
+      const roster = (u.roster || []).map(p =>
+        ({ ...p, _label: labelFor(p.kind, p.assetId), _flag: flagFor(p.kind, p.assetId) }));
+      const exited = (u.exitedPicks || []).map(p =>
+        ({ ...p, _label: labelFor(p.kind, p.assetId), _flag: flagFor(p.kind, p.assetId) }));
+      const rosterLine = rosterLineHtml(roster, exited);
+      return `<tr>
+        <td class="rank-cell ${podiumClass}">${rank}</td>
+        <td>${flagSpan}${escape(u.name)}${rosterLine}</td>
+        <td class="num"><strong>${u.totalPoints}</strong></td>
+      </tr>`;
+    }).join('');
+  }
+
+  loadArchive();
+</script>
+</body>
+</html>
