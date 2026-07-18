@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-17T17:46:44.367587+00:00",
+  "generatedAt": "2026-07-18T05:52:42.423129+00:00",
   "runs": 20000,
   "assumesCurrentRoster": true,
   "bracketModel": "standings-seeded (v1 approximation)",
@@ -8,11 +8,11 @@
       "uid": "KVS3kfS9SYUapdy7rAT7yrYSzT02",
       "name": "Karlos Abel",
       "current": 278,
-      "median": 331.0,
-      "p20": 308,
-      "p80": 358,
-      "mean": 333.4,
-      "winPct": 99.8,
+      "median": 334.0,
+      "p20": 309,
+      "p80": 360,
+      "mean": 335.3,
+      "winPct": 99.3,
       "top3Pct": 100.0,
       "top5Pct": 100.0,
       "lastPct": 0.0,
@@ -31,7 +31,7 @@
         },
         {
           "kind": "player",
-          "id": "3373-france"
+          "id": "180137-spain"
         }
       ],
       "curRank": 1,
@@ -170,7 +170,7 @@
       "p20": 164,
       "p80": 272,
       "mean": 217.6,
-      "winPct": 0.2,
+      "winPct": 0.7,
       "top3Pct": 36.1,
       "top5Pct": 47.7,
       "lastPct": 0.0,
