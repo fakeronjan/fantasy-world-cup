@@ -4,7 +4,7 @@ Runs idempotently on a cron (every 15 min during match windows). Each run:
 
   1. Loads `config/global` for scoring weights.
   2. Pulls match-list summary from football-data.org `/v4/competitions/WC/matches`.
-  3. For each match that's newly FINISHED (or whose lastUpdated has advanced),
+  3. For each match that's newly FINISHED and has no detail on file yet,
      fetches detail via `/v4/matches/{id}` and persists:
        - Score, status, winner
        - Per-goal: scorerFdId, assistFdId, minute, type, team
@@ -216,7 +216,7 @@ def _enrich_with_detail(detail: dict, summary: dict) -> dict:
 
 def sync_matches(db, team_fd_to_slug: dict) -> int:
     """Sync match list + fetch details for FINISHED matches whose detail
-    we haven't ingested yet (or whose lastUpdated has changed).
+    we haven't ingested yet.
     Returns count of detail-fetches performed."""
     payload = fd_get("/competitions/WC/matches")
     matches_raw = payload.get("matches") or []
@@ -231,22 +231,25 @@ def sync_matches(db, team_fd_to_slug: dict) -> int:
         doc_id = str(summary["fdId"])
         ref = db.collection("matches").document(doc_id)
 
-        # Check if we need to fetch the detailed event data
+        # Check if we need to fetch the detailed event data. A FINISHED
+        # match's goals/lineups never change once captured, so "goals"
+        # already present is enough - no need to compare lastUpdated
+        # (football-data.org reports one shared value for the whole
+        # competition, not per-match, which used to force a re-fetch of
+        # every already-finished match on every single cron tick).
         existing_snap = ref.get()
         existing = existing_snap.to_dict() if existing_snap.exists else {}
-        needs_detail = (
-            summary["status"] == "FINISHED"
-            and (
-                "goals" not in existing
-                or existing.get("lastUpdated") != summary["lastUpdated"]
-            )
-        )
+        needs_detail = summary["status"] == "FINISHED" and "goals" not in existing
 
         if needs_detail:
             try:
                 detail = fd_get(f"/matches/{summary['fdId']}")
                 enriched = _enrich_with_detail(detail, summary)
-                batch.set(ref, enriched, merge=True)
+                # Commit immediately (not batched) - these are the slow,
+                # rate-limited calls, and if the job gets killed mid-loop
+                # (e.g. CI timeout) already-fetched matches must survive so
+                # the next run doesn't have to redo them.
+                ref.set(enriched, merge=True)
                 detail_fetches += 1
                 # Be polite to API - 30/min cap, sleep briefly between calls
                 time.sleep(2.5)

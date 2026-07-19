@@ -30,7 +30,7 @@ on:
 jobs:
   ingest:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     # contents:write lets the projections/archive steps commit back; actions:write
     # lets the end-of-tournament step dispatch + disable workflows via `gh`.
     permissions:
