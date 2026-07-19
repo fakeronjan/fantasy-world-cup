@@ -1,0 +1,22 @@
+{
+  "seasonLabel": "2026",
+  "generatedAt": "2026-07-19T22:35:23.736027+00:00",
+  "championTeamId": "spain",
+  "championTeamName": "Spain",
+  "scoringWeights": {
+    "player_win_share": 1,
+    "team_draw": 1,
+    "bonus_final": 8,
+    "player_clean_sheet_gk": 5,
+    "bonus_qf": 3,
+    "player_clean_sheet_other": 0,
+    "player_assist": 3,
+    "team_win": 3,
+    "bonus_sf": 5,
+    "player_goal": 5,
+    "player_clean_sheet_def": 2,
+    "bonus_r32": 1,
+    "bonus_champion": 12,
+    "bonus_r16": 2
+  }
+}

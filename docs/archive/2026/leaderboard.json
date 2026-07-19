@@ -1,0 +1,1704 @@
+[
+  {
+    "name": "Cris V",
+    "countryFlag": "\ud83c\uddec\ud83c\uddf1",
+    "totalPoints": 302,
+    "tieBreakerScore": 91,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "8004-england",
+        "points": 38,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3373-france",
+        "points": 42,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "202283-spain",
+        "points": 12,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "argentina",
+        "points": 40,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3218-argentina",
+        "points": 59,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "32570-spain",
+        "points": 13,
+        "pointsAtPurchase": 29,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "180137-spain",
+        "points": 1,
+        "pointsAtPurchase": 34,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "player",
+        "assetId": "19334-germany",
+        "points": 11,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "belgium",
+        "points": 17,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "38101-norway",
+        "points": 39,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "8215-england",
+        "points": 0,
+        "exitReason": "sold"
+      }
+    ]
+  },
+  {
+    "name": "World Cupcake",
+    "countryFlag": "\ud83c\uddef\ud83c\uddf4",
+    "totalPoints": 221,
+    "tieBreakerScore": 76,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 29,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "8004-england",
+        "points": 38,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "125010-england",
+        "points": 44,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "spain",
+        "points": 37,
+        "pointsAtPurchase": 16,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "player",
+        "assetId": "318-croatia",
+        "points": 1,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "19334-germany",
+        "points": 11,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "44-portugal",
+        "points": 17,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "3254-portugal",
+        "points": 1,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Amanda Schneider",
+    "countryFlag": "",
+    "totalPoints": 219,
+    "tieBreakerScore": 84,
+    "groupIds": [
+      "samsung"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "argentina",
+        "points": 40,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "spain",
+        "points": 53,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3218-argentina",
+        "points": 59,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "cape-verde",
+        "points": 4,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "ecuador",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "algeria",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "paraguay",
+        "points": 10,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "colombia",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "44-portugal",
+        "points": 17,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "ronjan",
+    "countryFlag": "\ud83c\uddee\ud83c\uddf3",
+    "totalPoints": 216,
+    "tieBreakerScore": 92,
+    "groupIds": [
+      "nielson",
+      "metamarsci",
+      "samsung",
+      "nelsonbasis",
+      "agrani"
+    ],
+    "roster": [
+      {
+        "kind": "player",
+        "assetId": "99813-england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3374-france",
+        "points": 39,
+        "pointsAtPurchase": 29,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 16,
+        "pointsAtPurchase": 13,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "player",
+        "assetId": "170281-south-korea",
+        "points": 1,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "canada",
+        "points": 4,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "38101-norway",
+        "points": 22,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "team",
+        "assetId": "netherlands",
+        "points": 7,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "8004-england",
+        "points": 28,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "145-united-states",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "mexico",
+        "points": 15,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "united-states",
+        "points": 6,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Hup Holland Hup!",
+    "countryFlag": "\ud83c\uddf3\ud83c\uddf1",
+    "totalPoints": 207,
+    "tieBreakerScore": 68,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "player",
+        "assetId": "3218-argentina",
+        "points": 59,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "8004-england",
+        "points": 38,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "177522-france",
+        "points": 5,
+        "pointsAtPurchase": 9,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "player",
+        "assetId": "126870-netherlands",
+        "points": 2,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "33154-spain",
+        "points": 2,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "145-united-states",
+        "points": 4,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "team",
+        "assetId": "netherlands",
+        "points": 8,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "7459-netherlands",
+        "points": 20,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "44-portugal",
+        "points": 17,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "morocco",
+        "points": 19,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "38101-norway",
+        "points": 17,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "belgium",
+        "points": 3,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Niraj Patel",
+    "countryFlag": "",
+    "totalPoints": 201,
+    "tieBreakerScore": 81,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "spain",
+        "points": 53,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "8004-england",
+        "points": 38,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "177522-france",
+        "points": 14,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "turkey",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "24545-ecuador",
+        "points": 6,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "senegal",
+        "points": 4,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "ivory-coast",
+        "points": 7,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "germany",
+        "points": 7,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "44-portugal",
+        "points": 17,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "144570-portugal",
+        "points": 11,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "22396-colombia",
+        "points": 11,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "watch it! watch the football!",
+    "countryFlag": "\ud83c\udde7\ud83c\uddf4",
+    "totalPoints": 197,
+    "tieBreakerScore": 119,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 29,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "spain",
+        "points": 53,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "argentina",
+        "points": 40,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3218-argentina",
+        "points": 11,
+        "pointsAtPurchase": 48,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "iran",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "algeria",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "australia",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "austria",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "germany",
+        "points": 7,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "egypt",
+        "points": 11,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "colombia",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "mexico",
+        "points": 15,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Vindaloo",
+    "countryFlag": "\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f",
+    "totalPoints": 191,
+    "tieBreakerScore": 48,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "8004-england",
+        "points": 38,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "125010-england",
+        "points": 44,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "7888-england",
+        "points": 0,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "7848-england",
+        "points": 18,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "99813-england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "144892-england",
+        "points": 0,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "8215-england",
+        "points": 16,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3313-england",
+        "points": 4,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "5457-england",
+        "points": 1,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "118489-england",
+        "points": 10,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": []
+  },
+  {
+    "name": "Rekhmina Babar",
+    "countryFlag": "",
+    "totalPoints": 189,
+    "tieBreakerScore": 115,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 29,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "spain",
+        "points": 53,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "argentina",
+        "points": 40,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "germany",
+        "points": 7,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "senegal",
+        "points": 4,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "colombia",
+        "points": 13,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Kelsey Barry",
+    "countryFlag": "",
+    "totalPoints": 188,
+    "tieBreakerScore": 96,
+    "groupIds": [
+      "samsung"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 29,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "spain",
+        "points": 53,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "argentina",
+        "points": 40,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "south-korea",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "panama",
+        "points": 0,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "ghana",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "ecuador",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "paraguay",
+        "points": 10,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Daniel Ortiz",
+    "countryFlag": "",
+    "totalPoints": 180,
+    "tieBreakerScore": 100,
+    "groupIds": [
+      "samsung"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "spain",
+        "points": 53,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "argentina",
+        "points": 40,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "japan",
+        "points": 6,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "portugal",
+        "points": 11,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "mexico",
+        "points": 15,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "united-states",
+        "points": 12,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Kk",
+    "countryFlag": "",
+    "totalPoints": 180,
+    "tieBreakerScore": 23,
+    "groupIds": [
+      "metamarsci"
+    ],
+    "roster": [
+      {
+        "kind": "player",
+        "assetId": "3218-argentina",
+        "points": 26,
+        "pointsAtPurchase": 33,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3374-france",
+        "points": 28,
+        "pointsAtPurchase": 40,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3373-france",
+        "points": 5,
+        "pointsAtPurchase": 37,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "71-france",
+        "points": 5,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "player",
+        "assetId": "3199-spain",
+        "points": 2,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "133860-spain",
+        "points": 2,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "157135-spain",
+        "points": 2,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "138230-brazil",
+        "points": 0,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "359-germany",
+        "points": 8,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "217540-spain",
+        "points": 11,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "8004-england",
+        "points": 28,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "8215-england",
+        "points": 5,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "32570-spain",
+        "points": 30,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "7884-spain",
+        "points": 18,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "202283-spain",
+        "points": 10,
+        "exitReason": "sold"
+      }
+    ]
+  },
+  {
+    "name": "theGuha",
+    "countryFlag": "",
+    "totalPoints": 177,
+    "tieBreakerScore": 104,
+    "groupIds": [
+      "agrani"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 29,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "spain",
+        "points": 53,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "team",
+        "assetId": "argentina",
+        "points": 40,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "netherlands",
+        "points": 8,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "sweden",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "portugal",
+        "points": 11,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "norway",
+        "points": 18,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Connor Thorpe",
+    "countryFlag": "",
+    "totalPoints": 158,
+    "tieBreakerScore": 68,
+    "groupIds": [
+      "nielson",
+      "nelsonbasis"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 29,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "8004-england",
+        "points": 38,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3141-argentina",
+        "points": 17,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "33154-spain",
+        "points": 12,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "turkey",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "ecuador",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "3254-portugal",
+        "points": 1,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "178722-portugal",
+        "points": 2,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "138230-brazil",
+        "points": 0,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "colombia",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "switzerland",
+        "points": 19,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "morocco",
+        "points": 19,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Carl H",
+    "countryFlag": "\ud83c\udde8\ud83c\udded",
+    "totalPoints": 156,
+    "tieBreakerScore": 51,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 29,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "202283-spain",
+        "points": 12,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3373-france",
+        "points": 16,
+        "pointsAtPurchase": 26,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "32570-spain",
+        "points": 19,
+        "pointsAtPurchase": 23,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "player",
+        "assetId": "191712-turkey",
+        "points": 1,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "341-germany",
+        "points": 2,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "8279-sweden",
+        "points": 12,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "6486-sweden",
+        "points": 15,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "15892-portugal",
+        "points": 6,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "3365-france",
+        "points": 0,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "144570-portugal",
+        "points": 10,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "99813-england",
+        "points": 8,
+        "exitReason": "sold"
+      },
+      {
+        "kind": "player",
+        "assetId": "171-germany",
+        "points": 17,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "netherlands",
+        "points": 8,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "1556-brazil",
+        "points": 1,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Mariss Mednis",
+    "countryFlag": "",
+    "totalPoints": 151,
+    "tieBreakerScore": 88,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "england",
+        "points": 30,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "8004-england",
+        "points": 38,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "germany",
+        "points": 7,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "netherlands",
+        "points": 8,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "united-states",
+        "points": 12,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "canada",
+        "points": 10,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "mexico",
+        "points": 15,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "145-united-states",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "131040-united-states",
+        "points": 18,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "8492-united-states",
+        "points": 1,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "player",
+        "assetId": "3927-united-states",
+        "points": 7,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Foot-and-ball disease",
+    "countryFlag": "\ud83c\uddf5\ud83c\uddf9",
+    "totalPoints": 131,
+    "tieBreakerScore": 111,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 29,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "curacao",
+        "points": 1,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "iran",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "japan",
+        "points": 6,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "algeria",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "bosnia",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "united-states",
+        "points": 12,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "canada",
+        "points": 10,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "egypt",
+        "points": 11,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "belgium",
+        "points": 17,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "morocco",
+        "points": 19,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "mc",
+    "countryFlag": "",
+    "totalPoints": 126,
+    "tieBreakerScore": 103,
+    "groupIds": [
+      "samsung"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 29,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3374-france",
+        "points": 16,
+        "pointsAtPurchase": 52,
+        "currentlyHeld": true
+      },
+      {
+        "kind": "player",
+        "assetId": "3220-argentina",
+        "points": 6,
+        "pointsAtPurchase": 19,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "south-korea",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "croatia",
+        "points": 7,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "senegal",
+        "points": 4,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "sweden",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "germany",
+        "points": 7,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "japan",
+        "points": 6,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "portugal",
+        "points": 11,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "morocco",
+        "points": 19,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "S Korea Win = Day Off Right?",
+    "countryFlag": "\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc73\udb40\udc63\udb40\udc74\udb40\udc7f",
+    "totalPoints": 122,
+    "tieBreakerScore": 106,
+    "groupIds": [
+      "samsung"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "france",
+        "points": 29,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "south-korea",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "scotland",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "iran",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "germany",
+        "points": 7,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "netherlands",
+        "points": 8,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "mexico",
+        "points": 15,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "egypt",
+        "points": 11,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "portugal",
+        "points": 11,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "morocco",
+        "points": 19,
+        "exitReason": "eliminated"
+      }
+    ]
+  },
+  {
+    "name": "Veronica Hernandez",
+    "countryFlag": "\ud83c\uddf2\ud83c\uddfd",
+    "totalPoints": 110,
+    "tieBreakerScore": 76,
+    "groupIds": [
+      "nielson"
+    ],
+    "roster": [
+      {
+        "kind": "team",
+        "assetId": "argentina",
+        "points": 40,
+        "pointsAtPurchase": null,
+        "currentlyHeld": true
+      }
+    ],
+    "exitedPicks": [
+      {
+        "kind": "team",
+        "assetId": "iran",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "uruguay",
+        "points": 2,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "turkey",
+        "points": 3,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "haiti",
+        "points": 0,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "japan",
+        "points": 6,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "croatia",
+        "points": 7,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "south-africa",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "ecuador",
+        "points": 5,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "mexico",
+        "points": 15,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "brazil",
+        "points": 13,
+        "exitReason": "eliminated"
+      },
+      {
+        "kind": "team",
+        "assetId": "portugal",
+        "points": 11,
+        "exitReason": "eliminated"
+      }
+    ]
+  }
+]

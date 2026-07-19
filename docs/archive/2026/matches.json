@@ -1,0 +1,938 @@
+[
+  {
+    "round": "group",
+    "team1Id": "mexico",
+    "team2Id": "south-africa",
+    "score1": 2,
+    "score2": 0,
+    "kickoff": "2026-06-11T19:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "south-korea",
+    "team2Id": "czechia",
+    "score1": 2,
+    "score2": 1,
+    "kickoff": "2026-06-12T02:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "czechia",
+    "team2Id": "south-africa",
+    "score1": 1,
+    "score2": 1,
+    "kickoff": "2026-06-18T16:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "mexico",
+    "team2Id": "south-korea",
+    "score1": 1,
+    "score2": 0,
+    "kickoff": "2026-06-19T01:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "czechia",
+    "team2Id": "mexico",
+    "score1": 0,
+    "score2": 3,
+    "kickoff": "2026-06-25T01:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "south-africa",
+    "team2Id": "south-korea",
+    "score1": 1,
+    "score2": 0,
+    "kickoff": "2026-06-25T01:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "canada",
+    "team2Id": "bosnia",
+    "score1": 1,
+    "score2": 1,
+    "kickoff": "2026-06-12T19:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "qatar",
+    "team2Id": "switzerland",
+    "score1": 1,
+    "score2": 1,
+    "kickoff": "2026-06-13T19:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "switzerland",
+    "team2Id": "bosnia",
+    "score1": 4,
+    "score2": 1,
+    "kickoff": "2026-06-18T19:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "canada",
+    "team2Id": "qatar",
+    "score1": 6,
+    "score2": 0,
+    "kickoff": "2026-06-18T22:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "switzerland",
+    "team2Id": "canada",
+    "score1": 2,
+    "score2": 1,
+    "kickoff": "2026-06-24T19:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "bosnia",
+    "team2Id": "qatar",
+    "score1": 3,
+    "score2": 1,
+    "kickoff": "2026-06-24T19:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "brazil",
+    "team2Id": "morocco",
+    "score1": 1,
+    "score2": 1,
+    "kickoff": "2026-06-13T22:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "haiti",
+    "team2Id": "scotland",
+    "score1": 0,
+    "score2": 1,
+    "kickoff": "2026-06-14T01:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "brazil",
+    "team2Id": "haiti",
+    "score1": 3,
+    "score2": 0,
+    "kickoff": "2026-06-20T00:30:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "scotland",
+    "team2Id": "morocco",
+    "score1": 0,
+    "score2": 1,
+    "kickoff": "2026-06-19T22:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "scotland",
+    "team2Id": "brazil",
+    "score1": 0,
+    "score2": 3,
+    "kickoff": "2026-06-24T22:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "morocco",
+    "team2Id": "haiti",
+    "score1": 4,
+    "score2": 2,
+    "kickoff": "2026-06-24T22:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "united-states",
+    "team2Id": "paraguay",
+    "score1": 4,
+    "score2": 1,
+    "kickoff": "2026-06-13T01:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "australia",
+    "team2Id": "turkey",
+    "score1": 2,
+    "score2": 0,
+    "kickoff": "2026-06-14T04:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "turkey",
+    "team2Id": "paraguay",
+    "score1": 0,
+    "score2": 1,
+    "kickoff": "2026-06-20T03:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "united-states",
+    "team2Id": "australia",
+    "score1": 2,
+    "score2": 0,
+    "kickoff": "2026-06-19T19:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "turkey",
+    "team2Id": "united-states",
+    "score1": 3,
+    "score2": 2,
+    "kickoff": "2026-06-26T02:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "paraguay",
+    "team2Id": "australia",
+    "score1": 0,
+    "score2": 0,
+    "kickoff": "2026-06-26T02:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "germany",
+    "team2Id": "curacao",
+    "score1": 7,
+    "score2": 1,
+    "kickoff": "2026-06-14T17:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "ivory-coast",
+    "team2Id": "ecuador",
+    "score1": 1,
+    "score2": 0,
+    "kickoff": "2026-06-14T23:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "germany",
+    "team2Id": "ivory-coast",
+    "score1": 2,
+    "score2": 1,
+    "kickoff": "2026-06-20T20:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "ecuador",
+    "team2Id": "curacao",
+    "score1": 0,
+    "score2": 0,
+    "kickoff": "2026-06-21T00:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "ecuador",
+    "team2Id": "germany",
+    "score1": 2,
+    "score2": 1,
+    "kickoff": "2026-06-25T20:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "curacao",
+    "team2Id": "ivory-coast",
+    "score1": 0,
+    "score2": 2,
+    "kickoff": "2026-06-25T20:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "netherlands",
+    "team2Id": "japan",
+    "score1": 2,
+    "score2": 2,
+    "kickoff": "2026-06-14T20:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "sweden",
+    "team2Id": "tunisia",
+    "score1": 5,
+    "score2": 1,
+    "kickoff": "2026-06-15T02:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "netherlands",
+    "team2Id": "sweden",
+    "score1": 5,
+    "score2": 1,
+    "kickoff": "2026-06-20T17:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "tunisia",
+    "team2Id": "japan",
+    "score1": 0,
+    "score2": 4,
+    "kickoff": "2026-06-21T04:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "tunisia",
+    "team2Id": "netherlands",
+    "score1": 1,
+    "score2": 3,
+    "kickoff": "2026-06-25T23:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "japan",
+    "team2Id": "sweden",
+    "score1": 1,
+    "score2": 1,
+    "kickoff": "2026-06-25T23:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "belgium",
+    "team2Id": "egypt",
+    "score1": 1,
+    "score2": 1,
+    "kickoff": "2026-06-15T19:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "iran",
+    "team2Id": "new-zealand",
+    "score1": 2,
+    "score2": 2,
+    "kickoff": "2026-06-16T01:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "belgium",
+    "team2Id": "iran",
+    "score1": 0,
+    "score2": 0,
+    "kickoff": "2026-06-21T19:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "new-zealand",
+    "team2Id": "egypt",
+    "score1": 1,
+    "score2": 3,
+    "kickoff": "2026-06-22T01:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "new-zealand",
+    "team2Id": "belgium",
+    "score1": 1,
+    "score2": 5,
+    "kickoff": "2026-06-27T03:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "egypt",
+    "team2Id": "iran",
+    "score1": 1,
+    "score2": 1,
+    "kickoff": "2026-06-27T03:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "spain",
+    "team2Id": "cape-verde",
+    "score1": 0,
+    "score2": 0,
+    "kickoff": "2026-06-15T16:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "saudi-arabia",
+    "team2Id": "uruguay",
+    "score1": 1,
+    "score2": 1,
+    "kickoff": "2026-06-15T22:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "spain",
+    "team2Id": "saudi-arabia",
+    "score1": 4,
+    "score2": 0,
+    "kickoff": "2026-06-21T16:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "uruguay",
+    "team2Id": "cape-verde",
+    "score1": 2,
+    "score2": 2,
+    "kickoff": "2026-06-21T22:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "uruguay",
+    "team2Id": "spain",
+    "score1": 0,
+    "score2": 1,
+    "kickoff": "2026-06-27T00:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "cape-verde",
+    "team2Id": "saudi-arabia",
+    "score1": 0,
+    "score2": 0,
+    "kickoff": "2026-06-27T00:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "R16",
+    "team1Id": "paraguay",
+    "team2Id": "france",
+    "score1": 0,
+    "score2": 1,
+    "kickoff": "2026-07-04T21:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R16",
+    "team1Id": "canada",
+    "team2Id": "morocco",
+    "score1": 0,
+    "score2": 3,
+    "kickoff": "2026-07-04T17:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R16",
+    "team1Id": "brazil",
+    "team2Id": "norway",
+    "score1": 1,
+    "score2": 2,
+    "kickoff": "2026-07-05T20:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R16",
+    "team1Id": "mexico",
+    "team2Id": "england",
+    "score1": 2,
+    "score2": 3,
+    "kickoff": "2026-07-06T01:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R16",
+    "team1Id": "portugal",
+    "team2Id": "spain",
+    "score1": 0,
+    "score2": 1,
+    "kickoff": "2026-07-06T19:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R16",
+    "team1Id": "united-states",
+    "team2Id": "belgium",
+    "score1": 1,
+    "score2": 4,
+    "kickoff": "2026-07-07T00:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R16",
+    "team1Id": "argentina",
+    "team2Id": "egypt",
+    "score1": 3,
+    "score2": 2,
+    "kickoff": "2026-07-07T16:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R16",
+    "team1Id": "switzerland",
+    "team2Id": "colombia",
+    "score1": 4,
+    "score2": 3,
+    "kickoff": "2026-07-07T20:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "QF",
+    "team1Id": "france",
+    "team2Id": "morocco",
+    "score1": 2,
+    "score2": 0,
+    "kickoff": "2026-07-09T20:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "QF",
+    "team1Id": "spain",
+    "team2Id": "belgium",
+    "score1": 2,
+    "score2": 1,
+    "kickoff": "2026-07-10T19:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "QF",
+    "team1Id": "norway",
+    "team2Id": "england",
+    "score1": 1,
+    "score2": 2,
+    "kickoff": "2026-07-11T21:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "QF",
+    "team1Id": "argentina",
+    "team2Id": "switzerland",
+    "score1": 3,
+    "score2": 1,
+    "kickoff": "2026-07-12T01:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "SF",
+    "team1Id": "france",
+    "team2Id": "spain",
+    "score1": 0,
+    "score2": 2,
+    "kickoff": "2026-07-14T19:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "SF",
+    "team1Id": "england",
+    "team2Id": "argentina",
+    "score1": 1,
+    "score2": 2,
+    "kickoff": "2026-07-15T19:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "third",
+    "team1Id": "france",
+    "team2Id": "england",
+    "score1": 4,
+    "score2": 6,
+    "kickoff": "2026-07-18T21:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "F",
+    "team1Id": "spain",
+    "team2Id": "argentina",
+    "score1": 1,
+    "score2": 0,
+    "kickoff": "2026-07-19T19:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "france",
+    "team2Id": "senegal",
+    "score1": 3,
+    "score2": 1,
+    "kickoff": "2026-06-16T19:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "iraq",
+    "team2Id": "norway",
+    "score1": 1,
+    "score2": 4,
+    "kickoff": "2026-06-16T22:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "france",
+    "team2Id": "iraq",
+    "score1": 3,
+    "score2": 0,
+    "kickoff": "2026-06-22T21:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "norway",
+    "team2Id": "senegal",
+    "score1": 3,
+    "score2": 2,
+    "kickoff": "2026-06-23T00:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "norway",
+    "team2Id": "france",
+    "score1": 1,
+    "score2": 4,
+    "kickoff": "2026-06-26T19:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "senegal",
+    "team2Id": "iraq",
+    "score1": 5,
+    "score2": 0,
+    "kickoff": "2026-06-26T19:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "argentina",
+    "team2Id": "algeria",
+    "score1": 3,
+    "score2": 0,
+    "kickoff": "2026-06-17T01:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "austria",
+    "team2Id": "jordan",
+    "score1": 3,
+    "score2": 1,
+    "kickoff": "2026-06-17T04:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "argentina",
+    "team2Id": "austria",
+    "score1": 2,
+    "score2": 0,
+    "kickoff": "2026-06-22T17:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "jordan",
+    "team2Id": "algeria",
+    "score1": 1,
+    "score2": 2,
+    "kickoff": "2026-06-23T03:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "jordan",
+    "team2Id": "argentina",
+    "score1": 1,
+    "score2": 3,
+    "kickoff": "2026-06-28T02:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "algeria",
+    "team2Id": "austria",
+    "score1": 3,
+    "score2": 3,
+    "kickoff": "2026-06-28T02:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "portugal",
+    "team2Id": "congo-dr",
+    "score1": 1,
+    "score2": 1,
+    "kickoff": "2026-06-17T17:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "uzbekistan",
+    "team2Id": "colombia",
+    "score1": 1,
+    "score2": 3,
+    "kickoff": "2026-06-18T02:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "portugal",
+    "team2Id": "uzbekistan",
+    "score1": 5,
+    "score2": 0,
+    "kickoff": "2026-06-23T17:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "colombia",
+    "team2Id": "congo-dr",
+    "score1": 1,
+    "score2": 0,
+    "kickoff": "2026-06-24T02:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "colombia",
+    "team2Id": "portugal",
+    "score1": 0,
+    "score2": 0,
+    "kickoff": "2026-06-27T23:30:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "congo-dr",
+    "team2Id": "uzbekistan",
+    "score1": 3,
+    "score2": 1,
+    "kickoff": "2026-06-27T23:30:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "england",
+    "team2Id": "croatia",
+    "score1": 4,
+    "score2": 2,
+    "kickoff": "2026-06-17T20:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "ghana",
+    "team2Id": "panama",
+    "score1": 1,
+    "score2": 0,
+    "kickoff": "2026-06-17T23:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "england",
+    "team2Id": "ghana",
+    "score1": 0,
+    "score2": 0,
+    "kickoff": "2026-06-23T20:00:00Z",
+    "winner": "DRAW"
+  },
+  {
+    "round": "group",
+    "team1Id": "panama",
+    "team2Id": "croatia",
+    "score1": 0,
+    "score2": 1,
+    "kickoff": "2026-06-23T23:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "panama",
+    "team2Id": "england",
+    "score1": 0,
+    "score2": 2,
+    "kickoff": "2026-06-27T21:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "group",
+    "team1Id": "croatia",
+    "team2Id": "ghana",
+    "score1": 2,
+    "score2": 1,
+    "kickoff": "2026-06-27T21:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "germany",
+    "team2Id": "paraguay",
+    "score1": 4,
+    "score2": 5,
+    "kickoff": "2026-06-29T20:30:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "france",
+    "team2Id": "sweden",
+    "score1": 3,
+    "score2": 0,
+    "kickoff": "2026-06-30T21:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "south-africa",
+    "team2Id": "canada",
+    "score1": 0,
+    "score2": 1,
+    "kickoff": "2026-06-28T19:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "netherlands",
+    "team2Id": "morocco",
+    "score1": 3,
+    "score2": 4,
+    "kickoff": "2026-06-30T01:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "portugal",
+    "team2Id": "croatia",
+    "score1": 2,
+    "score2": 1,
+    "kickoff": "2026-07-02T23:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "spain",
+    "team2Id": "austria",
+    "score1": 3,
+    "score2": 0,
+    "kickoff": "2026-07-02T19:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "united-states",
+    "team2Id": "bosnia",
+    "score1": 2,
+    "score2": 0,
+    "kickoff": "2026-07-02T00:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "belgium",
+    "team2Id": "senegal",
+    "score1": 3,
+    "score2": 2,
+    "kickoff": "2026-07-01T20:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "brazil",
+    "team2Id": "japan",
+    "score1": 2,
+    "score2": 1,
+    "kickoff": "2026-06-29T17:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "ivory-coast",
+    "team2Id": "norway",
+    "score1": 1,
+    "score2": 2,
+    "kickoff": "2026-06-30T17:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "mexico",
+    "team2Id": "ecuador",
+    "score1": 2,
+    "score2": 0,
+    "kickoff": "2026-07-01T02:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "england",
+    "team2Id": "congo-dr",
+    "score1": 2,
+    "score2": 1,
+    "kickoff": "2026-07-01T16:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "argentina",
+    "team2Id": "cape-verde",
+    "score1": 3,
+    "score2": 2,
+    "kickoff": "2026-07-03T22:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "australia",
+    "team2Id": "egypt",
+    "score1": 3,
+    "score2": 5,
+    "kickoff": "2026-07-03T18:00:00Z",
+    "winner": "AWAY_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "switzerland",
+    "team2Id": "algeria",
+    "score1": 2,
+    "score2": 0,
+    "kickoff": "2026-07-03T03:00:00Z",
+    "winner": "HOME_TEAM"
+  },
+  {
+    "round": "R32",
+    "team1Id": "colombia",
+    "team2Id": "ghana",
+    "score1": 1,
+    "score2": 0,
+    "kickoff": "2026-07-04T01:30:00Z",
+    "winner": "HOME_TEAM"
+  }
+]
